@@ -128,23 +128,287 @@
       </div>
       <!-- End Page Header -->
 
-      <!-- Simple Content -->
+      <!-- Users Management -->
       <div class="row">
         <div class="col-12">
+          <!-- Card -->
           <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Dashboard Features</h3>
+            <!-- Header -->
+            <div class="card-header card-header-content-sm-between">
+              <div class="mb-2 mb-sm-0">
+                <h3 class="card-title">User Management <span class="badge bg-soft-dark text-dark ms-2">124</span></h3>
+              </div>
+
+              <div class="d-grid d-sm-flex justify-content-sm-end align-items-sm-center gap-2">
+                <!-- Search -->
+                <form>
+                  <div class="input-group input-group-merge input-group-flush">
+                    <div class="input-group-prepend input-group-text">
+                      <i class="bi-search"></i>
+                    </div>
+                    <input type="search" class="form-control" placeholder="Search users" aria-label="Search users">
+                  </div>
+                </form>
+                <!-- End Search -->
+
+                <a class="btn btn-primary" href="javascript:;">
+                  <i class="bi-person-plus me-1"></i> Add User
+                </a>
+              </div>
             </div>
-            <div class="card-body">
-              <p>This page uses the dashboard template with:</p>
-              <ul>
-                <li>✅ Vertical sidebar navigation</li>
-                <li>✅ Dashboard-specific styling</li>
-                <li>✅ Proper template assets</li>
-                <li>✅ Working sidebar functionality</li>
-              </ul>
+            <!-- End Header -->
+
+            <!-- Table -->
+            <div class="table-responsive">
+              <table class="table table-lg table-borderless table-thead-bordered table-nowrap table-align-middle card-table">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col" class="table-column-pe-0">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="usersCheckAll">
+                        <label class="form-check-label" for="usersCheckAll"></label>
+                      </div>
+                    </th>
+                    <th class="table-column-ps-0">Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td class="table-column-pe-0">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="usersDataCheck1">
+                        <label class="form-check-label" for="usersDataCheck1"></label>
+                      </div>
+                    </td>
+                    <td class="table-column-ps-0">
+                      <a class="d-flex align-items-center" href="javascript:;">
+                        <div class="flex-shrink-0">
+                          <div class="avatar avatar-circle">
+                            <img class="avatar-img" src="./assets/dashboard/img/160x160/img3.jpg" alt="Avatar">
+                          </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <span class="h5 text-inherit">John Smith</span>
+                        </div>
+                      </a>
+                    </td>
+                    <td>john.smith@company.com</td>
+                    <td><span class="badge bg-soft-primary text-primary">Admin</span></td>
+                    <td>
+                      <span class="legend-indicator bg-success"></span>Active
+                    </td>
+                    <td>2 hours ago</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-pencil-square me-1"></i> Edit
+                        </a>
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-trash me-1"></i> Delete
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="table-column-pe-0">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="usersDataCheck2">
+                        <label class="form-check-label" for="usersDataCheck2"></label>
+                      </div>
+                    </td>
+                    <td class="table-column-ps-0">
+                      <a class="d-flex align-items-center" href="javascript:;">
+                        <div class="flex-shrink-0">
+                          <div class="avatar avatar-soft-info avatar-circle">
+                            <span class="avatar-initials">SM</span>
+                          </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <span class="h5 text-inherit">Sarah Miller</span>
+                        </div>
+                      </a>
+                    </td>
+                    <td>sarah.miller@company.com</td>
+                    <td><span class="badge bg-soft-success text-success">Editor</span></td>
+                    <td>
+                      <span class="legend-indicator bg-success"></span>Active
+                    </td>
+                    <td>1 day ago</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-pencil-square me-1"></i> Edit
+                        </a>
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-trash me-1"></i> Delete
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="table-column-pe-0">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="usersDataCheck3">
+                        <label class="form-check-label" for="usersDataCheck3"></label>
+                      </div>
+                    </td>
+                    <td class="table-column-ps-0">
+                      <a class="d-flex align-items-center" href="javascript:;">
+                        <div class="flex-shrink-0">
+                          <div class="avatar avatar-circle">
+                            <img class="avatar-img" src="./assets/dashboard/img/160x160/img8.jpg" alt="Avatar">
+                          </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <span class="h5 text-inherit">David Wilson</span>
+                        </div>
+                      </a>
+                    </td>
+                    <td>david.wilson@company.com</td>
+                    <td><span class="badge bg-soft-warning text-warning">Viewer</span></td>
+                    <td>
+                      <span class="legend-indicator bg-warning"></span>Pending
+                    </td>
+                    <td>3 days ago</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-pencil-square me-1"></i> Edit
+                        </a>
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-trash me-1"></i> Delete
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="table-column-pe-0">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="usersDataCheck4">
+                        <label class="form-check-label" for="usersDataCheck4"></label>
+                      </div>
+                    </td>
+                    <td class="table-column-ps-0">
+                      <a class="d-flex align-items-center" href="javascript:;">
+                        <div class="flex-shrink-0">
+                          <div class="avatar avatar-soft-danger avatar-circle">
+                            <span class="avatar-initials">EB</span>
+                          </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <span class="h5 text-inherit">Emma Brown</span>
+                        </div>
+                      </a>
+                    </td>
+                    <td>emma.brown@company.com</td>
+                    <td><span class="badge bg-soft-info text-info">Moderator</span></td>
+                    <td>
+                      <span class="legend-indicator bg-danger"></span>Inactive
+                    </td>
+                    <td>1 week ago</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-pencil-square me-1"></i> Edit
+                        </a>
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-trash me-1"></i> Delete
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="table-column-pe-0">
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="usersDataCheck5">
+                        <label class="form-check-label" for="usersDataCheck5"></label>
+                      </div>
+                    </td>
+                    <td class="table-column-ps-0">
+                      <a class="d-flex align-items-center" href="javascript:;">
+                        <div class="flex-shrink-0">
+                          <div class="avatar avatar-circle">
+                            <img class="avatar-img" src="./assets/dashboard/img/160x160/img5.jpg" alt="Avatar">
+                          </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <span class="h5 text-inherit">Michael Johnson</span>
+                        </div>
+                      </a>
+                    </td>
+                    <td>michael.johnson@company.com</td>
+                    <td><span class="badge bg-soft-success text-success">Editor</span></td>
+                    <td>
+                      <span class="legend-indicator bg-success"></span>Active
+                    </td>
+                    <td>5 minutes ago</td>
+                    <td>
+                      <div class="btn-group" role="group">
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-pencil-square me-1"></i> Edit
+                        </a>
+                        <a class="btn btn-white btn-sm" href="javascript:;">
+                          <i class="bi-trash me-1"></i> Delete
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+            <!-- End Table -->
+
+            <!-- Footer -->
+            <div class="card-footer">
+              <div class="row justify-content-center justify-content-sm-between align-items-sm-center">
+                <div class="col-sm mb-2 mb-sm-0">
+                  <div class="d-flex justify-content-center justify-content-sm-start align-items-center">
+                    <span class="me-2">Showing:</span>
+                    <div class="tom-select-custom">
+                      <select class="js-select form-select form-select-borderless form-select-sm">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                      </select>
+                    </div>
+                    <span class="text-secondary me-2">of</span>
+                    <span id="datatableWithPaginationInfoTotalQty">124</span>
+                  </div>
+                </div>
+
+                <div class="col-sm-auto">
+                  <div class="d-flex justify-content-center justify-content-sm-end">
+                    <!-- Pagination -->
+                    <nav id="datatablePagination" aria-label="Activity pagination">
+                      <div class="dataTables_paginate paging_simple_numbers">
+                        <a class="paginate_button previous disabled" href="javascript:;">Previous</a>
+                        <span>
+                          <a class="paginate_button current" href="javascript:;">1</a>
+                          <a class="paginate_button" href="javascript:;">2</a>
+                          <a class="paginate_button" href="javascript:;">3</a>
+                        </span>
+                        <a class="paginate_button next" href="javascript:;">Next</a>
+                      </div>
+                    </nav>
+                    <!-- End Pagination -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Footer -->
           </div>
+          <!-- End Card -->
         </div>
       </div>
     </div>
