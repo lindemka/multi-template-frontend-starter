@@ -77,3 +77,16 @@
 | JavaScript | Sidebar management | Standard navigation |
 | Use Case | Admin interfaces | Public pages |
 | Responsive | Collapsible sidebar | Mobile menu |
+
+## Design System Reference
+
+**CRITICAL**: All frontend changes must reference the archived template folders:
+
+- **Dashboard designs**: `archive/template-front-dashboard/src/` - Contains complete pages, components, and layouts
+- **Multipurpose designs**: `archive/template-front-multipurpose/src/` - Contains complete pages, components, and layouts
+
+### Finding Components
+1. Browse archived template folders for existing UI patterns
+2. Copy HTML structure and adapt for your use case  
+3. Ensure asset paths point to current template assets
+4. Never create new designs - always use existing template patterns

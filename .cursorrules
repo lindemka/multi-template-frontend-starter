@@ -26,6 +26,12 @@
 - **ALWAYS test asset accessibility** after deployment
 - **ALWAYS use production-ready assets** (minified, optimized)
 
+### Design System
+- **CRITICAL: ALWAYS use existing designs from archived template folders** - `archive/template-front-dashboard/` and `archive/template-front-multipurpose/`
+- **NEVER create new UI components** - always find and use equivalent components from the archived templates
+- **ALWAYS reference archived templates** for layout patterns, styling, and component structures
+- **ALWAYS maintain design consistency** by using established patterns from the template archives
+
 ## 🔧 DEVELOPMENT PRINCIPLES
 
 ### Before Making Changes

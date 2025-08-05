@@ -72,3 +72,4 @@ curl -I http://localhost:3000/assets/multipurpose/css/theme.min.css
 2. **Use correct file extensions** - `.min.css` and `.min.js` for production assets
 3. **Maintain asset paths** - `./assets/dashboard/` vs `./assets/multipurpose/`
 4. **Test both templates** after any modifications
+5. **ALWAYS use existing designs from archived templates** - Reference `archive/template-front-dashboard/` and `archive/template-front-multipurpose/` for all UI components, layouts, and styling patterns. Never create new designs from scratch.
