@@ -24,8 +24,8 @@ project1/
 ├── src/
 │   ├── pages/           # HTML pages
 │   │   ├── index.html              # Home (multipurpose)
-│   │   ├── dashboard-proper.html   # Dashboard template
-│   │   └── multipurpose-proper.html # Multipurpose template
+│   │   ├── dashboard.html          # Dashboard template
+│   │   └── multipurpose.html       # Multipurpose template
 │   ├── scss/           # Custom styles
 │   ├── js/             # Custom scripts
 │   └── assets/         # Pre-built template assets
@@ -58,8 +58,8 @@ npm run clean      # Clean dist directory
 ```bash
 # Verify pages load
 curl -s http://localhost:3000/ | grep -c "Multi-Template Project"
-curl -s http://localhost:3000/dashboard-proper.html | grep -c "Dashboard Template"
-curl -s http://localhost:3000/multipurpose-proper.html | grep -c "Multipurpose Template"
+curl -s http://localhost:3000/dashboard.html | grep -c "Dashboard Template"
+curl -s http://localhost:3000/multipurpose.html | grep -c "Multipurpose Template"
 
 # Verify assets (200 OK expected)
 curl -I http://localhost:3000/assets/dashboard/css/theme.min.css
@@ -74,3 +74,4 @@ curl -I http://localhost:3000/assets/multipurpose/css/theme.min.css
 4. **Test both templates** after any modifications
 5. **ALWAYS use existing designs from archived templates** - Reference `archive/template-front-dashboard/` and `archive/template-front-multipurpose/` for all UI components, layouts, and styling patterns. Never create new designs from scratch.
 6. **Check COMPONENT-GUIDE.md first** - Use `ai/COMPONENT-GUIDE.md` to quickly find the right component for your needs.
+7. **ALWAYS rebuild after file renames** - Run `npm run build` to clean dist folder and ensure no stale files remain.

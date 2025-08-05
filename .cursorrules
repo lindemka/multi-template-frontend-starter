@@ -46,6 +46,8 @@
 3. **ALWAYS clean up old files** and references
 4. **ALWAYS update documentation** - README.md and /ai folder
 5. **ALWAYS verify URLs and page names** are current
+6. **CRITICAL: ALWAYS run `npm run build` after file renames** - ensures dist folder is clean with correct filenames
+7. **ALWAYS check dist folder** after renaming files to verify old files are removed
 
 ### Testing
 - **ALWAYS test all pages** after changes
@@ -89,6 +91,7 @@ project1/
 3. **Mixing template assets** - each template must use its own CSS/JS
 4. **Leaving .md files in root** - move to `/ai` folder
 5. **Outdated documentation** - keep docs current with actual state
+6. **CRITICAL: Stale dist folder after renames** - always rebuild after renaming files to clean dist/
 
 ### Verification Steps
 1. Check all pages load correctly

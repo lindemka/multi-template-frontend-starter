@@ -18,8 +18,8 @@ npm run build
 ## Available Pages
 
 - **Home**: `http://localhost:3002/` - Index page (multipurpose template)
-- **Dashboard**: `http://localhost:3002/dashboard-proper.html` - Dashboard template (with sidebar)
-- **Multipurpose**: `http://localhost:3002/multipurpose-proper.html` - Multipurpose template (header navigation)
+- **Dashboard**: `http://localhost:3002/dashboard.html` - Dashboard template (with sidebar)
+- **Multipurpose**: `http://localhost:3002/multipurpose.html` - Multipurpose template (header navigation)
 
 ## Template Architecture
 
@@ -40,8 +40,8 @@ project1/
 ├── src/
 │   └── pages/
 │       ├── index.html              # Home page (multipurpose template)
-│       ├── dashboard-proper.html   # Dashboard template page
-│       └── multipurpose-proper.html # Multipurpose template page
+│       ├── dashboard.html          # Dashboard template page
+│       └── multipurpose.html       # Multipurpose template page
 ├── dist/                           # Built files
 ├── archive/                        # Archived original templates
 │   ├── template-front-dashboard/   # Original dashboard template

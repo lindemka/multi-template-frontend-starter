@@ -22,8 +22,8 @@ curl -I http://localhost:3000/assets/dashboard/css/theme.min.css
 
 ### Pages
 - `src/pages/index.html` - Home (multipurpose)
-- `src/pages/dashboard-proper.html` - Dashboard
-- `src/pages/multipurpose-proper.html` - Multipurpose
+- `src/pages/dashboard.html` - Dashboard
+- `src/pages/multipurpose.html` - Multipurpose
 
 
 ### Custom Code
@@ -58,3 +58,4 @@ curl -I http://localhost:3000/assets/dashboard/css/theme.min.css
 | Sidebar broken | Verify dashboard JS files loaded |
 | Build fails | Run `npm run clean` first |
 | Port in use | Check gulpfile.js for port config |
+| **Stale files after rename** | **CRITICAL: Always run `npm run build` after renaming files** |
