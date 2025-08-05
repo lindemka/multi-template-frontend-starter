@@ -1,0 +1,121 @@
+# Cursor Rules - Multi-Template Project
+
+## 🧹 CLEANUP PRINCIPLES
+
+### File Organization
+- **ALL documentation goes in `/ai` folder** - never leave .md files in root
+- **ALWAYS clean up old files** when creating new versions
+- **ALWAYS remove unused code** after refactoring
+- **ALWAYS update references** when changing URLs or page names
+
+### Documentation
+- **ALWAYS keep documentation current** with actual project state
+- **ALWAYS organize documentation** in appropriate folders
+- **ALWAYS verify URLs and paths** are correct
+
+## 🏗️ ARCHITECTURE PRINCIPLES
+
+### Template System
+- **Dashboard Template**: Admin panels, dashboards, management interfaces
+- **Multipurpose Template**: Landing pages, marketing sites, public-facing pages
+- **NEVER mix template assets** - each template uses its own CSS/JS
+- **ALWAYS use correct template structure** for each type
+
+### Asset Management
+- **ALWAYS verify asset paths** after making changes
+- **ALWAYS test asset accessibility** after deployment
+- **ALWAYS use production-ready assets** (minified, optimized)
+
+## 🔧 DEVELOPMENT PRINCIPLES
+
+### Before Making Changes
+1. **ALWAYS understand current state** before modifying
+2. **ALWAYS plan the change** and its impact
+3. **ALWAYS consider cleanup needs** before starting
+
+### After Making Changes
+1. **ALWAYS rebuild and test** after modifications
+2. **ALWAYS verify all pages work** correctly
+3. **ALWAYS clean up old files** and references
+4. **ALWAYS update documentation** - README.md and /ai folder
+5. **ALWAYS verify URLs and page names** are current
+
+### Testing
+- **ALWAYS test all pages** after changes
+- **ALWAYS verify navigation** works correctly
+- **ALWAYS check asset accessibility** with curl commands
+
+## 📁 PROJECT STRUCTURE
+
+### Required Organization
+```
+project1/
+├── src/pages/           # All HTML pages
+├── dist/                # Built files
+├── ai/                  # ALL documentation
+├── README.md           # Main project documentation
+└── .cursorrules        # This file
+```
+
+### Forbidden in Root
+- ❌ Any .md files except README.md
+- ❌ Any unused code or files
+- ❌ Any outdated references or URLs
+
+## 🎯 BEST PRACTICES
+
+### Code Quality
+- **ALWAYS use semantic HTML** with proper structure
+- **ALWAYS include proper meta tags** and viewport settings
+- **ALWAYS test responsive behavior** on different screen sizes
+
+### Performance
+- **ALWAYS use optimized assets** in production
+- **ALWAYS test build process** after changes
+- **ALWAYS verify hot reload** is working
+
+## 🚨 ERROR PREVENTION
+
+### Common Mistakes to Avoid
+1. **Leaving old files** - always clean up when making changes
+2. **Forgetting to rebuild** - always run build after changes
+3. **Mixing template assets** - each template must use its own CSS/JS
+4. **Leaving .md files in root** - move to `/ai` folder
+5. **Outdated documentation** - keep docs current with actual state
+
+### Verification Steps
+1. Check all pages load correctly
+2. Verify all assets are accessible
+3. Test navigation between pages
+4. Confirm template-specific features work
+5. Verify no console errors
+
+## 📝 CHANGE MANAGEMENT
+
+### When Making Changes
+1. **Plan the change** - understand what needs to be modified
+2. **Check current state** - verify what exists and what's used
+3. **Make the change** - implement the modification
+4. **Test thoroughly** - verify everything works
+5. **Clean up** - remove any old files or references
+6. **Update documentation** - keep docs current
+7. **Verify structure** - ensure project organization is maintained
+
+## 🎯 SUCCESS CRITERIA
+
+### Project is Clean When:
+- ✅ No .md files in root (except README.md)
+- ✅ No unused code or files
+- ✅ All asset paths are correct and accessible
+- ✅ All documentation is current and organized
+- ✅ All pages load without errors
+- ✅ Navigation works between all pages
+
+### Project is Production-Ready When:
+- ✅ Build process works correctly
+- ✅ All assets are optimized
+- ✅ No console errors
+- ✅ Responsive design works on all devices
+- ✅ Clean, maintainable code structure
+- ✅ Comprehensive documentation
+- ✅ Professional project organization 
