@@ -79,5 +79,6 @@ npm run clean
 All detailed documentation is available in the `/ai` folder:
 
 - `ai/README.md` - Comprehensive project overview
+- `ai/COMPONENT-GUIDE.md` - **Navigation guide for template components**
 - `ai/ARCHITECTURE.md` - Technical architecture details
 - `ai/QUICK-START.md` - Essential commands and workflows for AI 

@@ -73,3 +73,4 @@ curl -I http://localhost:3000/assets/multipurpose/css/theme.min.css
 3. **Maintain asset paths** - `./assets/dashboard/` vs `./assets/multipurpose/`
 4. **Test both templates** after any modifications
 5. **ALWAYS use existing designs from archived templates** - Reference `archive/template-front-dashboard/` and `archive/template-front-multipurpose/` for all UI components, layouts, and styling patterns. Never create new designs from scratch.
+6. **Check COMPONENT-GUIDE.md first** - Use `ai/COMPONENT-GUIDE.md` to quickly find the right component for your needs.

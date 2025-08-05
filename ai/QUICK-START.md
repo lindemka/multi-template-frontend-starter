@@ -36,10 +36,11 @@ curl -I http://localhost:3000/assets/dashboard/css/theme.min.css
 ## Common Tasks
 
 ### Add New Page
-1. **Find reference design** in archived template folders (`archive/template-front-dashboard/src/` or `archive/template-front-multipurpose/src/`)
-2. Create HTML in `src/pages/` using the archived template structure
-3. Copy component HTML from archived templates, adapting asset paths to current structure
-4. Use dashboard body classes for admin pages, none for public pages
+1. **Check COMPONENT-GUIDE.md** for the component you need
+2. **Find reference design** in archived template folders using the guide's quick reference
+3. Create HTML in `src/pages/` using the archived template structure
+4. Copy component HTML from archived templates, adapting asset paths to current structure
+5. Use dashboard body classes for admin pages, none for public pages
 
 ### Modify Styles
 1. Edit `src/scss/main.scss`

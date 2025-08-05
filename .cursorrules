@@ -31,6 +31,7 @@
 - **NEVER create new UI components** - always find and use equivalent components from the archived templates
 - **ALWAYS reference archived templates** for layout patterns, styling, and component structures
 - **ALWAYS maintain design consistency** by using established patterns from the template archives
+- **ALWAYS check `/ai/COMPONENT-GUIDE.md` first** - comprehensive catalog of available components with usage examples
 
 ## 🔧 DEVELOPMENT PRINCIPLES
 
