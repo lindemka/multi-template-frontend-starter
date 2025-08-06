@@ -49,6 +49,12 @@ const data = {
       ],
     },
     {
+      title: "Members",
+      url: "/dashboard/members",
+      icon: Users,
+      items: [],
+    },
+    {
       title: "Profile",
       url: "/dashboard/profile",
       icon: User,

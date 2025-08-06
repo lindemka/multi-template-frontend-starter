@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,14 @@ import Image from "next/image";
 import EditProfileModal from '@/components/profile/EditProfileModal';
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  // Redirect to current user's profile (assuming user ID 1 for demo)
+  // In a real app, get this from auth context
+  useEffect(() => {
+    router.push('/dashboard/profile/1');
+  }, [router]);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
