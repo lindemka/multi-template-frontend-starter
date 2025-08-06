@@ -20,7 +20,7 @@ cd "$PROJECT_ROOT"
 # Stop function
 stop_servers() {
     echo -e "${BLUE}Stopping development servers...${NC}"
-    pkill -f "java.*multi-template-demo" || true
+    pkill -f "java.*fbase" || true
     pkill -f "next dev" || true
     rm -f backend/backend.log frontend/frontend.log 2>/dev/null || true
     echo -e "${GREEN}✅ Servers stopped${NC}"
@@ -40,7 +40,7 @@ echo -e "${YELLOW}  - Dashboard: http://localhost:3000/dashboard/${NC}"
 echo ""
 
 # Clean up any existing processes
-pkill -f "java.*multi-template-demo" || true
+pkill -f "java.*fbase" || true
 pkill -f "next dev" || true
 sleep 2
 

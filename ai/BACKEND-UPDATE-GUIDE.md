@@ -1,54 +1,57 @@
-# 🔄 Backend Update Guide - Without Disrupting Frontend
+# 🔄 Backend Update Guide - Modern Next.js + Spring Boot Workflow
 
 ## 🚀 Quick Commands
 
-### Option 1: Manual Backend Restart (Recommended)
+### Option 1: Use Unified Development Script (Recommended)
 ```bash
-./scripts/backend-restart.sh
+./scripts/dev.sh
 ```
-- ✅ Frontend keeps running
-- ✅ Backend restarts in ~10 seconds
+- ✅ Starts both Next.js frontend and Spring Boot backend
+- ✅ Both have hot reload enabled
+- ✅ Integrated development experience
+
+### Option 2: Manual Backend Restart
+```bash
+# Stop backend only
+pkill -f "java.*fbase"
+# Restart backend
+cd backend && mvn spring-boot:run
+```
+- ✅ Frontend (Next.js) keeps running on port 3000
+- ✅ Backend restarts quickly
 - ✅ No lost frontend state
 
-### Option 2: Auto-Restart on Code Changes
+### Option 3: Development with Production Build
 ```bash
-./scripts/backend-dev.sh
-```
-- ✅ Auto-restarts when Java files change
-- ✅ Uses Spring Boot DevTools
-- ⚠️ Run in separate terminal from frontend
-
-### Option 3: Just Kill Backend
-```bash
-pkill -f "java.*multi-template-demo"
-# Then restart manually
+./scripts/deploy.sh
+# Then access via http://localhost:8080/nextjs/dashboard/
 ```
 
 ## 📋 Step-by-Step Workflows
 
-### Workflow 1: Backend Code Changes (Manual)
-1. **Keep frontend running** in Terminal 1
+### Workflow 1: Unified Development (Recommended)
+1. **Start both servers**: `./scripts/dev.sh`
 2. **Make backend changes** in your editor
-3. **Run** `./scripts/backend-restart.sh` in Terminal 2
-4. **Wait ~10 seconds** for backend to restart
-5. **Continue working** - frontend never stopped!
+3. **Spring Boot DevTools** auto-restarts backend
+4. **Next.js** auto-reloads frontend
+5. **Access**: http://localhost:3000/dashboard/ (development)
 
-### Workflow 2: Backend with Auto-Restart
-1. **Terminal 1**: `./scripts/dev-frontend.sh` (frontend only)
-2. **Terminal 2**: `./scripts/backend-dev.sh` (backend with auto-restart)
-3. **Edit Java files** - backend restarts automatically
-4. **Frontend stays running** throughout
-
-### Workflow 3: Full Control
+### Workflow 2: Separate Development
 ```bash
-# Terminal 1: Frontend only
-cd frontend && npm run dev:turbo
+# Terminal 1: Next.js frontend
+cd frontend-nextjs && npm run dev
 
-# Terminal 2: Backend only
+# Terminal 2: Spring Boot backend
 cd backend && mvn spring-boot:run
+```
 
-# When you need to restart backend:
-# Ctrl+C in Terminal 2, then run mvn spring-boot:run again
+### Workflow 3: Production Testing
+```bash
+# Build and test production deployment
+./scripts/deploy.sh
+
+# Access production build via Spring Boot
+# http://localhost:8080/nextjs/dashboard/
 ```
 
 ## 🛠️ What Changes Require Backend Restart?
@@ -66,13 +69,17 @@ cd backend && mvn spring-boot:run
 
 ## 💡 Pro Tips
 
-### 1. Use Two Terminals
+### 1. Modern Development Setup
 ```bash
-# Terminal 1 - Frontend (never stop this)
-./scripts/dev-frontend.sh
+# Single command for both (recommended)
+./scripts/dev.sh
 
-# Terminal 2 - Backend (restart as needed)
-./scripts/backend-restart.sh
+# Or separate terminals for more control
+# Terminal 1 - Next.js frontend
+cd frontend-nextjs && npm run dev
+
+# Terminal 2 - Spring Boot backend
+cd backend && mvn spring-boot:run
 ```
 
 ### 2. Check Backend Status
@@ -81,7 +88,10 @@ cd backend && mvn spring-boot:run
 curl http://localhost:8080/api/users
 
 # Check backend process
-ps aux | grep "multi-template-demo"
+ps aux | grep "fbase"
+
+# Use status script
+./scripts/status.sh
 ```
 
 ### 3. View Backend Logs
@@ -99,31 +109,31 @@ cd backend && mvn spring-boot:run
 - Data is lost when backend restarts
 - For persistent data, configure file-based H2 or use PostgreSQL
 
-## 🔥 With Spring Boot DevTools
+## 🔥 Next.js + Spring Boot Integration
 
-DevTools is now added to your project! Benefits:
-- **Automatic restart** on classpath changes
-- **Faster startup** with restart vs cold start
-- **LiveReload** integration possible
+Modern development setup with integrated hot reload:
+- **Next.js**: Automatic rebuild on file changes
+- **Spring Boot DevTools**: Automatic restart on Java changes
+- **Integrated deployment**: Next.js builds export to Spring Boot static resources
 
-To use DevTools effectively:
+Development workflow:
 ```bash
-# Run backend with DevTools
-./scripts/backend-dev.sh
+# Start integrated development
+./scripts/dev.sh
 
-# Or manually:
-cd backend
-mvn spring-boot:run -Dspring-boot.run.fork=false
+# Next.js dev server: http://localhost:3000/dashboard/
+# Spring Boot API: http://localhost:8080/api/users
+# Production build: http://localhost:8080/nextjs/dashboard/
 ```
 
 ## 🚨 Common Issues
 
 ### Backend won't restart?
 ```bash
-# Force kill all Java processes
-pkill -f java
+# Force kill all processes
+./scripts/dev.sh stop
 # Then start fresh
-./scripts/backend-restart.sh
+./scripts/dev.sh
 ```
 
 ### Port 8080 already in use?
@@ -131,25 +141,30 @@ pkill -f java
 lsof -ti:8080 | xargs kill -9
 ```
 
-### Frontend lost connection?
-- Check if backend is running: `curl http://localhost:8080/api/users`
-- Frontend will auto-reconnect when backend is back
+### Frontend/Backend connection issues?
+- Check servers: `./scripts/status.sh`
+- Check backend API: `curl http://localhost:8080/api/users`
+- Next.js will auto-reconnect when backend is back
+- For production build, ensure Next.js static files are built
 
-## 📊 Architecture Benefits
+## 📊 Modern Architecture Benefits
 
-Your setup now supports:
-1. **Independent scaling** - Frontend and backend separate
-2. **No downtime** for frontend during backend updates
-3. **Faster development** - Update only what changed
-4. **Better debugging** - Isolate frontend vs backend issues
+Your Next.js + Spring Boot setup provides:
+1. **Modern frontend** - Next.js 15 with shadcn/ui components
+2. **Type-safe development** - TypeScript integration
+3. **Flexible deployment** - Development and production builds
+4. **Component-driven UI** - shadcn/ui with Tailwind CSS v4
+5. **Seamless integration** - Next.js exports to Spring Boot static resources
 
 ## 🎯 Best Practice Workflow
 
 1. **Morning**: Start both with `./scripts/dev.sh`
-2. **Frontend work**: Just keep going, hot reload handles it
-3. **Backend change**: Run `./scripts/backend-restart.sh` in new terminal
-4. **End of day**: `./scripts/dev.sh stop` to clean up
+2. **Frontend work**: Next.js hot reload handles changes automatically
+3. **Backend changes**: Spring Boot DevTools restarts automatically
+4. **Component updates**: Use shadcn/ui components for consistent design
+5. **Testing**: Use `./scripts/deploy.sh` for production build testing
+6. **End of day**: `./scripts/dev.sh stop` to clean up
 
 ---
 
-Remember: **Your frontend NEVER needs to restart for backend changes!** 🎉
+Remember: **Modern development with Next.js + shadcn/ui + Spring Boot DevTools handles restarts automatically!** 🎉

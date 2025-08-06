@@ -1,212 +1,408 @@
-# Template Component Guide
+# shadcn/ui Component Guide
 
-**CRITICAL**: Always use existing components from archived templates. Never create new designs from scratch.
+**Modern Component System**: This project uses shadcn/ui components with Tailwind CSS v4 for a modern, type-safe, and accessible UI.
 
 ## Quick Reference
 
-### 🚀 Most Commonly Used Components
+### 🚀 Currently Available Components
 
-| Component | Dashboard Template | Multipurpose Template |
-|-----------|-------------------|----------------------|
-| **User Tables** | `users.html`, `ecommerce-customers.html` | - |
-| **Login Forms** | `authentication-login-basic.html` | `page-login.html`, `page-login-simple.html` |
-| **Data Tables** | `ecommerce-products.html`, `ecommerce-orders.html` | - |
-| **Hero Sections** | - | `landing-classic-*.html` (8 variations) |
-| **Contact Forms** | - | `page-contacts-*.html` |
-| **Error Pages** | `error-404.html`, `error-500.html` | `page-error-404.html` |
-
----
-
-## Dashboard Template (`archive/template-front-dashboard/src/`)
-
-### 📊 Tables & Data Management
-- **`users.html`** - User management with avatars, filters, bulk actions
-- **`ecommerce-customers.html`** - Customer database (used for our user table)
-- **`ecommerce-products.html`** - Product catalog with search/filters
-- **`ecommerce-orders.html`** - Order management with status tracking
-- **`ecommerce-manage-reviews.html`** - Review moderation interface
-
-### 📝 Forms & Authentication
-- **`authentication-login-basic.html`** - Login with social auth, password toggle
-- **`authentication-signup-basic.html`** - Registration form
-- **`authentication-reset-password-basic.html`** - Password reset workflow
-- **`authentication-2-step-verification-basic.html`** - 2FA interface
-- **`ecommerce-add-product.html`** - Complex product creation form
-- **`ecommerce-add-customers.html`** - Customer onboarding form
-
-### 🔧 Applications
-- **`apps-kanban.html`** - Project Kanban board with drag-drop
-- **`apps-calendar.html`** - Event calendar interface
-- **`apps-file-manager.html`** - File browser with upload/download
-- **`apps-invoice-generator.html`** - Invoice creation tool
-
-### 👤 User Management
-- **`user-profile.html`** - Complete user profile dashboard
-- **`user-profile-teams.html`** - Team management interface
-- **`user-profile-my-profile.html`** - Personal profile editor
-- **`account-invoice.html`** - Billing/invoice history
-
-### 📁 Project Management
-- **`projects.html`** - Project overview dashboard
-- **`projects-timeline.html`** - Timeline/milestone tracker
-- **`project-teams.html`** - Team assignment interface
-- **`project-files.html`** - Document management
-- **`project-settings.html`** - Project configuration
-- **`project-activity.html`** - Activity feed/audit trail
-
-### ⚠️ Status Pages
-- **`error-404.html`** - Not found page
-- **`error-500.html`** - Server error page
-- **`welcome-page.html`** - Onboarding/welcome screen
+| Component | Usage | Location |
+|-----------|-------|----------|
+| **Table** | Data tables with sorting, pagination | `@/components/ui/table` |
+| **Avatar** | User profile images with fallbacks | `@/components/ui/avatar` |
+| **Badge** | Status indicators, labels | `@/components/ui/badge` |
+| **Button** | Actions, navigation | `@/components/ui/button` |
+| **Input** | Form inputs, search | `@/components/ui/input` |
+| **Sheet** | Mobile drawers, overlays | `@/components/ui/sheet` |
+| **DropdownMenu** | Action menus, navigation | `@/components/ui/dropdown-menu` |
+| **Skeleton** | Loading states | `@/components/ui/skeleton` |
+| **Separator** | Visual dividers | `@/components/ui/separator` |
 
 ---
 
-## Multipurpose Template (`archive/template-front-multipurpose/src/`)
+## Core shadcn/ui Components
 
-### 🎯 Landing Pages (Hero Sections)
-- **`landing-classic-corporate.html`** - Business landing with animations
-- **`landing-classic-software.html`** - SaaS product showcase
-- **`landing-classic-portfolio.html`** - Creative portfolio
-- **`landing-classic-analytics.html`** - Data/analytics platform
-- **`landing-classic-studio.html`** - Design agency
-- **`landing-classic-advertisement.html`** - Marketing agency
+### 📊 Data Display Components
 
-### 🛒 E-commerce Components
-- **`demo-shop/index.html`** - Shop homepage with hero slider
-- **`demo-shop/products-list.html`** - Product catalog (list view)
-- **`demo-shop/products-grid.html`** - Product catalog (grid view)
-- **`demo-shop/checkout.html`** - Shopping cart checkout
-- **`demo-shop/order-completed.html`** - Order confirmation
-- **`demo-shop/empty-cart.html`** - Empty state handling
+#### Table
+```tsx
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-### 📰 Content & Blog
-- **`blog-newsroom.html`** - News/press section
-- **`blog-metro.html`** - Magazine-style blog
-- **`blog-journal.html`** - Personal blog layout
-- **`blog-article.html`** - Article detail page
-- **`blog-author-profile.html`** - Author bio/portfolio
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Email</TableHead>
+      <TableHead>Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {users.map((user) => (
+      <TableRow key={user.id}>
+        <TableCell>{user.name}</TableCell>
+        <TableCell>{user.email}</TableCell>
+        <TableCell>
+          <Badge variant="outline">{user.status}</Badge>
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+```
 
-### 🔐 Authentication Pages
-- **`page-login.html`** - Split-screen login with testimonials
-- **`page-login-simple.html`** - Minimal login form
-- **`page-signup.html`** - Registration with benefits showcase
-- **`page-signup-simple.html`** - Basic signup
-- **`page-reset-password.html`** - Password recovery
+#### Avatar
+```tsx
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-### 📄 Informational Pages
-- **`page-about.html`** - Company/team overview
-- **`page-services.html`** - Service offerings
-- **`page-faq.html`** - Frequently asked questions
-- **`page-privacy.html`** - Privacy policy
-- **`page-terms.html`** - Terms of service
-- **`page-contacts-agency.html`** - Contact page for agencies
-- **`page-contacts-startup.html`** - Contact page for startups
+<Avatar>
+  <AvatarImage src={user.avatar} alt={user.name} />
+  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+</Avatar>
+```
 
-### 💼 Business Pages
-- **`page-careers.html`** - Job listings
-- **`page-careers-overview.html`** - Company culture page
-- **`page-customer-stories.html`** - Case studies overview
-- **`page-customer-story.html`** - Individual case study
-- **`page-hire-us.html`** - Services/consultation page
+#### Badge
+```tsx
+import { Badge } from '@/components/ui/badge';
 
-### 👥 Account Management
-- **`account-teams.html`** - Team collaboration
-- **`account-preferences.html`** - User settings
-- **`account-notifications.html`** - Notification preferences
-- **`account-address.html`** - Address book
+// Variants: default, secondary, destructive, outline
+<Badge variant="outline">Active</Badge>
+<Badge variant="secondary">Pending</Badge>
+<Badge variant="destructive">Inactive</Badge>
+```
 
-### 🎨 Portfolio & Showcase
-- **`portfolio-grid.html`** - Work gallery
-- **`portfolio-case-studies-product.html`** - Product case study
-- **`portfolio-case-studies-branding.html`** - Branding project showcase
-- **`portfolio-product-article.html`** - Detailed project writeup
+### 🎯 Interactive Components
+
+#### Button
+```tsx
+import { Button } from '@/components/ui/button';
+
+// Variants: default, destructive, outline, secondary, ghost, link
+<Button>Primary Action</Button>
+<Button variant="outline">Secondary</Button>
+<Button variant="ghost">Subtle Action</Button>
+<Button size="sm">Small</Button>
+<Button size="lg">Large</Button>
+```
+
+#### DropdownMenu
+```tsx
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost">Actions</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem>Edit</DropdownMenuItem>
+    <DropdownMenuItem>Delete</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+### 📱 Layout Components
+
+#### Sheet (Mobile Drawer)
+```tsx
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+
+<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="ghost" size="sm">
+      <Menu className="h-4 w-4" />
+    </Button>
+  </SheetTrigger>
+  <SheetContent side="left" className="w-64">
+    {/* Sidebar content */}
+  </SheetContent>
+</Sheet>
+```
+
+### 📝 Form Components
+
+#### Input
+```tsx
+import { Input } from '@/components/ui/input';
+
+<Input
+  type="search"
+  placeholder="Search users..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+/>
+```
+
+### ⚡ State Components
+
+#### Skeleton (Loading States)
+```tsx
+import { Skeleton } from '@/components/ui/skeleton';
+
+function UserTableSkeleton() {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex items-center space-x-4">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[200px]" />
+            <Skeleton className="h-4 w-[150px]" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
 
 ---
 
-## 🔍 How to Find Components
+## Adding New shadcn/ui Components
 
-### 1. **By Use Case**
-- Need a user table? → `ecommerce-customers.html`
-- Need a login form? → `authentication-login-basic.html` (dashboard) or `page-login.html` (multipurpose)  
-- Need a hero section? → `landing-classic-*.html` files
-- Need a contact form? → `page-contacts-*.html` files
-
-### 2. **By File Naming Pattern**
-- `authentication-*` = Auth/login related
-- `ecommerce-*` = Business/data management
-- `landing-*` = Hero sections and landing pages
-- `page-*` = Standalone informational pages
-- `user-*` = User profile and account pages
-- `project-*` = Project management features
-
-### 3. **By Template Type**
-- **Dashboard**: Admin panels, data tables, business apps
-- **Multipurpose**: Marketing sites, portfolios, e-commerce
-
----
-
-## 🛠️ Implementation Steps
-
-### 1. **Find Your Component**
+### Installation Process
 ```bash
-# Browse archived templates
-ls archive/template-front-dashboard/src/
-ls archive/template-front-multipurpose/src/
+# Navigate to Next.js frontend
+cd frontend-nextjs
+
+# Add a new component (use canary version for Tailwind v4)
+npx shadcn@canary add [component-name]
+
+# Examples:
+npx shadcn@canary add card
+npx shadcn@canary add dialog
+npx shadcn@canary add form
+npx shadcn@canary add select
 ```
 
-### 2. **Copy Structure**
-- Open the relevant HTML file
-- Copy the HTML structure you need
-- Adapt asset paths to current project structure
-
-### 3. **Update Asset Paths**
-```html
-<!-- Original archived path -->
-src="@@autopath/assets/img/160x160/img3.jpg"
-
-<!-- Updated for current project -->
-src="./assets/dashboard/img/160x160/img3.jpg"
-```
-
-### 4. **Maintain Template Consistency**
-- Dashboard components → Use dashboard assets (`./assets/dashboard/`)
-- Multipurpose components → Use multipurpose assets (`./assets/multipurpose/`)
+### Available Components to Add
+- **Layout**: Card, Accordion, Tabs, Collapsible
+- **Form**: Form, Select, Checkbox, Radio Group, Textarea, Switch
+- **Feedback**: Dialog, Alert Dialog, Toast, Alert, Progress
+- **Navigation**: Command, Menubar, Breadcrumb, Pagination
+- **Data**: Data Table, Calendar, Carousel
+- **Overlay**: Popover, Tooltip, HoverCard
 
 ---
 
-## 💡 Pro Tips
+## Custom Dashboard Components
 
-### **Component Mixing Rules**
-- ✅ **Dashboard + Dashboard components** = Professional admin interfaces
-- ✅ **Multipurpose + Multipurpose components** = Marketing/public sites
-- ❌ **Never mix dashboard and multipurpose assets**
+### Location
+Custom components are in `frontend-nextjs/src/components/dashboard/`:
 
-### **Common Patterns**
-- **Tables**: Always include search, filters, pagination
-- **Forms**: Include validation, loading states, success messages
-- **Cards**: Use consistent spacing and shadow patterns
-- **Buttons**: Follow established color schemes (primary, secondary, etc.)
+- **`sidebar.tsx`** - Desktop sidebar navigation
+- **`mobile-nav.tsx`** - Mobile navigation drawer
+- **`user-table-shadcn.tsx`** - User management table
+- **`header.tsx`** - Dashboard header
 
-### **Performance Tips**
-- Copy only the HTML you need, not entire pages
-- Keep existing CSS class names for proper styling
-- Test responsive behavior on different screen sizes
-- Verify all asset paths are correct after copying
+### Pattern for Custom Components
+```tsx
+// components/dashboard/my-component.tsx
+'use client';
+
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+export default function MyComponent() {
+  const [state, setState] = useState('');
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['my-data'],
+    queryFn: () => fetch('/api/my-endpoint').then(res => res.json())
+  });
+
+  if (isLoading) return <MyComponentSkeleton />;
+  if (error) return <div>Error loading data</div>;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>My Component</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {/* Component content */}
+      </CardContent>
+    </Card>
+  );
+}
+
+function MyComponentSkeleton() {
+  return <Skeleton className="h-32 w-full" />;
+}
+```
 
 ---
 
-## 🎯 Example Usage
+## Design System
 
-### Adding a Contact Form (Multipurpose)
-1. **Find component**: `page-contacts-agency.html`
-2. **Copy form section**: Lines with `<form>` elements
-3. **Update paths**: Change `@@autopath/` to `./assets/multipurpose/`
-4. **Test**: Verify styling and responsiveness
+### Color System
+```css
+/* CSS Variables for theming */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 224 71.4% 4.1%;
+  --primary: 220.9 39.3% 11%;
+  --primary-foreground: 210 20% 98%;
+  --muted: 220 14.3% 95.9%;
+  --muted-foreground: 220 8.9% 46.1%;
+}
 
-### Adding a Data Table (Dashboard)  
-1. **Find component**: `ecommerce-products.html` or `users.html`
-2. **Copy table structure**: `<table>` with headers and sample rows
-3. **Update paths**: Change `@@autopath/` to `./assets/dashboard/`
-4. **Customize**: Replace sample data with your content
+.dark {
+  --background: 224 71.4% 4.1%;
+  --foreground: 210 20% 98%;
+  /* ... dark mode variables */
+}
+```
 
-This guide ensures you can quickly find and implement any component while maintaining design consistency!
+### Typography
+```tsx
+// Use Tailwind classes for consistent typography
+<h1 className="text-3xl font-bold tracking-tight">Page Title</h1>
+<h2 className="text-2xl font-semibold">Section Title</h2>
+<p className="text-sm text-muted-foreground">Helper text</p>
+```
+
+### Spacing & Layout
+```tsx
+// Consistent spacing patterns
+<div className="space-y-4">        {/* Vertical spacing */}
+<div className="space-x-2">        {/* Horizontal spacing */}
+<div className="p-4">              {/* Padding */}
+<div className="m-2">              {/* Margin */}
+<div className="gap-4">            {/* Grid/flex gap */}
+```
+
+---
+
+## Responsive Design
+
+### Breakpoints
+- **Mobile**: Default (< 768px)
+- **Tablet**: `md:` (768px+)
+- **Desktop**: `lg:` (1024px+)
+- **Large**: `xl:` (1280px+)
+
+### Mobile-First Example
+```tsx
+<div className="
+  w-full          // Full width on mobile
+  md:w-1/2        // Half width on tablet+
+  lg:w-1/3        // Third width on desktop+
+  p-4             // Padding on all screens
+  md:p-6          // Larger padding on tablet+
+">
+  {/* Content */}
+</div>
+```
+
+---
+
+## Best Practices
+
+### Component Organization
+1. **Keep components focused** - Single responsibility
+2. **Use TypeScript** - Define proper interfaces
+3. **Handle loading states** - Always provide skeleton loading
+4. **Error boundaries** - Handle API errors gracefully
+5. **Accessibility** - Use semantic HTML and ARIA labels
+
+### Performance
+1. **Use React Query** - For API state management
+2. **Optimize re-renders** - Memoize expensive operations
+3. **Lazy loading** - Split large components
+4. **Bundle optimization** - Import only what you need
+
+### Code Example (Best Practices)
+```tsx
+'use client';
+
+import { memo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+}
+
+interface Props {
+  searchTerm?: string;
+}
+
+const UserTable = memo(function UserTable({ searchTerm = '' }: Props) {
+  const { data: users, isLoading, error } = useQuery({
+    queryKey: ['users', searchTerm],
+    queryFn: async () => {
+      const url = searchTerm 
+        ? `/api/users?search=${encodeURIComponent(searchTerm)}`
+        : '/api/users';
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch users');
+      return response.json() as User[];
+    }
+  });
+
+  if (isLoading) return <UserTableSkeleton />;
+  if (error) return <ErrorState error={error} />;
+  if (!users?.length) return <EmptyState />;
+
+  return (
+    <Table>
+      <TableBody>
+        {users.map((user) => (
+          <TableRow key={user.id}>
+            <TableCell>{user.name}</TableCell>
+            <TableCell>{user.email}</TableCell>
+            <TableCell>
+              <Badge variant={getBadgeVariant(user.status)}>
+                {user.status}
+              </Badge>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+});
+
+export default UserTable;
+```
+
+---
+
+## Migration from Legacy Templates
+
+### From Old Template System
+The project has migrated from a multi-template system to modern shadcn/ui components:
+
+**Old Way (Archived):**
+- Static HTML templates
+- jQuery for interactions
+- Bootstrap CSS framework
+- Gulp build system
+
+**New Way (Current):**
+- React components with TypeScript
+- shadcn/ui + Tailwind CSS v4
+- Next.js with App Router
+- Modern build tools
+
+### Finding Equivalent Components
+| Old Template Element | New shadcn/ui Component |
+|---------------------|------------------------|
+| Bootstrap Tables | Table component |
+| Bootstrap Cards | Card component |
+| Bootstrap Modals | Dialog component |
+| Bootstrap Buttons | Button component |
+| Bootstrap Forms | Form components |
+| Bootstrap Alerts | Alert component |
+
+This modern approach provides better performance, accessibility, type safety, and developer experience.

@@ -1,7 +1,7 @@
 # AI Development Context
 
 ## 🎯 Purpose
-This document provides comprehensive context for AI assistants (Claude, Cursor, etc.) working on this multi-template frontend project with Shadcn/ui integration.
+This document provides comprehensive context for AI assistants (Claude, Cursor, etc.) working on the fbase project - a modern Next.js + shadcn/ui application with Spring Boot backend.
 
 ## 📁 Project Structure & AI Documentation Location
 

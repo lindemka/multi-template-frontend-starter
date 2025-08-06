@@ -1,74 +1,87 @@
 # Backend Integration Guide
 
-## Creating a Minimal Spring Boot + Multi-Template Frontend Boilerplate
+## Spring Boot + Next.js (shadcn/ui) Integration
 
-Based on the foundersbase project structure, here's how to integrate your multi-template frontend with Spring Boot:
+Based on the fbase project structure, here's how the modern Next.js frontend integrates with Spring Boot:
 
 ### 1. Project Structure
 ```
 project1/
-├── frontend/                          # Your existing frontend
-│   ├── src/pages/                    # dashboard.html, multipurpose.html, index.html
-│   ├── src/assets/                   # template assets
-│   ├── gulpfile.js                   # build system
+├── frontend-nextjs/                   # Modern Next.js frontend
+│   ├── src/app/dashboard/            # Dashboard pages with App Router
+│   ├── src/components/ui/            # shadcn/ui components
+│   ├── src/components/dashboard/     # Custom dashboard components
+│   ├── src/lib/                      # Utilities and API clients
+│   ├── next.config.ts               # Next.js configuration
+│   ├── tailwind.config.ts           # Tailwind CSS v4 config
 │   └── package.json
-├── backend/                          # New Spring Boot backend
+├── backend/                          # Spring Boot backend
 │   ├── src/main/java/
-│   │   └── com/example/demo/
-│   │       ├── DemoApplication.java
-│   │       ├── controller/
-│   │       ├── service/
-│   │       ├── model/
-│   │       └── config/
+│   │   └── com/fbase/
+│   │       ├── FbaseApplication.java
+│   │       ├── controller/           # REST API controllers
+│   │       ├── service/              # Business logic
+│   │       ├── model/                # Data models
+│   │       └── config/               # Configuration
 │   ├── src/main/resources/
-│   │   ├── templates/               # Thymeleaf templates
-│   │   ├── static/                  # Static assets (from frontend build)
+│   │   ├── static/nextjs/           # Next.js build output
+│   │   ├── static/assets/           # Legacy template assets
 │   │   └── application.properties
 │   └── pom.xml
-└── integration-build.js             # Build script to copy frontend to backend
+└── scripts/                         # Build and development scripts
 ```
 
 ### 2. Key Integration Points
 
-#### Frontend → Backend Asset Pipeline
-1. **Frontend builds** to `dist/` (existing)
-2. **Integration script** copies `dist/` to `backend/src/main/resources/static/`
-3. **Spring Boot serves** static assets from classpath
+#### Next.js → Spring Boot Integration Pipeline
+1. **Next.js builds** to `../backend/src/main/resources/static/nextjs/`
+2. **Spring Boot serves** Next.js static export from classpath
+3. **API calls** from Next.js to Spring Boot REST endpoints
+4. **Development**: Next.js dev server (3000) + Spring Boot (8080)
+5. **Production**: Single Spring Boot JAR serving everything
 
-#### Template Integration Options
+#### Integration Architecture
 
-**Option A: Pure REST API (Recommended for Multi-Template)**
-- Frontend remains independent
-- Backend provides REST endpoints
-- JavaScript fetches data from API
-- Clean separation of concerns
+**Modern SPA + REST API Architecture**
+- Next.js handles all UI with shadcn/ui components
+- Spring Boot provides REST API endpoints
+- React Query manages API state and caching
+- TypeScript ensures type safety across frontend
+- Clean separation with defined API contracts
 
-**Option B: Thymeleaf Integration**
-- Convert HTML pages to Thymeleaf templates
-- Server-side rendering with Spring Boot
-- More complex but better SEO
+### 3. Implementation Details
 
-### 3. Implementation Steps
+#### Next.js Configuration
+```typescript
+// next.config.ts
+const nextConfig: NextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  distDir: '../backend/src/main/resources/static/nextjs',
+  basePath: '/nextjs',
+  images: { unoptimized: true }
+};
+```
 
-#### Step 1: Create Spring Boot Backend
-Create minimal Spring Boot project with:
-- Web starter
-- JPA starter (for database)
-- Security starter (optional)
-- Thymeleaf starter (if using Option B)
+#### Spring Boot Configuration
+```java
+// Static resource handling
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/nextjs/**")
+                .addResourceLocations("classpath:/static/nextjs/");
+    }
+}
+```
 
-#### Step 2: Frontend-Backend Bridge
-Create Node.js script to:
-- Build frontend (`npm run build`)
-- Copy assets to Spring Boot static folder
-- Optionally convert HTML to Thymeleaf templates
-
-#### Step 3: API Endpoints
-Create REST controllers for:
-- User management (matching your user table)
-- Authentication
+#### API Endpoints
+REST controllers provide:
+- User management (`/api/users`)
 - Dashboard data
-- General CRUD operations
+- CRUD operations with JSON responses
+- CORS configuration for development
 
 ### 4. Example Implementation
 
@@ -76,78 +89,85 @@ Create REST controllers for:
 ```java
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     
     @GetMapping("/users")
-    public List<UserDTO> getUsers() {
-        // Return user data for your dashboard table
+    public List<User> getUsers() {
+        return userService.getAllUsers();
     }
     
     @PostMapping("/users")
-    public UserDTO createUser(@RequestBody UserDTO user) {
-        // Create new user
+    public User createUser(@RequestBody User user) {
+        return userService.createUser(user);
     }
 }
 ```
 
-#### Frontend JavaScript Integration
-```javascript
-// In your dashboard.html
-async function loadUsers() {
-    const response = await fetch('/api/users');
-    const users = await response.json();
-    populateUserTable(users);
+#### Next.js + React Query Integration
+```typescript
+// hooks/useUsers.ts
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const response = await fetch('/api/users');
+      return response.json();
+    }
+  });
+}
+
+// components/UserTable.tsx
+export default function UserTable() {
+  const { data: users, isLoading } = useUsers();
+  // Render with shadcn/ui Table component
 }
 ```
 
 ### 5. Development Workflow
 
-#### For REST API Approach:
-1. **Frontend Development**: `npm run dev` (port 3000)
-2. **Backend Development**: `mvn spring-boot:run` (port 8080)
-3. **Proxy Setup**: Configure frontend to proxy API calls to backend
-4. **Production**: Build frontend, copy to backend, deploy Spring Boot
+#### Development Mode
+1. **Start both servers**: `./scripts/dev.sh`
+2. **Next.js dev server**: http://localhost:3000/dashboard/
+3. **Spring Boot backend**: http://localhost:8080/api/users
+4. **Hot reload**: Both frontend and backend auto-reload on changes
 
-#### For Thymeleaf Approach:
-1. **Template Conversion**: Convert HTML to Thymeleaf templates
-2. **Unified Development**: Run Spring Boot with embedded frontend
-3. **Asset Pipeline**: Gulp builds assets, Spring Boot serves pages
+#### Production Build
+1. **Build and deploy**: `./scripts/build.sh`
+2. **Next.js exports**: Static files to Spring Boot resources
+3. **Single JAR deployment**: `java -jar target/fbase-0.0.1-SNAPSHOT.jar`
+4. **Access production**: http://localhost:8080/nextjs/dashboard/
 
-### 6. Recommended Approach: REST API + Proxy
+### 6. Modern Architecture Benefits
 
-This maintains your clean multi-template architecture while adding backend functionality:
+The Next.js + shadcn/ui + Spring Boot architecture provides:
 
-#### Frontend `gulpfile.js` modification:
-```javascript
-// Add proxy configuration to BrowserSync
-browserSync.init({
-    proxy: "http://localhost:8080", // Spring Boot server
-    port: 3000,
-    ui: {
-        port: 3001
-    }
-});
-```
+#### Development Benefits
+- ✅ **Modern component library**: shadcn/ui with Tailwind CSS v4
+- ✅ **Type safety**: TypeScript across the entire frontend
+- ✅ **Hot reload**: Both Next.js and Spring Boot DevTools
+- ✅ **API state management**: React Query for caching and synchronization
+- ✅ **Responsive design**: Mobile-first shadcn/ui components
 
-#### Backend CORS configuration:
+#### Production Benefits
+- ✅ **Single deployment**: Next.js static export + Spring Boot JAR
+- ✅ **Performance**: Static files served efficiently
+- ✅ **SEO friendly**: Next.js static generation
+- ✅ **Scalable**: Clean API contracts and component architecture
+- ✅ **Maintainable**: Modern tooling and established patterns
+
+#### CORS Configuration
 ```java
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedMethods("*");
+                .allowedMethods("*")
+                .allowCredentials(true);
     }
 }
 ```
 
-This approach allows:
-- ✅ **Independent frontend development** with hot reload
-- ✅ **Clean template separation** (dashboard vs multipurpose)
-- ✅ **Modern API architecture** with REST endpoints
-- ✅ **Easy deployment** (build frontend → copy to backend → deploy)
-- ✅ **Scalable architecture** for future features
-
-Would you like me to create the actual boilerplate implementation?
+This modern stack provides a solid foundation for building scalable web applications with excellent developer experience.

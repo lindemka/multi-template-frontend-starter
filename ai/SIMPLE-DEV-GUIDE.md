@@ -13,7 +13,8 @@
 - Automatically waits for servers to be ready
 
 **Access points:**
-- Dashboard: http://localhost:3000/dashboard/
+- Next.js Dashboard: http://localhost:3000/dashboard/
+- Production Dashboard: http://localhost:8080/nextjs/dashboard/
 - API: http://localhost:8080/api/users
 
 ### Stop All Servers
@@ -65,7 +66,7 @@ mvn spring-boot:run
 ### Production JAR
 ```bash
 cd backend
-java -jar target/multi-template-demo-0.0.1-SNAPSHOT.jar
+java -jar target/fbase-0.0.1-SNAPSHOT.jar
 ```
 
 ## 🔍 Troubleshooting
@@ -89,15 +90,14 @@ tail -f backend/backend.log
 tail -f frontend/frontend.log
 ```
 
-## 🎉 What We Removed
+## 🎉 Technology Stack
 
-**Removed confusing scripts:**
-- ❌ `dev-frontend.sh` (redundant - dev.sh starts both)
-- ❌ `backend-restart.sh` (confusing - just restart dev.sh)
-- ❌ `backend-dev.sh` (redundant - dev.sh has hot reload)
-- ❌ `run.sh` (confusing - overlapped with build.sh)
+**Frontend:** Next.js 15 + shadcn/ui + Tailwind CSS v4
+**Backend:** Spring Boot 3.4 + Java 21
+**Components:** Modern shadcn/ui components with responsive design
+**Development:** Hot reload for both frontend (Next.js) and backend (Spring Boot)
 
-**Result:** Simple, clear process with just 4 essential scripts!
+**Result:** Modern full-stack development with 4 essential scripts!
 
 ---
 

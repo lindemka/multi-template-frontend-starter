@@ -57,14 +57,14 @@ cd backend
 mvn clean package -DskipTests
 
 # Verify Spring Boot build
-if [ ! -f "target/multi-template-demo-0.0.1-SNAPSHOT.jar" ]; then
+if [ ! -f "target/fbase-0.0.1-SNAPSHOT.jar" ]; then
     echo -e "${RED}Error: Spring Boot build failed - JAR not found${NC}"
     exit 1
 fi
 
 # Step 6: Kill any existing Spring Boot process
 echo -e "${BLUE}Step 6: Stopping any existing Spring Boot instances...${NC}"
-pkill -f "java.*multi-template-demo" || true
+pkill -f "java.*fbase" || true
 sleep 2
 
 # Step 7: Start Spring Boot
@@ -72,7 +72,7 @@ echo -e "${BLUE}Step 7: Starting Spring Boot application...${NC}"
 # Make sure we're in the backend directory
 pwd
 ls -la target/*.jar
-nohup java -jar target/multi-template-demo-0.0.1-SNAPSHOT.jar > server.log 2>&1 &
+nohup java -jar target/fbase-0.0.1-SNAPSHOT.jar > server.log 2>&1 &
 SPRING_PID=$!
 echo "Spring Boot started with PID: $SPRING_PID"
 
@@ -100,6 +100,6 @@ echo -e "${GREEN}  Dashboard: http://localhost:8080/dashboard/${NC}"
 echo -e "${GREEN}  API: http://localhost:8080/api/users${NC}"
 echo -e "${GREEN}${NC}"
 echo -e "${GREEN}Commands:${NC}"
-echo -e "${GREEN}  Stop: pkill -f \"java.*multi-template-demo\"${NC}"
+echo -e "${GREEN}  Stop: pkill -f \"java.*fbase\"${NC}"
 echo -e "${GREEN}  Status: ./scripts/status.sh${NC}"
 echo -e "${GREEN}  View logs: tail -f backend/server.log${NC}"

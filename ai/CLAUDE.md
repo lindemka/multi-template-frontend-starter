@@ -70,7 +70,7 @@ mvn spring-boot:run
 mvn clean package -DskipTests
 
 # Run built JAR
-java -jar target/multi-template-demo-0.0.1-SNAPSHOT.jar
+java -jar target/fbase-0.0.1-SNAPSHOT.jar
 ```
 
 ### Clean Build Process
@@ -103,15 +103,15 @@ This is a **modern React-based system** with Next.js frontend and Spring Boot ba
 - **Database**: H2 in-memory for development
 - **Deployment**: Next.js static export to Spring Boot resources
 
-### 📦 Legacy System: Gulp Templates (Archived)
-- **Status**: Maintained in `/archive/` for reference only
-- **Usage**: Original dashboard and multipurpose templates
-- **Note**: Replaced by modern Shadcn/ui implementation
+### 📦 Legacy System: Archived Templates
+- **Status**: Legacy HTML templates archived in `/archive/`
+- **Usage**: Original static templates (no longer maintained)
+- **Note**: Fully replaced by modern React/shadcn/ui components
 
 ### 🏗️ File Structure
 
 ```
-project1/
+fbase/
 ├── frontend/               # 🚀 Primary Next.js app  
 │   ├── src/
 │   │   ├── app/                    # Next.js pages

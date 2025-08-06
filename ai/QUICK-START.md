@@ -1,61 +1,72 @@
-# Quick Start for AI
+# Quick Start for fbase (Next.js + shadcn/ui)
 
 ## Essential Commands
 
 ```bash
-# Setup
-npm install
+# Start development environment (both frontend and backend)
+./scripts/dev.sh
 
-# Development
-npm run dev         # Start on localhost:3000
+# Check server status
+./scripts/status.sh
 
-# Production
-npm run build       # Build to dist/
-npm run clean       # Clean dist/
+# Production build
+./scripts/build.sh
+
+# Development build without stopping servers
+./scripts/deploy.sh
 
 # Quick Tests
-curl -s http://localhost:3000/ | grep -c "Multi-Template Project"
-curl -I http://localhost:3000/assets/dashboard/css/theme.min.css
+curl -s http://localhost:3000/dashboard/ | grep -c "Dashboard"
+curl -s http://localhost:8080/api/users
 ```
 
-## File Locations
+## Project Structure
 
-### Pages
-- `src/pages/index.html` - Home (multipurpose)
-- `src/pages/dashboard.html` - Dashboard
-- `src/pages/multipurpose.html` - Multipurpose
+### Frontend (Next.js + shadcn/ui)
+- `frontend-nextjs/` - Modern Next.js application
+- `frontend-nextjs/src/app/dashboard/` - Dashboard pages
+- `frontend-nextjs/src/components/ui/` - shadcn/ui components
+- `frontend-nextjs/src/components/dashboard/` - Custom dashboard components
+- `frontend-nextjs/src/lib/` - Utilities and configurations
 
-
-### Custom Code
-- `src/scss/main.scss` - Custom styles
-- `src/js/main.js` - Custom scripts
+### Backend (Spring Boot)
+- `backend/src/main/java/` - Java application code
+- `backend/src/main/resources/static/` - Static resources and Next.js build output
 
 ### Build Config
-- `gulpfile.js` - Build configuration
+- `frontend-nextjs/next.config.ts` - Next.js configuration
+- `backend/pom.xml` - Maven configuration
 
 ## Common Tasks
 
 ### Add New Page
-1. **Check COMPONENT-GUIDE.md** for the component you need
-2. **Find reference design** in archived template folders using the guide's quick reference
-3. Create HTML in `src/pages/` using the archived template structure
-4. Copy component HTML from archived templates, adapting asset paths to current structure
-5. Use dashboard body classes for admin pages, none for public pages
+1. **Create page** in `frontend-nextjs/src/app/dashboard/[page]/`
+2. **Use shadcn/ui components** from `src/components/ui/`
+3. **Follow existing patterns** in dashboard components
+4. **Add navigation** to sidebar component
+5. **Use TypeScript** for type safety
+
+### Add shadcn/ui Component
+1. Run `npx shadcn@canary add [component-name]`
+2. Components install to `src/components/ui/`
+3. Import and use in your pages
 
 ### Modify Styles
-1. Edit `src/scss/main.scss`
-2. Changes auto-compile in dev mode
+1. Edit component-specific styles using Tailwind CSS
+2. Global styles in `frontend-nextjs/src/app/globals.css`
+3. Changes auto-reload in dev mode
 
 ### Update Navigation
-- Dashboard: Edit sidebar in dashboard pages
-- Multipurpose: Edit header in multipurpose pages
+- Dashboard: Edit `frontend-nextjs/src/components/dashboard/sidebar.tsx`
+- Mobile: Edit `frontend-nextjs/src/components/dashboard/mobile-nav.tsx`
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| 404 on assets | Check `.min.css`/`.min.js` extension |
-| Sidebar broken | Verify dashboard JS files loaded |
-| Build fails | Run `npm run clean` first |
-| Port in use | Check gulpfile.js for port config |
-| **Stale files after rename** | **CRITICAL: Always run `npm run build` after renaming files** |
+| Servers won't start | Run `./scripts/dev.sh stop` then `./scripts/dev.sh` |
+| Port conflicts | Kill processes: `lsof -ti:3000 \| xargs kill -9` |
+| Build fails | Check both Next.js and Spring Boot logs |
+| shadcn/ui component issues | Ensure using canary version for Tailwind v4 |
+| API connection failed | Verify backend is running on port 8080 |
+| **Production build issues** | **Run `./scripts/build.sh` for complete rebuild** |

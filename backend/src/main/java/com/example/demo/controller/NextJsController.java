@@ -14,7 +14,7 @@ import java.io.IOException;
 @RequestMapping("/nextjs")
 public class NextJsController {
 
-    @GetMapping(value = {"", "/", "/dashboard", "/multipurpose"})
+    @GetMapping(value = {"", "/", "/dashboard", "/test"})
     public ResponseEntity<Resource> serveNextJs() throws IOException {
         Resource resource = new ClassPathResource("static/nextjs/index.html");
         if (resource.exists()) {
@@ -36,9 +36,9 @@ public class NextJsController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/multipurpose/**")
-    public ResponseEntity<Resource> serveMultipurpose() throws IOException {
-        Resource resource = new ClassPathResource("static/nextjs/multipurpose/index.html");
+    @GetMapping(value = "/test/**")
+    public ResponseEntity<Resource> serveTest() throws IOException {
+        Resource resource = new ClassPathResource("static/nextjs/test/index.html");
         if (resource.exists()) {
             return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_HTML)

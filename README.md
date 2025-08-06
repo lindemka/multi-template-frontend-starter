@@ -1,6 +1,6 @@
-# Multi-Template Project
+# fbase
 
-A production-ready template system with proper build architecture and scalable development workflow.
+A full-stack application built with Spring Boot backend and Next.js frontend using shadcn/ui components.
 
 ## Quick Start
 
@@ -17,49 +17,54 @@ npm run build
 
 ## Available Pages
 
-- **Home**: `http://localhost:3002/` - Index page (multipurpose template)
-- **Dashboard**: `http://localhost:3002/dashboard.html` - Dashboard template (with sidebar)
-- **Multipurpose**: `http://localhost:3002/multipurpose.html` - Multipurpose template (header navigation)
+- **Home**: `http://localhost:3000/` - Landing page
+- **Dashboard**: `http://localhost:3000/dashboard` - Dashboard with shadcn/ui components
+- **Test**: `http://localhost:3000/test` - Component testing page
 
-## Template Architecture
+## Architecture
 
-### Dashboard Template
-- **Use for**: Admin panels, dashboards, management interfaces
-- **Features**: Vertical sidebar navigation, fixed header, compact layout
-- **Assets**: `./assets/dashboard/` - Isolated dashboard template assets
+### Frontend (Next.js)
+- **Framework**: Next.js 15 with React 19
+- **UI Components**: shadcn/ui with Radix UI primitives
+- **Styling**: Tailwind CSS v4
+- **State Management**: TanStack Query for server state
+- **Type Safety**: Full TypeScript support
 
-### Multipurpose Template  
-- **Use for**: Landing pages, marketing sites, public-facing pages
-- **Features**: Header navigation, full-width layout, responsive design
-- **Assets**: `./assets/multipurpose/` - Isolated multipurpose template assets
+### Backend (Spring Boot)
+- **Framework**: Spring Boot 3.4.2 with Java 21
+- **Database**: H2 (development) with JPA/Hibernate
+- **API**: RESTful endpoints with JSON responses
+- **Development**: Hot reload with Spring DevTools
 
 ## Project Structure
 
 ```
-project1/
-├── src/
-│   └── pages/
-│       ├── index.html              # Home page (multipurpose template)
-│       ├── dashboard.html          # Dashboard template page
-│       └── multipurpose.html       # Multipurpose template page
-├── dist/                           # Built files
-├── archive/                        # Archived original templates
-│   ├── template-front-dashboard/   # Original dashboard template
-│   └── template-front-multipurpose/ # Original multipurpose template
-├── ai/                            # Documentation
-└── .gitignore                     # Git ignore rules
+fbase/
+├── frontend/                       # Next.js frontend
+│   ├── src/
+│   │   ├── app/                   # Next.js app router pages
+│   │   ├── components/            # React components with shadcn/ui
+│   │   ├── lib/                   # Utilities and API client
+│   │   └── types/                 # TypeScript definitions
+│   └── package.json
+├── backend/                       # Spring Boot backend
+│   ├── src/main/java/            # Java source code
+│   └── pom.xml
+├── scripts/                       # Build and deployment scripts
+├── archive/                       # Legacy template files (to be removed)
+└── ai/                           # Documentation
 ```
 
 ## Features
 
-- ✅ **Dual Template System**: Dashboard and Multipurpose templates
-- ✅ **Asset Isolation**: Each template uses its own CSS/JS assets
-- ✅ **Hot Reload Development**: `npm run dev` for live development
-- ✅ **Production Build**: `npm run build` for optimized assets
-- ✅ **Responsive Design**: Works on all devices
-- ✅ **Professional Architecture**: Clean, maintainable code structure
-- ✅ **Archive Management**: Original templates archived in `/archive/` folder
-- ✅ **Git Configuration**: Comprehensive `.gitignore` excludes build artifacts and archive
+- ✅ **Modern Stack**: Next.js 15 + Spring Boot 3.4.2 + Java 21
+- ✅ **shadcn/ui Components**: Professional UI component library
+- ✅ **Type Safety**: Full TypeScript support throughout
+- ✅ **Hot Reload**: Both frontend and backend development servers
+- ✅ **Production Ready**: Optimized builds and deployment scripts
+- ✅ **Responsive Design**: Mobile-first approach with Tailwind CSS
+- ✅ **API Integration**: RESTful backend with React Query client
+- ✅ **Development Tools**: ESLint, TypeScript checking, and more
 
 ## Development
 

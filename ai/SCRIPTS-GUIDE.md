@@ -93,7 +93,7 @@ Need to test prod while developing? → ./scripts/deploy.sh
 
 # Test prod JAR
 cd backend
-java -jar target/multi-template-demo-0.0.1-SNAPSHOT.jar
+java -jar target/fbase-0.0.1-SNAPSHOT.jar
 ```
 
 ### When Things Go Wrong

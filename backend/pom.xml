@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>multi-template-demo</artifactId>
+	<artifactId>fbase</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>multi-template-demo</name>
-	<description>Multi-template frontend with Spring Boot backend demo</description>
+	<name>fbase</name>
+	<description>Full-stack application with Spring Boot backend and Next.js frontend using shadcn/ui</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
