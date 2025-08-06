@@ -1,11 +1,57 @@
-import React from 'react';
-import DashboardLayoutShadcn from '@/components/layouts/DashboardLayoutShadcn';
+"use client"
+
+import React, { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { AppSidebar } from "@/components/app-sidebar"
+import { SiteHeader } from "@/components/site-header"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar"
 import UserTableShadcn from '@/components/dashboard/UserTableShadcn';
+import Feed from '@/components/feed/Feed';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab') || 'feed';
+  
+  return (
+    <div className="space-y-6">
+      <Tabs defaultValue={tab} value={tab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsTrigger value="feed">Activity Feed</TabsTrigger>
+          <TabsTrigger value="users">User Management</TabsTrigger>
+        </TabsList>
+        <TabsContent value="feed" className="mt-6">
+          <div className="max-w-3xl">
+            <Feed />
+          </div>
+        </TabsContent>
+        <TabsContent value="users" className="mt-6">
+          <UserTableShadcn />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   return (
-    <DashboardLayoutShadcn>
-      <UserTableShadcn />
-    </DashboardLayoutShadcn>
+    <div>
+      <SidebarProvider className="flex flex-col min-h-screen">
+        <SiteHeader />
+        <div className="flex flex-1">
+          <AppSidebar />
+          <SidebarInset>
+            <div className="flex flex-1 flex-col gap-4 p-4">
+              <Suspense fallback={<div>Loading...</div>}>
+                <DashboardContent />
+              </Suspense>
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }

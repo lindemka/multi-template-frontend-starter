@@ -123,7 +123,7 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
             </SheetTrigger>
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center">
-              <h2 className="text-lg font-semibold">User Management</h2>
+              <h2 className="text-lg font-semibold">Dashboard</h2>
 
               {/* Right side */}
               <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
