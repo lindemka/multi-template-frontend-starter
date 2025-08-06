@@ -27,6 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface DashboardLayoutShadcnProps {
   children: React.ReactNode;
@@ -126,6 +127,9 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
 
               {/* Right side */}
               <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
+                {/* Language switcher */}
+                <LanguageSwitcher />
+                
                 {/* User menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

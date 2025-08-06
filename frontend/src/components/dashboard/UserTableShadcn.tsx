@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { userApi } from '@/lib/api';
 import { User } from '@/types/api';
 import { MoreHorizontal, RefreshCw, Search, Plus, Edit, Trash2 } from 'lucide-react';
@@ -29,6 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const UserTableShadcn: React.FC = () => {
+  const t = useTranslations();
   const {
     data: users,
     isLoading,
