@@ -45,7 +45,7 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-[400px] sm:w-[540px] p-0">
+      <SheetContent className="w-[400px] sm:w-[540px] p-0" showCloseButton={false}>
         {/* Header with gradient background */}
         <div className="relative">
           <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
