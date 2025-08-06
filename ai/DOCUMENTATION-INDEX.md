@@ -18,11 +18,12 @@ This index provides a roadmap to all project documentation, organized by use cas
 7. **[QUICK-START.md](./QUICK-START.md)** - Development environment setup
 
 ### Development Workflow Guides
-8. **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Fast frontend development guide
-9. **[BACKEND-UPDATE-GUIDE.md](./BACKEND-UPDATE-GUIDE.md)** - Backend update without disrupting frontend
-10. **[FAST-DEV-GUIDE.md](./FAST-DEV-GUIDE.md)** - Performance tips for fast iteration
-11. **[SCRIPTS-GUIDE.md](./SCRIPTS-GUIDE.md)** - When to use each development script
-12. **[MCP-SETUP.md](./MCP-SETUP.md)** - Shadcn MCP integration for faster UI development
+8. **[SIMPLE-DEV-GUIDE.md](./SIMPLE-DEV-GUIDE.md)** - Simple development workflow (START HERE)
+9. **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Detailed frontend development guide
+10. **[FAST-DEV-GUIDE.md](./FAST-DEV-GUIDE.md)** - Advanced performance tips
+11. **[BACKEND-UPDATE-GUIDE.md](./BACKEND-UPDATE-GUIDE.md)** - Backend-specific workflows
+12. **[SCRIPTS-GUIDE.md](./SCRIPTS-GUIDE.md)** - Complete scripts reference
+13. **[MCP-SETUP.md](./MCP-SETUP.md)** - Shadcn MCP integration for faster UI development
 
 ## 📁 Documentation Organization
 
@@ -39,8 +40,9 @@ ai/
 ├── CLAUDE.md                  # 🔧 Build commands and quick reference
 ├── DEVELOPMENT.md             # 💻 Development guide
 ├── BACKEND-UPDATE-GUIDE.md    # 🔄 Backend update workflows
-├── FAST-DEV-GUIDE.md          # ⚡ Fast frontend development
-├── SCRIPTS-GUIDE.md           # 📚 Scripts usage guide
+├── SIMPLE-DEV-GUIDE.md        # ⚡ Simple development workflow (RECOMMENDED)
+├── FAST-DEV-GUIDE.md          # ⚡ Advanced frontend development tips
+├── SCRIPTS-GUIDE.md           # 📚 Detailed scripts reference
 ├── MCP-SETUP.md               # 🔌 Model Context Protocol integration
 └── README.md                  # 📋 AI development guidelines
 ```

@@ -1,137 +1,121 @@
-# 📚 Scripts Guide - When to Use Each Script
+# 📚 Scripts Guide - Simplified Development
 
-## 🚀 Development Scripts (Keep Servers Running)
+## 🎯 Only 4 Scripts (Cleaned Up!)
 
-### `./scripts/dev.sh` - Main Development Script
-- **Purpose**: Start BOTH frontend and backend for development
-- **When to use**: Every morning when you start working
+We removed confusing and redundant scripts. Here's what remains:
+
+## 🚀 Essential Scripts
+
+### `./scripts/dev.sh` - Development Environment
+- **Purpose**: Start both frontend and backend for development
+- **Usage**: 
+  - `./scripts/dev.sh` - Start servers
+  - `./scripts/dev.sh stop` - Stop servers
 - **What it does**:
-  - Starts backend on http://localhost:8080
-  - Starts frontend on http://localhost:3000 with hot reload
-  - Both servers stay running until you stop them
-- **To stop**: Run `./scripts/dev.sh stop`
+  - Starts Spring Boot backend on port 8080
+  - Starts Next.js frontend on port 3000
+  - Both run in background with hot reload
+  - Waits for servers to be ready
+- **When to use**: 95% of your development time
 
-### `./scripts/dev-frontend.sh` - Frontend Only Development
-- **Purpose**: Start ONLY the frontend dev server
-- **When to use**: When backend is already running and you only need frontend
-- **What it does**:
-  - Checks if backend is running
-  - Starts frontend on http://localhost:3000
-  - Uses Turbopack for ultra-fast hot reload
-- **Stays running**: Yes
-
-### `./scripts/backend-restart.sh` - Restart Backend Only
-- **Purpose**: Restart backend without touching frontend
-- **When to use**: After making Java code changes
-- **What it does**:
-  - Kills existing backend process
-  - Starts new backend on http://localhost:8080
-  - Frontend keeps running on :3000
-- **Frontend stays running**: Yes!
-
-### `./scripts/backend-dev.sh` - Backend with Auto-Restart
-- **Purpose**: Backend development with auto-restart on code changes
-- **When to use**: When actively developing backend code
-- **What it does**:
-  - Uses Spring Boot DevTools
-  - Auto-restarts when Java files change
-  - Frontend can run separately
-- **Requires**: Spring Boot DevTools in pom.xml
-
-## 📦 Deployment Scripts
-
-### `./scripts/deploy.sh` - Deploy Without Stopping Dev Servers ✨
-- **Purpose**: Build and deploy while keeping dev servers running
-- **When to use**: When you want to test production build without stopping development
-- **What it does**:
-  - Builds frontend production bundle
-  - Copies to Spring Boot resources
-  - Builds Spring Boot JAR
-  - Dev servers keep running!
-- **Result**: 
-  - Dev still on :3000 and :8080
-  - Production JAR ready at `backend/target/*.jar`
-
-### `./scripts/build.sh` - Full Production Build & Run
-- **Purpose**: Complete production build and run (STOPS dev servers)
-- **When to use**: Testing full production deployment
-- **What it does**:
-  - Stops all dev servers
-  - Builds everything from scratch
-  - Starts production server on :8080
-  - Opens browser automatically
-- **Warning**: This stops your dev servers!
-
-## 🔍 Utility Scripts
-
-### `./scripts/status.sh` - Check What's Running
-- **Purpose**: See status of all servers
-- **When to use**: To check what's currently running
+### `./scripts/status.sh` - Check Server Status
+- **Purpose**: See what's currently running
+- **Usage**: `./scripts/status.sh`
 - **Shows**:
   - Frontend status (port 3000)
   - Backend status (port 8080)
   - Process IDs
-  - Number of users in database
+  - Database user count
+  - Quick commands
+- **When to use**: When you're confused about server state
 
-## 💡 Common Workflows
+### `./scripts/build.sh` - Production Build
+- **Purpose**: Complete production build and run
+- **Usage**: `./scripts/build.sh`
+- **What it does**:
+  - Stops development servers
+  - Builds Next.js for production
+  - Builds Spring Boot JAR
+  - Runs production server
+- **When to use**: Final deployment testing
+- **Warning**: Stops dev servers!
 
-### Morning Start
-```bash
-./dev.sh
-# Both servers start, you're ready to code!
+### `./scripts/deploy.sh` - Build While Developing
+- **Purpose**: Build production without stopping dev servers
+- **Usage**: `./scripts/deploy.sh`
+- **What it does**:
+  - Builds Next.js for production
+  - Builds Spring Boot JAR
+  - Keeps dev servers running
+- **When to use**: Test production build while keeping development running
+
+## 🧹 What We Removed (And Why)
+
+### ❌ Removed Scripts
+- **`dev-frontend.sh`** - Redundant (dev.sh starts both)
+- **`backend-restart.sh`** - Confusing (just restart dev.sh)
+- **`backend-dev.sh`** - Redundant (dev.sh has hot reload)
+- **`run.sh`** - Confusing (overlapped with build.sh)
+
+### ✅ Why This Is Better
+- **Simpler**: Just use dev.sh for daily work
+- **Less confusing**: No more "which script should I use?"
+- **More reliable**: One script that always works
+- **Cleaner**: Focused on essential tasks only
+
+## 🎯 Decision Tree
+
+```
+Need to develop? → ./scripts/dev.sh
+Need to stop? → ./scripts/dev.sh stop
+Confused about status? → ./scripts/status.sh
+Need production build? → ./scripts/build.sh
+Need to test prod while developing? → ./scripts/deploy.sh
 ```
 
-### Frontend Changes Only
+## 📋 Common Workflows
+
+### Daily Development
 ```bash
-# Just save your files - hot reload handles it!
-# No need to restart anything
+# Morning
+./scripts/dev.sh
+
+# Work on code (servers auto-reload)
+
+# End of day
+./scripts/dev.sh stop
 ```
 
-### Backend Changes
+### Production Testing
 ```bash
-# Option 1: Manual restart
-./backend-restart.sh
+# Keep dev running, build prod
+./scripts/deploy.sh
 
-# Option 2: Auto-restart mode
-./backend-dev.sh  # In separate terminal
+# Test prod JAR
+cd backend
+java -jar target/multi-template-demo-0.0.1-SNAPSHOT.jar
 ```
 
-### Deploy for Testing (Keep Dev Running)
+### When Things Go Wrong
 ```bash
-./deploy.sh
-# Creates production build without stopping dev
-# Test with: java -jar backend/target/*.jar
-```
+# Force stop everything
+./scripts/dev.sh stop
 
-### Full Production Test
-```bash
-./scripts/build.sh
-# Warning: Stops dev servers!
-# Runs production on :8080
-```
-
-### Check Status
-```bash
+# Check what's running
 ./scripts/status.sh
-# See what's running
+
+# Start fresh
+./scripts/dev.sh
 ```
 
-### Stop Everything
-```bash
-./dev.sh stop
-# Stops all dev servers
-```
+## 🎉 Benefits of Simplified Approach
 
-## 🎯 Best Practices
+1. **Less cognitive load** - Only 4 scripts to remember
+2. **Clearer purpose** - Each script has a distinct, obvious use case
+3. **More reliable** - Fewer edge cases and conflicts
+4. **Better for teams** - Everyone uses the same simple workflow
+5. **Easier onboarding** - New developers aren't confused by options
 
-1. **Use `./dev.sh` for daily development** - It's the fastest way to get started
-2. **Use `./deploy.sh` for deployments** - Keeps your dev environment running
-3. **Use `./backend-restart.sh` for Java changes** - Frontend stays up
-4. **Use `./scripts/status.sh` when confused** - Shows what's actually running
+---
 
-## ⚡ Speed Tips
-
-- Frontend hot reload is instant (Turbopack)
-- Backend restart takes ~10 seconds
-- Use two terminals: one for frontend logs, one for backend commands
-- The deploy script lets you test production without stopping development!
+**Bottom line: Just use `./scripts/dev.sh` for daily development!**

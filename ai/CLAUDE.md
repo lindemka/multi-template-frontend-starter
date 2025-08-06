@@ -13,13 +13,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build and Development Commands
 
-### 🚀 Quick Start - Development (FAST & RECOMMENDED)
+### 🚀 Quick Start - Development (SIMPLE & RELIABLE)
 ```bash
-# Fast development with hot reloading
+# Start both servers with hot reloading
 ./scripts/dev.sh
 
-# Frontend: http://localhost:3000 (instant reloads!)
-# Backend: http://localhost:8080/api
+# Access points:
+# Dashboard: http://localhost:3000/dashboard/
+# API: http://localhost:8080/api/users
+
+# Stop servers:
+./scripts/dev.sh stop
 ```
 
 ### 📦 Production Build & Deploy

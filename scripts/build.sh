@@ -25,8 +25,7 @@ NC='\033[0m' # No Color
 
 # Step 1: Clean old builds
 echo -e "${BLUE}Step 1: Cleaning old builds...${NC}"
-rm -rf backend/src/main/resources/static/nextjs
-rm -rf backend/src/main/resources/static/index.html
+rm -rf backend/src/main/resources/static/*
 rm -rf backend/target
 
 # Step 2: Build Next.js application
@@ -36,13 +35,12 @@ cd frontend
 npm install
 # Clean any previous builds
 rm -rf .next
-rm -rf ../backend/src/main/resources/static/nextjs
 # Build with production flag
 NODE_ENV=production npm run build
 
-# Verify Next.js build output (it builds directly to Spring Boot)
-if [ ! -d "../backend/src/main/resources/static/nextjs" ]; then
-    echo -e "${RED}Error: Next.js build failed - no output directory found${NC}"
+# Verify Next.js build output (it builds directly to Spring Boot static root)
+if [ ! -f "../backend/src/main/resources/static/index.html" ]; then
+    echo -e "${RED}Error: Next.js build failed - no index.html found${NC}"
     exit 1
 fi
 
@@ -95,11 +93,13 @@ echo -e "${BLUE}Step 8: Opening browser...${NC}"
 open http://localhost:8080/
 
 # Summary
-echo -e "${GREEN}✅ Build and deployment completed successfully!${NC}"
+echo -e "${GREEN}✅ Production build and deployment completed!${NC}"
 echo -e "${GREEN}Application is now running at:${NC}"
 echo -e "${GREEN}  Main: http://localhost:8080/${NC}"
-echo -e "${GREEN}  Dashboard: http://localhost:8080/nextjs/dashboard/${NC}"
+echo -e "${GREEN}  Dashboard: http://localhost:8080/dashboard/${NC}"
 echo -e "${GREEN}  API: http://localhost:8080/api/users${NC}"
 echo -e "${GREEN}${NC}"
-echo -e "${GREEN}To stop the application: kill $SPRING_PID${NC}"
-echo -e "${GREEN}To view logs: tail -f $SCRIPT_DIR/backend/server.log${NC}"
+echo -e "${GREEN}Commands:${NC}"
+echo -e "${GREEN}  Stop: pkill -f \"java.*multi-template-demo\"${NC}"
+echo -e "${GREEN}  Status: ./scripts/status.sh${NC}"
+echo -e "${GREEN}  View logs: tail -f backend/server.log${NC}"
