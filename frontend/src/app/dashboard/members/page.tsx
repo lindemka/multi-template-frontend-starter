@@ -48,6 +48,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import FiltersModal from '@/components/members/FiltersModal';
+import ProfileDrawer from '@/components/members/ProfileDrawer';
 import { userApi } from '@/lib/api';
 import { User } from '@/types/api';
 import { mockFoundersData } from '@/data/mockMembers';
@@ -62,6 +63,8 @@ export default function MembersPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({
     goals: [],
     interests: [],
@@ -178,6 +181,16 @@ export default function MembersPage() {
 
   const handleViewProfile = (memberId: number) => {
     router.push(`/dashboard/profile/${memberId}`);
+  };
+
+  const handleRowClick = (member: any) => {
+    setSelectedMember(member);
+    setIsDrawerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false);
+    setTimeout(() => setSelectedMember(null), 300); // Clear after animation
   };
 
   const clearAllFilters = () => {
@@ -352,7 +365,11 @@ export default function MembersPage() {
                 </TableRow>
               ) : (
                 paginatedMembers.map((member) => (
-              <TableRow key={member.id}>
+              <TableRow 
+                key={member.id}
+                className="cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => handleRowClick(member)}
+              >
                 {/* Member Info */}
                 <TableCell>
                   <div className="flex items-start gap-3">
@@ -387,7 +404,7 @@ export default function MembersPage() {
                 {/* Goals */}
                 <TableCell>
                   <div className="flex flex-wrap gap-2">
-                    {member.goals.map((goal, index) => (
+                    {member.goals.map((goal: string, index: number) => (
                       <Button
                         key={index}
                         variant="outline"
@@ -404,7 +421,7 @@ export default function MembersPage() {
                 {/* Interests & Roles */}
                 <TableCell>
                   <div className="flex flex-wrap gap-1 max-w-md">
-                    {member.interests.slice(0, 3).map((interest, index) => (
+                    {member.interests.slice(0, 3).map((interest: string, index: number) => (
                       <Badge key={index} variant="secondary" className="text-xs">
                         {interest}
                       </Badge>
@@ -439,7 +456,10 @@ export default function MembersPage() {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => handleViewProfile(member.id)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent row click
+                      handleViewProfile(member.id);
+                    }}
                   >
                     View Profile
                   </Button>
@@ -568,6 +588,14 @@ export default function MembersPage() {
         onClose={() => setIsFiltersOpen(false)}
         onApply={applyFilters}
         currentFilters={filters}
+      />
+
+      {/* Profile Drawer */}
+      <ProfileDrawer
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        member={selectedMember}
+        onViewFullProfile={handleViewProfile}
       />
     </div>
   );
