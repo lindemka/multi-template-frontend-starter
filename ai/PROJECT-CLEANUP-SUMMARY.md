@@ -35,7 +35,8 @@ project1/                           # 3.2G total (clean!)
 │   ├── ARCHITECTURE.md            # System architecture
 │   ├── backend-integration-guide.md # API integration details
 │   ├── QUICK-START.md             # Setup instructions
-│   └── README.md                  # AI development guidelines
+│   ├── README.md                  # AI development guidelines
+│   └── CLAUDE.md                  # Build commands for AI
 ├── archive/                       # 1.2G - Original templates (reference)
 ├── backend/                       # 925M - Spring Boot API
 │   ├── src/main/java/             # Java source code
@@ -49,7 +50,6 @@ project1/                           # 3.2G total (clean!)
 │   ├── next.config.ts             # Next.js configuration
 │   ├── components.json            # Shadcn/ui configuration
 │   └── package.json               # Next.js dependencies
-├── CLAUDE.md                      # 4K - Build commands for AI
 └── README.md                      # 3K - General project info
 ```
 

@@ -2,16 +2,16 @@
 
 ## 🚀 Development Scripts (Keep Servers Running)
 
-### `./dev.sh` - Main Development Script
+### `./scripts/dev.sh` - Main Development Script
 - **Purpose**: Start BOTH frontend and backend for development
 - **When to use**: Every morning when you start working
 - **What it does**:
   - Starts backend on http://localhost:8080
   - Starts frontend on http://localhost:3000 with hot reload
   - Both servers stay running until you stop them
-- **To stop**: Run `./dev.sh stop`
+- **To stop**: Run `./scripts/dev.sh stop`
 
-### `./dev-frontend.sh` - Frontend Only Development
+### `./scripts/dev-frontend.sh` - Frontend Only Development
 - **Purpose**: Start ONLY the frontend dev server
 - **When to use**: When backend is already running and you only need frontend
 - **What it does**:
@@ -20,7 +20,7 @@
   - Uses Turbopack for ultra-fast hot reload
 - **Stays running**: Yes
 
-### `./backend-restart.sh` - Restart Backend Only
+### `./scripts/backend-restart.sh` - Restart Backend Only
 - **Purpose**: Restart backend without touching frontend
 - **When to use**: After making Java code changes
 - **What it does**:
@@ -29,7 +29,7 @@
   - Frontend keeps running on :3000
 - **Frontend stays running**: Yes!
 
-### `./backend-dev.sh` - Backend with Auto-Restart
+### `./scripts/backend-dev.sh` - Backend with Auto-Restart
 - **Purpose**: Backend development with auto-restart on code changes
 - **When to use**: When actively developing backend code
 - **What it does**:
@@ -40,7 +40,7 @@
 
 ## 📦 Deployment Scripts
 
-### `./deploy.sh` - Deploy Without Stopping Dev Servers ✨
+### `./scripts/deploy.sh` - Deploy Without Stopping Dev Servers ✨
 - **Purpose**: Build and deploy while keeping dev servers running
 - **When to use**: When you want to test production build without stopping development
 - **What it does**:
@@ -52,7 +52,7 @@
   - Dev still on :3000 and :8080
   - Production JAR ready at `backend/target/*.jar`
 
-### `./build.sh` - Full Production Build & Run
+### `./scripts/build.sh` - Full Production Build & Run
 - **Purpose**: Complete production build and run (STOPS dev servers)
 - **When to use**: Testing full production deployment
 - **What it does**:
@@ -64,7 +64,7 @@
 
 ## 🔍 Utility Scripts
 
-### `./status.sh` - Check What's Running
+### `./scripts/status.sh` - Check What's Running
 - **Purpose**: See status of all servers
 - **When to use**: To check what's currently running
 - **Shows**:
@@ -105,14 +105,14 @@
 
 ### Full Production Test
 ```bash
-./build.sh
+./scripts/build.sh
 # Warning: Stops dev servers!
 # Runs production on :8080
 ```
 
 ### Check Status
 ```bash
-./status.sh
+./scripts/status.sh
 # See what's running
 ```
 
@@ -127,7 +127,7 @@
 1. **Use `./dev.sh` for daily development** - It's the fastest way to get started
 2. **Use `./deploy.sh` for deployments** - Keeps your dev environment running
 3. **Use `./backend-restart.sh` for Java changes** - Frontend stays up
-4. **Use `./status.sh` when confused** - Shows what's actually running
+4. **Use `./scripts/status.sh` when confused** - Shows what's actually running
 
 ## ⚡ Speed Tips
 

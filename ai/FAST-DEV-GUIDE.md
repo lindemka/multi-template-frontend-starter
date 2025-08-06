@@ -4,13 +4,13 @@
 
 ### Fastest Frontend-Only Development (Backend must be running)
 ```bash
-./dev-frontend.sh
+./scripts/dev-frontend.sh
 ```
 
 ### Full Stack Development
 ```bash
-./dev.sh        # Both frontend and backend
-./dev.sh stop   # Stop all servers
+./scripts/dev.sh        # Both frontend and backend
+./scripts/dev.sh stop   # Stop all servers
 ```
 
 ### Frontend-Only in Terminal
@@ -29,7 +29,7 @@ npm run dev:turbo   # Uses Turbopack for FAST hot reload
 ## ⚡ Performance Tips
 
 ### 1. Use Turbopack (Already configured)
-- `npm run dev:turbo` or `./dev-frontend.sh` uses Turbopack
+- `npm run dev:turbo` or `./scripts/dev-frontend.sh` uses Turbopack
 - 10x faster than standard Webpack
 
 ### 2. Skip Type Checking During Dev
@@ -40,9 +40,9 @@ npm run dev:turbo   # Uses Turbopack for FAST hot reload
 
 | Task | Command | Speed |
 |------|---------|--------|
-| Frontend only (fastest) | `./dev-frontend.sh` | ⚡⚡⚡ |
-| Full stack | `./dev.sh` | ⚡⚡ |
-| Production test | `./build.sh` | ⚡ |
+| Frontend only (fastest) | `./scripts/dev-frontend.sh` | ⚡⚡⚡ |
+| Full stack | `./scripts/dev.sh` | ⚡⚡ |
+| Production test | `./scripts/build.sh` | ⚡ |
 
 ## 🛠️ Available NPM Scripts
 
@@ -68,21 +68,21 @@ npm run clean          # Remove all caches and reinstall
 cd backend && mvn spring-boot:run
 
 # Terminal 2: Start frontend with hot reload
-./dev-frontend.sh
+./scripts/dev-frontend.sh
 
 # Make changes - they appear instantly!
 ```
 
 ### 2. Full Stack Development
 ```bash
-./dev.sh  # Starts everything
+./scripts/dev.sh  # Starts everything
 # Make changes to frontend or backend
 # Frontend: instant reload
 # Backend: restart required
 ```
 
 ### 3. Quick Iteration Cycle
-1. Use `./dev-frontend.sh` for frontend work
+1. Use `./scripts/dev-frontend.sh` for frontend work
 2. Keep backend running separately
 3. Changes appear in < 1 second
 4. No manual refresh needed!
@@ -99,7 +99,7 @@ cd backend && mvn spring-boot:run
 ### Frontend not updating?
 1. Check if using `--turbo` flag
 2. Clear `.next` folder: `rm -rf frontend/.next`
-3. Restart with `./dev-frontend.sh`
+3. Restart with `./scripts/dev-frontend.sh`
 
 ### Backend connection issues?
 1. Ensure backend is on port 8080
@@ -108,7 +108,7 @@ cd backend && mvn spring-boot:run
 
 ### Port already in use?
 ```bash
-./dev.sh stop  # Kills all project processes
+./scripts/dev.sh stop  # Kills all project processes
 # Or manually:
 lsof -ti:3000 | xargs kill -9  # Frontend
 lsof -ti:8080 | xargs kill -9  # Backend
@@ -127,7 +127,7 @@ lsof -ti:8080 | xargs kill -9  # Backend
 1. **ALWAYS use Turbopack** (`--turbo` flag)
 2. **Keep backend running** separately
 3. **Don't restart unless necessary**
-4. **Use `./dev-frontend.sh`** for UI work
+4. **Use `./scripts/dev-frontend.sh`** for UI work
 
 ---
 

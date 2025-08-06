@@ -4,7 +4,7 @@
 
 ### For Fast Frontend Development (Recommended)
 ```bash
-./dev.sh
+./scripts/dev.sh
 ```
 This starts both backend (port 8080) and frontend (port 3000) with **hot reloading**.
 
@@ -27,7 +27,7 @@ cd frontend-nextjs && npm run dev:all
 ## 🎯 Best Practices
 
 ### 1. **Fast Development Workflow**
-- Use `./dev.sh` for development
+- Use `./scripts/dev.sh` for development
 - Frontend changes reload instantly (< 1 second)
 - No need to rebuild for frontend changes
 - API calls automatically proxy to backend
@@ -164,4 +164,4 @@ Settings (.vscode/settings.json):
 
 ## 🎉 Ready to Code!
 
-Start with `./dev.sh` and enjoy instant reloading! Make changes in `src/` and see them immediately in your browser.
+Start with `./scripts/dev.sh` and enjoy instant reloading! Make changes in `src/` and see them immediately in your browser.

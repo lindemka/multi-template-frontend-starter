@@ -7,12 +7,13 @@
 # Exit on any error
 set -e
 
-# Get the directory where this script is located
+# Get the project root directory (parent of scripts directory)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$SCRIPT_DIR"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_ROOT"
 
 echo "🔨 Starting PRODUCTION build (will stop dev servers)..."
-echo "💡 Tip: Use ./deploy.sh to build without stopping dev servers"
+echo "💡 Tip: Use ./scripts/deploy.sh to build without stopping dev servers"
 echo ""
 
 # Colors for output

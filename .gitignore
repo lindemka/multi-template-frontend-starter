@@ -173,6 +173,9 @@ local.properties
 # Project specific
 .claude/
 
+# Keep MCP configuration for team collaboration
+# .cursor/mcp.json should be committed
+
 # Keep CLAUDE.md and ai/ folder in the repository
 # CLAUDE.md
 # ai/

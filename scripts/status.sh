@@ -19,7 +19,7 @@ if lsof -ti:3000 > /dev/null 2>&1; then
     echo -e "   PID: $FRONTEND_PID"
 else
     echo -e "${RED}❌ Frontend is not running${NC}"
-    echo -e "   Start with: ./dev-frontend.sh"
+    echo -e "   Start with: ./scripts/dev-frontend.sh"
 fi
 
 echo ""
@@ -35,12 +35,12 @@ if curl -s http://localhost:8080/api/users > /dev/null 2>&1; then
     echo -e "   Users in database: $USER_COUNT"
 else
     echo -e "${RED}❌ Backend is not running${NC}"
-    echo -e "   Start with: ./backend-restart.sh"
+    echo -e "   Start with: ./scripts/backend-restart.sh"
 fi
 
 echo ""
 echo -e "${YELLOW}Quick Actions:${NC}"
-echo -e "  ${GREEN}Start both:${NC} ./dev.sh"
-echo -e "  ${GREEN}Frontend only:${NC} ./dev-frontend.sh"
-echo -e "  ${GREEN}Restart backend:${NC} ./backend-restart.sh"
-echo -e "  ${GREEN}Stop all:${NC} ./dev.sh stop"
+echo -e "  ${GREEN}Start both:${NC} ./scripts/dev.sh"
+echo -e "  ${GREEN}Frontend only:${NC} ./scripts/dev-frontend.sh"
+echo -e "  ${GREEN}Restart backend:${NC} ./scripts/backend-restart.sh"
+echo -e "  ${GREEN}Stop all:${NC} ./scripts/dev.sh stop"

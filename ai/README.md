@@ -50,9 +50,9 @@ project1/
 │   ├── AI-CONTEXT.md               # Comprehensive AI context
 │   ├── PROJECT-STATUS.md           # Current status
 │   ├── ARCHITECTURE.md             # System architecture
-│   └── COMPONENT-GUIDE.md          # Component usage guide
-├── archive/             # 📦 Original templates (reference only)
-└── CLAUDE.md           # Build commands and instructions
+│   ├── COMPONENT-GUIDE.md          # Component usage guide
+│   └── CLAUDE.md                   # Build commands and instructions
+└── archive/             # 📦 Original templates (reference only)
 ```
 
 ## Development Workflow

@@ -23,8 +23,8 @@ project1/
 ├── frontend-nextjs/        # Next.js app with Shadcn/ui
 ├── backend/               # Spring Boot API
 ├── src/                   # Original Gulp template assets
-├── ai/                    # Documentation
-└── CLAUDE.md             # Development instructions
+└── ai/                    # Documentation
+    └── CLAUDE.md         # Development instructions
 ```
 
 ### 🌐 Access Points

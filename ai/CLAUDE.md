@@ -9,13 +9,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Current status**: `/ai/PROJECT-STATUS.md` - What's completed and working
 - **Architecture**: `/ai/ARCHITECTURE.md` - System design overview
 - **Components**: `/ai/COMPONENT-GUIDE.md` - Shadcn/ui usage patterns
+- Make sure all ai docs are in the ai folder
 
 ## Build and Development Commands
 
 ### 🚀 Quick Start - Development (FAST & RECOMMENDED)
 ```bash
 # Fast development with hot reloading
-./dev.sh
+./scripts/dev.sh
 
 # Frontend: http://localhost:3000 (instant reloads!)
 # Backend: http://localhost:8080/api
@@ -26,7 +27,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### Deploy WITHOUT Stopping Dev Servers (Recommended)
 ```bash
 # Build production while keeping dev servers running
-./deploy.sh
+./scripts/deploy.sh
 
 # Dev servers stay on :3000 and :8080
 # Production JAR created at backend/target/*.jar
@@ -35,7 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### Full Production Build & Run
 ```bash
 # Complete build and run (STOPS dev servers)
-./build.sh
+./scripts/build.sh
 
 # Access at: http://localhost:8080/
 ```
@@ -69,7 +70,7 @@ java -jar target/multi-template-demo-0.0.1-SNAPSHOT.jar
 ```
 
 ### Clean Build Process
-The `build.sh` script handles the complete build process:
+The `scripts/build.sh` script handles the complete build process:
 1. Cleans old builds
 2. Builds Next.js (exports to Spring Boot)
 3. Creates root redirect to Next.js app
@@ -117,8 +118,8 @@ project1/
 ├── backend/                # 🗄️ Spring Boot API
 │   ├── src/main/java/             # Java source
 │   └── src/main/resources/static/ # Deployed frontend
-├── ai/                     # 🤖 AI documentation
-└── CLAUDE.md              # This file - build commands
+└── ai/                     # 🤖 AI documentation
+    └── CLAUDE.md          # This file - build commands
 ```
 
 ### 🔄 Build Process

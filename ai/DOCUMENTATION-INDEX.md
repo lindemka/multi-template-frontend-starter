@@ -9,13 +9,20 @@ This index provides a roadmap to all project documentation, organized by use cas
 ### Essential Reading (Start Here)
 1. **[AI-CONTEXT.md](./AI-CONTEXT.md)** - Complete project context, technology stack, and implementation details
 2. **[PROJECT-STATUS.md](./PROJECT-STATUS.md)** - Current project status, completed features, and next steps
-3. **[/CLAUDE.md](../CLAUDE.md)** - Build commands and immediate development instructions
+3. **[/ai/CLAUDE.md](./CLAUDE.md)** - Build commands and immediate development instructions
 
 ### Implementation Guides
 4. **[COMPONENT-GUIDE.md](./COMPONENT-GUIDE.md)** - Shadcn/ui component usage patterns and examples
 5. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - System architecture and design decisions
 6. **[backend-integration-guide.md](./backend-integration-guide.md)** - Backend integration specifics
 7. **[QUICK-START.md](./QUICK-START.md)** - Development environment setup
+
+### Development Workflow Guides
+8. **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Fast frontend development guide
+9. **[BACKEND-UPDATE-GUIDE.md](./BACKEND-UPDATE-GUIDE.md)** - Backend update without disrupting frontend
+10. **[FAST-DEV-GUIDE.md](./FAST-DEV-GUIDE.md)** - Performance tips for fast iteration
+11. **[SCRIPTS-GUIDE.md](./SCRIPTS-GUIDE.md)** - When to use each development script
+12. **[MCP-SETUP.md](./MCP-SETUP.md)** - Shadcn MCP integration for faster UI development
 
 ## 📁 Documentation Organization
 
@@ -29,16 +36,23 @@ ai/
 ├── ARCHITECTURE.md            # 🏗️ System architecture
 ├── backend-integration-guide.md # 🔌 API integration details
 ├── QUICK-START.md             # ⚡ Setup instructions
+├── CLAUDE.md                  # 🔧 Build commands and quick reference
+├── DEVELOPMENT.md             # 💻 Development guide
+├── BACKEND-UPDATE-GUIDE.md    # 🔄 Backend update workflows
+├── FAST-DEV-GUIDE.md          # ⚡ Fast frontend development
+├── SCRIPTS-GUIDE.md           # 📚 Scripts usage guide
+├── MCP-SETUP.md               # 🔌 Model Context Protocol integration
 └── README.md                  # 📋 AI development guidelines
 ```
 
 ### Root Level Files
 ```
 /
-├── CLAUDE.md                  # 🔧 Build commands and quick reference
+├── ai/                        # 🤖 All AI documentation (this folder)
 ├── README.md                  # 📄 General project README
-├── frontend-nextjs/           # 🚀 Next.js app with Shadcn/ui
+├── frontend/                  # 🚀 Next.js app with Shadcn/ui
 ├── backend/                   # 🗄️ Spring Boot API
+├── scripts/                   # 🛠️ Development scripts
 └── archive/                   # 📦 Legacy templates (reference only)
 ```
 
@@ -50,10 +64,13 @@ ai/
 3. **Architecture**: [ARCHITECTURE.md](./ARCHITECTURE.md) - How it's built
 
 ### For Development Tasks
-1. **Build commands**: [/CLAUDE.md](../CLAUDE.md) - Immediate reference
+1. **Build commands**: [CLAUDE.md](./CLAUDE.md) - Immediate reference
 2. **Component work**: [COMPONENT-GUIDE.md](./COMPONENT-GUIDE.md) - UI patterns
 3. **API integration**: [backend-integration-guide.md](./backend-integration-guide.md) - Backend details
 4. **Setup**: [QUICK-START.md](./QUICK-START.md) - Environment configuration
+5. **Development workflow**: [DEVELOPMENT.md](./DEVELOPMENT.md) - Fast development tips
+6. **Backend updates**: [BACKEND-UPDATE-GUIDE.md](./BACKEND-UPDATE-GUIDE.md) - Update backend safely
+7. **Scripts usage**: [SCRIPTS-GUIDE.md](./SCRIPTS-GUIDE.md) - Which script to use when
 
 ### For Project Planning
 1. **Current status**: [PROJECT-STATUS.md](./PROJECT-STATUS.md) - What's done
@@ -75,7 +92,7 @@ ai/
 - Form handling and data integration
 
 ### Build and Deployment
-**File**: [/CLAUDE.md](../CLAUDE.md#build-and-development-commands)
+**File**: [CLAUDE.md](./CLAUDE.md#build-and-development-commands)
 - Frontend: `npm run build` in `frontend-nextjs/`
 - Backend: `mvn clean package -DskipTests` in `backend/`
 - Testing: API and UI verification commands

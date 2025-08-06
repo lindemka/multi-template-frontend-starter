@@ -16,8 +16,9 @@ project1/
 │   ├── COMPONENT-GUIDE.md      # Component usage and patterns
 │   ├── QUICK-START.md          # Development setup instructions
 │   ├── backend-integration-guide.md # Backend integration specifics
-│   └── README.md               # AI folder overview
-├── CLAUDE.md                   # Build commands and project instructions (root level)
+│   ├── README.md               # AI folder overview
+│   ├── CLAUDE.md               # Build commands and project instructions
+│   └── MCP-SETUP.md            # Model Context Protocol for Shadcn integration
 ├── frontend-nextjs/            # Next.js app with Shadcn/ui
 ├── backend/                    # Spring Boot API
 └── src/                        # Original Gulp template assets
@@ -33,6 +34,7 @@ project1/
 - **Icons**: Lucide React
 - **State Management**: React Query (@tanstack/react-query)
 - **Components**: Radix UI primitives via Shadcn/ui
+- **AI Integration**: Shadcn MCP server for enhanced AI component assistance
 
 ### Backend
 - **Framework**: Spring Boot 3.4.2

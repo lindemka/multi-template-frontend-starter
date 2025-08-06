@@ -4,7 +4,7 @@
 
 ### Option 1: Manual Backend Restart (Recommended)
 ```bash
-./backend-restart.sh
+./scripts/backend-restart.sh
 ```
 - ✅ Frontend keeps running
 - ✅ Backend restarts in ~10 seconds
@@ -12,7 +12,7 @@
 
 ### Option 2: Auto-Restart on Code Changes
 ```bash
-./backend-dev.sh
+./scripts/backend-dev.sh
 ```
 - ✅ Auto-restarts when Java files change
 - ✅ Uses Spring Boot DevTools
@@ -29,13 +29,13 @@ pkill -f "java.*multi-template-demo"
 ### Workflow 1: Backend Code Changes (Manual)
 1. **Keep frontend running** in Terminal 1
 2. **Make backend changes** in your editor
-3. **Run** `./backend-restart.sh` in Terminal 2
+3. **Run** `./scripts/backend-restart.sh` in Terminal 2
 4. **Wait ~10 seconds** for backend to restart
 5. **Continue working** - frontend never stopped!
 
 ### Workflow 2: Backend with Auto-Restart
-1. **Terminal 1**: `./dev-frontend.sh` (frontend only)
-2. **Terminal 2**: `./backend-dev.sh` (backend with auto-restart)
+1. **Terminal 1**: `./scripts/dev-frontend.sh` (frontend only)
+2. **Terminal 2**: `./scripts/backend-dev.sh` (backend with auto-restart)
 3. **Edit Java files** - backend restarts automatically
 4. **Frontend stays running** throughout
 
@@ -69,10 +69,10 @@ cd backend && mvn spring-boot:run
 ### 1. Use Two Terminals
 ```bash
 # Terminal 1 - Frontend (never stop this)
-./dev-frontend.sh
+./scripts/dev-frontend.sh
 
 # Terminal 2 - Backend (restart as needed)
-./backend-restart.sh
+./scripts/backend-restart.sh
 ```
 
 ### 2. Check Backend Status
@@ -109,7 +109,7 @@ DevTools is now added to your project! Benefits:
 To use DevTools effectively:
 ```bash
 # Run backend with DevTools
-./backend-dev.sh
+./scripts/backend-dev.sh
 
 # Or manually:
 cd backend
@@ -123,7 +123,7 @@ mvn spring-boot:run -Dspring-boot.run.fork=false
 # Force kill all Java processes
 pkill -f java
 # Then start fresh
-./backend-restart.sh
+./scripts/backend-restart.sh
 ```
 
 ### Port 8080 already in use?
@@ -145,10 +145,10 @@ Your setup now supports:
 
 ## 🎯 Best Practice Workflow
 
-1. **Morning**: Start both with `./dev.sh`
+1. **Morning**: Start both with `./scripts/dev.sh`
 2. **Frontend work**: Just keep going, hot reload handles it
-3. **Backend change**: Run `./backend-restart.sh` in new terminal
-4. **End of day**: `./dev.sh stop` to clean up
+3. **Backend change**: Run `./scripts/backend-restart.sh` in new terminal
+4. **End of day**: `./scripts/dev.sh stop` to clean up
 
 ---
 

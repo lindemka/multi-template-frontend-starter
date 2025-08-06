@@ -10,9 +10,10 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Get the directory where this script is located
+# Get the project root directory (parent of scripts directory)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$SCRIPT_DIR"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_ROOT"
 
 echo -e "${BLUE}🚀 Starting development environment...${NC}"
 echo ""
@@ -26,7 +27,7 @@ echo -e "  - Dashboard: ${GREEN}http://localhost:3000/dashboard/${NC}"
 echo -e "  - API: ${GREEN}http://localhost:8080/api/users${NC}"
 echo ""
 echo -e "${YELLOW}Commands:${NC}"
-echo -e "  - Stop servers: ${GREEN}./dev.sh stop${NC}"
+echo -e "  - Stop servers: ${GREEN}./scripts/dev.sh stop${NC}"
 echo -e "  - View logs: ${GREEN}tail -f backend/backend.log${NC} or ${GREEN}tail -f frontend/frontend.log${NC}"
 echo ""
 
