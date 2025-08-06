@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Building2, Link, Calendar, Users, Eye, MessageSquare, ThumbsUp, Share2, Send, MoreHorizontal, PencilLine, Plus, ArrowRight, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
+import EditProfileModal from '@/components/profile/EditProfileModal';
 
 export default function ProfilePage() {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
@@ -37,7 +40,7 @@ export default function ProfilePage() {
                   <Button variant="ghost" size="icon" className="mr-2">
                     <MoreHorizontal className="h-5 w-5" />
                   </Button>
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2" onClick={() => setIsEditModalOpen(true)}>
                       <PencilLine className="h-4 w-4" />
                       Edit Profile
                     </Button>
@@ -366,6 +369,12 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      
+      {/* Edit Profile Modal */}
+      <EditProfileModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+      />
     </div>
   );
 }
