@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Check, X } from 'lucide-react';
 
 export default function HotReloadTest() {
-  const [counter, setCounter] = useState(0);
+  const t = useTranslations();
+  const [counter, setCounter] = useState<number>(0);
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
@@ -19,10 +21,10 @@ export default function HotReloadTest() {
   }, []);
 
   const testFeatures = [
-    { name: 'Hot Reload', status: true, description: 'Change this text and save!' },
-    { name: 'State Persistence', status: true, description: 'Counter maintains value' },
-    { name: 'API Proxy', status: apiStatus === 'online', description: 'Backend connection' },
-    { name: 'Fast Refresh', status: true, description: 'No full page reload' },
+    { name: t('test.features.hotReload.name'), status: true, description: t('test.features.hotReload.description') },
+    { name: t('test.features.statePersistence.name'), status: true, description: t('test.features.statePersistence.description') },
+    { name: t('test.features.apiProxy.name'), status: apiStatus === 'online', description: t('test.features.apiProxy.description') },
+    { name: t('test.features.fastRefresh.name'), status: true, description: t('test.features.fastRefresh.description') },
   ];
 
   return (
@@ -32,42 +34,42 @@ export default function HotReloadTest() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="w-6 h-6 text-yellow-500" />
-              Hot Reload Test Page
+              {t('test.title')}
             </CardTitle>
             <CardDescription>
-              Edit this file at: <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">src/app/test/page.tsx</code>
+              {t('test.fileLocation')} <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">src/app/test/page.tsx</code>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Test 1: Text Change */}
             <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold mb-2">🔥 Test Hot Reload</h3>
+              <h3 className="font-semibold mb-2">{t('test.testHotReload')}</h3>
               <p className="text-sm text-gray-600">
-                Change this text in the code and watch it update instantly!
-                Current time: {new Date().toLocaleTimeString()}
+                🚀 HOT RELOAD TEST SUCCESSFUL! Change this text and watch it update instantly!
+                Current time: {Date().toString()}
               </p>
             </div>
 
             {/* Test 2: State Persistence */}
             <div className="p-4 bg-green-50 rounded-lg">
-              <h3 className="font-semibold mb-2">💾 State Persistence Test</h3>
+              <h3 className="font-semibold mb-2">{t('test.statePersistence')}</h3>
               <p className="text-sm text-gray-600 mb-3">
-                Counter should maintain value during hot reload:
+                {t('test.statePersistenceDesc')}
               </p>
               <div className="flex items-center gap-4">
                 <Button onClick={() => setCounter(c => c + 1)}>
-                  Increment
+                  {t('common.increment')}
                 </Button>
                 <span className="text-2xl font-bold">{counter}</span>
                 <Button variant="outline" onClick={() => setCounter(0)}>
-                  Reset
+                  {t('common.reset')}
                 </Button>
               </div>
             </div>
 
             {/* Test 3: Feature Status */}
             <div className="p-4 bg-purple-50 rounded-lg">
-              <h3 className="font-semibold mb-3">✅ Feature Status</h3>
+              <h3 className="font-semibold mb-3">{t('test.featureStatus')}</h3>
               <div className="space-y-2">
                 {testFeatures.map((feature) => (
                   <div key={feature.name} className="flex items-center justify-between">
@@ -82,7 +84,7 @@ export default function HotReloadTest() {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-500">{feature.description}</span>
                       <Badge variant={feature.status ? 'default' : 'secondary'}>
-                        {feature.status ? 'Active' : 'Inactive'}
+                        {feature.status ? t('common.active') : t('common.inactive')}
                       </Badge>
                     </div>
                   </div>
@@ -92,22 +94,22 @@ export default function HotReloadTest() {
 
             {/* Test 4: Last Update */}
             <div className="p-4 bg-yellow-50 rounded-lg">
-              <h3 className="font-semibold mb-2">🕐 Last Hot Reload</h3>
+              <h3 className="font-semibold mb-2">{t('test.lastHotReload')}</h3>
               <p className="text-sm text-gray-600">
-                Page loaded at: {lastUpdate.toLocaleTimeString()}
+                {t('test.pageLoadedAt')} {lastUpdate.toLocaleTimeString()}
               </p>
               <Button 
                 className="mt-2" 
                 variant="outline"
-                onClick={() => setLastUpdate(new Date())}
+                onClick={() => setLastUpdate((() => new Date())())}
               >
-                Update Timestamp
+                {t('test.updateTimestamp')}
               </Button>
             </div>
 
             {/* Instructions */}
             <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold mb-2">📝 How to Test</h3>
+              <h3 className="font-semibold mb-2">{t('test.howToTest')}</h3>
               <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
                 <li>Click &quot;Increment&quot; to increase the counter</li>
                 <li>Edit any text in this file and save</li>

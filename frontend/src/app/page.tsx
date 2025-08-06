@@ -66,18 +66,17 @@ export default function LandingPage() {
                 </div>
                 <CardTitle>{t('navigation.home')}</CardTitle>
                 <CardDescription>
-                  Start here to explore our modern web application
+                  {t('home.cards.home.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600">
-                  Welcome to your dashboard! This is the main landing page.
-                  Explore our modern Next.js application with hot reload enabled.
+                  {t('home.cards.home.content')}
                 </p>
               </CardContent>
               <CardFooter>
                 <span className="text-sm text-blue-600 hover:underline">
-                  You are here →
+                  {t('home.youAreHere')}
                 </span>
               </CardFooter>
             </Card>
@@ -91,13 +90,12 @@ export default function LandingPage() {
                 </div>
                 <CardTitle>{t('dashboard.title')}</CardTitle>
                 <CardDescription>
-                  Manage users and explore the admin interface
+                  {t('home.cards.dashboard.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600">
-                  Manage users with our modern dashboard featuring Shadcn/ui tables,
-                  advanced filtering, and live data from Spring Boot API.
+                  {t('home.cards.dashboard.content')}
                 </p>
               </CardContent>
               <CardFooter>
@@ -116,18 +114,17 @@ export default function LandingPage() {
                 </div>
                 <CardTitle>{t('navigation.test')}</CardTitle>
                 <CardDescription>
-                  Test the development environment and hot reload features
+                  {t('home.cards.test.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600">
-                  Interactive test page to verify hot reload, state persistence,
-                  and API connectivity. Perfect for development testing.
+                  {t('home.cards.test.content')}
                 </p>
               </CardContent>
               <CardFooter>
                 <span className="text-sm text-purple-600 hover:underline">
-                  Test Features →
+                  {t('home.testFeatures')}
                 </span>
               </CardFooter>
             </Card>
@@ -136,7 +133,7 @@ export default function LandingPage() {
 
         {/* Footer */}
         <p className="text-center text-sm text-gray-500">
-          Built with ❤️ using Next.js, Tailwind CSS, and Shadcn/ui
+          {t('home.footer')}
         </p>
       </div>
     </div>

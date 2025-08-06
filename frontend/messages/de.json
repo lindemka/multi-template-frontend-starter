@@ -15,7 +15,22 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "close": "Schließen",
-    "actions": "Aktionen"
+    "actions": "Aktionen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "refresh": "Aktualisieren",
+    "increment": "Erhöhen",
+    "reset": "Zurücksetzen",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "pending": "Ausstehend",
+    "never": "Nie",
+    "just_now": "Gerade eben",
+    "yesterday": "Gestern",
+    "hours_ago": "vor {hours}h",
+    "days_ago": "vor {days}d",
+    "weeks_ago": "vor {weeks}w",
+    "invalid_date": "Ungültiges Datum"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -23,19 +38,98 @@
     "totalUsers": "Benutzer gesamt",
     "activeUsers": "Aktive Benutzer",
     "newUsers": "Neue Benutzer",
+    "userManagement": "Benutzerverwaltung",
+    "userManagementDesc": "Benutzerkonten, Rollen und Berechtigungen verwalten.",
+    "searchUsers": "Benutzer suchen...",
+    "addUser": "Benutzer hinzufügen",
+    "addFirstUser": "Ersten Benutzer hinzufügen",
+    "noUsersFound": "Keine Benutzer gefunden",
+    "showingUsers": "{count} Benutzer angezeigt",
+    "backToHome": "Zurück zur Startseite",
+    "signOut": "Abmelden",
     "userTable": {
       "name": "Name",
       "email": "E-Mail",
       "status": "Status",
+      "role": "Rolle",
+      "user": "Benutzer",
+      "lastLogin": "Letzter Login",
       "joinedDate": "Beitrittsdatum",
       "active": "Aktiv",
       "inactive": "Inaktiv"
+    },
+    "errors": {
+      "loadingUsers": "Fehler beim Laden der Benutzer:",
+      "apiConnection": "Verbindung zur API fehlgeschlagen. Stellen Sie sicher, dass der Spring Boot Server auf Port 8080 läuft."
+    },
+    "actions": {
+      "editUser": "Benutzer {id} bearbeiten - Dies würde einen Bearbeitungsdialog in einer echten Anwendung öffnen",
+      "deleteUserConfirm": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten?",
+      "deleteUser": "Benutzer {id} löschen - Dies würde eine DELETE-Anfrage in einer echten Anwendung senden"
     }
   },
   "home": {
     "title": "Willkommen bei fbase",
     "subtitle": "Eine moderne Full-Stack-Anwendung mit Next.js und Spring Boot",
     "getStarted": "Loslegen",
-    "learnMore": "Mehr erfahren"
+    "learnMore": "Mehr erfahren",
+    "youAreHere": "Sie sind hier →",
+    "testFeatures": "Features testen →",
+    "footer": "Erstellt mit ❤️ unter Verwendung von Next.js, Tailwind CSS und Shadcn/ui",
+    "cards": {
+      "home": {
+        "title": "Startseite",
+        "description": "Beginnen Sie hier, um unsere moderne Webanwendung zu erkunden",
+        "content": "Willkommen zu Ihrem Dashboard! Dies ist die Hauptseite. Erkunden Sie unsere moderne Next.js-Anwendung mit Hot-Reload-Funktionalität."
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Benutzer verwalten und die Admin-Oberfläche erkunden",
+        "content": "Verwalten Sie Benutzer mit unserem modernen Dashboard mit Shadcn/ui-Tabellen, erweiterten Filtern und Live-Daten von der Spring Boot API."
+      },
+      "test": {
+        "title": "Test",
+        "description": "Die Entwicklungsumgebung und Hot-Reload-Features testen",
+        "content": "Interaktive Testseite zur Überprüfung von Hot-Reload, Zustandspersistenz und API-Konnektivität. Perfekt für Entwicklungstests."
+      }
+    }
+  },
+  "test": {
+    "title": "Hot-Reload-Testseite",
+    "fileLocation": "Bearbeiten Sie diese Datei unter:",
+    "testHotReload": "🔥 Hot-Reload testen",
+    "testHotReloadDesc": "Ändern Sie diesen Text im Code und sehen Sie zu, wie er sofort aktualisiert wird!",
+    "currentTime": "Aktuelle Zeit:",
+    "statePersistence": "💾 Zustandspersistenz-Test",
+    "statePersistenceDesc": "Der Zähler sollte seinen Wert während des Hot-Reloads beibehalten:",
+    "featureStatus": "✅ Feature-Status",
+    "lastHotReload": "🕐 Letztes Hot-Reload",
+    "pageLoadedAt": "Seite geladen um:",
+    "updateTimestamp": "Zeitstempel aktualisieren",
+    "howToTest": "📝 Wie testen",
+    "testInstructions": [
+      "Klicken Sie auf \"Erhöhen\", um den Zähler zu erhöhen",
+      "Bearbeiten Sie einen beliebigen Text in dieser Datei und speichern Sie",
+      "Beobachten Sie, wie die Seite aktualisiert wird, ohne den Zählerstatus zu verlieren",
+      "Keine Browser-Aktualisierung erforderlich!"
+    ],
+    "features": {
+      "hotReload": {
+        "name": "Hot-Reload",
+        "description": "Ändern Sie diesen Text und speichern Sie!"
+      },
+      "statePersistence": {
+        "name": "Zustandspersistenz",
+        "description": "Zähler behält Wert bei"
+      },
+      "apiProxy": {
+        "name": "API-Proxy",
+        "description": "Backend-Verbindung"
+      },
+      "fastRefresh": {
+        "name": "Fast-Refresh",
+        "description": "Kein vollständiges Neuladen der Seite"
+      }
+    }
   }
 }
