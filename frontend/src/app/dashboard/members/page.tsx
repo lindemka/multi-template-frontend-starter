@@ -22,7 +22,9 @@ import {
   Lightbulb,
   MessageCircle,
   MoreHorizontal,
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -38,6 +40,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import FiltersModal from '@/components/members/FiltersModal';
 import { userApi } from '@/lib/api';
 import { User } from '@/types/api';
@@ -379,6 +388,8 @@ export default function MembersPage() {
   const [members, setMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filters, setFilters] = useState({
     goals: [],
     interests: [],
@@ -470,6 +481,28 @@ export default function MembersPage() {
     
     return matchesSearch && matchesGoals && matchesInterests && matchesSkills && matchesLocation;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedMembers = filteredMembers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll to top of table
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(parseInt(value));
+    setCurrentPage(1);
+  };
 
   const handleViewProfile = (memberId: number) => {
     router.push(`/dashboard/profile/${memberId}`);
@@ -639,14 +672,14 @@ export default function MembersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredMembers.length === 0 ? (
+              {paginatedMembers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
                     No members found
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredMembers.map((member) => (
+                paginatedMembers.map((member) => (
               <TableRow key={member.id}>
                 {/* Member Info */}
                 <TableCell>
@@ -746,6 +779,116 @@ export default function MembersPage() {
           </Table>
         )}
       </Card>
+
+      {/* Pagination Controls */}
+      {filteredMembers.length > 0 && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-muted-foreground">
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredMembers.length)} of {filteredMembers.length} results
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Show</span>
+              <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">per page</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+
+            {/* Page Numbers */}
+            <div className="flex gap-1">
+              {/* First page */}
+              {currentPage > 3 && (
+                <>
+                  <Button
+                    variant={currentPage === 1 ? "default" : "outline"}
+                    size="sm"
+                    className="w-10"
+                    onClick={() => handlePageChange(1)}
+                  >
+                    1
+                  </Button>
+                  {currentPage > 4 && <span className="px-2 py-1 text-sm">...</span>}
+                </>
+              )}
+
+              {/* Pages around current */}
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                if (pageNum > 0 && pageNum <= totalPages && (totalPages <= 5 || Math.abs(pageNum - currentPage) <= 2)) {
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      className="w-10"
+                      onClick={() => handlePageChange(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                }
+                return null;
+              })}
+
+              {/* Last page */}
+              {currentPage < totalPages - 2 && totalPages > 5 && (
+                <>
+                  {currentPage < totalPages - 3 && <span className="px-2 py-1 text-sm">...</span>}
+                  <Button
+                    variant={currentPage === totalPages ? "default" : "outline"}
+                    size="sm"
+                    className="w-10"
+                    onClick={() => handlePageChange(totalPages)}
+                  >
+                    {totalPages}
+                  </Button>
+                </>
+              )}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Filters Modal */}
       <FiltersModal
