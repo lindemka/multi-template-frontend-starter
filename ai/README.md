@@ -1,77 +1,127 @@
-# Multi-Template Frontend Starter
+# Multi-Template Frontend with Shadcn/ui Integration
 
-A production-ready frontend starter with two isolated template systems.
+A production-ready frontend system integrating modern Shadcn/ui components with Spring Boot backend.
 
-## Templates
+## 🎯 Architecture Overview
 
-### Dashboard Template
-- **Purpose**: Admin panels, dashboards, management interfaces
-- **Structure**: Sidebar + header + main content
-- **Key Classes**: `has-navbar-vertical-aside navbar-vertical-aside-show-xl footer-offset`
-- **Assets**: `./assets/dashboard/`
-- **Required JS**: `hs-navbar-vertical-aside.min.js` for sidebar functionality
+### Next.js Frontend (Primary)
+- **Framework**: Next.js 15 with App Router and TypeScript
+- **UI Library**: Shadcn/ui components with Tailwind CSS v4
+- **Purpose**: Modern dashboard with user management, responsive design
+- **Key Features**: React Query integration, mobile-first responsive layout
+- **Deployment**: Static export to Spring Boot resources
 
-### Multipurpose Template
-- **Purpose**: Landing pages, marketing sites, public-facing pages
-- **Structure**: Header + main content (no sidebar)
-- **Key Classes**: `navbar navbar-expand-lg navbar-end navbar-absolute-top`
-- **Assets**: `./assets/multipurpose/`
+### Spring Boot Backend
+- **Framework**: Spring Boot 3.4.2 with Java 21
+- **Database**: H2 in-memory database
+- **API**: RESTful user management endpoints
+- **Integration**: Serves Next.js frontend and provides API data
+
+### Legacy Template System (Archive)
+- **Dashboard Template**: Original admin interface (archived)
+- **Multipurpose Template**: Original marketing pages (archived)
+- **Status**: Maintained for reference, replaced by Shadcn/ui implementation
 
 ## Project Structure
 
 ```
 project1/
-├── src/
-│   ├── pages/           # HTML pages
-│   │   ├── index.html              # Home (multipurpose)
-│   │   ├── dashboard.html          # Dashboard template
-│   │   └── multipurpose.html       # Multipurpose template
-│   ├── scss/           # Custom styles
-│   ├── js/             # Custom scripts
-│   └── assets/         # Pre-built template assets
-│       ├── dashboard/  # Dashboard CSS/JS/vendor
-│       └── multipurpose/ # Multipurpose CSS/JS/vendor
-├── dist/               # Built files (gitignored)
-├── archive/            # Original templates (gitignored)
-└── ai/                # Documentation
+├── frontend-nextjs/     # 🚀 Primary Next.js app with Shadcn/ui
+│   ├── src/
+│   │   ├── app/                    # Next.js App Router pages
+│   │   ├── components/             # React components
+│   │   │   ├── ui/                 # Shadcn/ui components
+│   │   │   ├── dashboard/          # Dashboard-specific components
+│   │   │   └── layouts/            # Layout components
+│   │   ├── lib/                    # Utilities and API functions
+│   │   ├── types/                  # TypeScript definitions
+│   │   └── providers/              # React context providers
+│   ├── components.json             # Shadcn/ui configuration
+│   └── next.config.ts              # Next.js configuration
+├── backend/             # 🗄️ Spring Boot API server
+│   ├── src/main/
+│   │   ├── java/                   # Java source code
+│   │   └── resources/
+│   │       └── static/             # Deployed frontend files
+│   │           ├── nextjs/         # Next.js build output
+│   │           └── assets/         # Legacy template assets
+│   └── pom.xml                     # Maven configuration
+├── ai/                  # 🤖 AI documentation (all AI docs here)
+│   ├── AI-CONTEXT.md               # Comprehensive AI context
+│   ├── PROJECT-STATUS.md           # Current status
+│   ├── ARCHITECTURE.md             # System architecture
+│   └── COMPONENT-GUIDE.md          # Component usage guide
+├── archive/             # 📦 Original templates (reference only)
+└── CLAUDE.md           # Build commands and instructions
 ```
 
-## Development
+## Development Workflow
 
 ```bash
-npm install        # Install dependencies
-npm run dev        # Start dev server (localhost:3000)
-npm run build      # Production build
-npm run clean      # Clean dist directory
+# Frontend Development (Next.js with Shadcn/ui)
+cd frontend-nextjs
+npm install
+npm run dev              # http://localhost:3000
+
+# Backend Development (Spring Boot)
+cd backend
+mvn spring-boot:run      # http://localhost:8080
+
+# Production Build & Deploy
+cd frontend-nextjs
+npm run build            # Exports to backend/src/main/resources/static/nextjs/
+cd ../backend
+mvn clean package -DskipTests
+java -jar target/*.jar   # Serves both frontend and API
 ```
 
-## Build System
+## Access Points
 
-- **Gulp** with file-include for HTML templating
-- **SCSS** compilation with autoprefixer
-- **JavaScript** bundling and minification
-- **BrowserSync** for hot reload
-- **Asset optimization** in production
+- **Dashboard**: http://localhost:8080/nextjs/dashboard/
+- **API**: http://localhost:8080/api/users
+- **H2 Console**: http://localhost:8080/h2-console
 
 ## Testing
 
 ```bash
-# Verify pages load
-curl -s http://localhost:3000/ | grep -c "Multi-Template Project"
-curl -s http://localhost:3000/dashboard.html | grep -c "Dashboard Template"
-curl -s http://localhost:3000/multipurpose.html | grep -c "Multipurpose Template"
+# Verify Shadcn UI deployment
+curl -s http://localhost:8080/nextjs/dashboard/ | grep -c "min-h-screen bg-background"
 
-# Verify assets (200 OK expected)
-curl -I http://localhost:3000/assets/dashboard/css/theme.min.css
-curl -I http://localhost:3000/assets/multipurpose/css/theme.min.css
+# Verify API functionality
+curl -s http://localhost:8080/api/users | jq 'length'
+
+# Check component loading
+curl -I http://localhost:8080/nextjs/_next/static/css/
 ```
 
-## Critical Rules
+## AI Development Guidelines
 
-1. **Never mix template assets** - each template uses isolated CSS/JS
-2. **Use correct file extensions** - `.min.css` and `.min.js` for production assets
-3. **Maintain asset paths** - `./assets/dashboard/` vs `./assets/multipurpose/`
-4. **Test both templates** after any modifications
-5. **ALWAYS use existing designs from archived templates** - Reference `archive/template-front-dashboard/` and `archive/template-front-multipurpose/` for all UI components, layouts, and styling patterns. Never create new designs from scratch.
-6. **Check COMPONENT-GUIDE.md first** - Use `ai/COMPONENT-GUIDE.md` to quickly find the right component for your needs.
-7. **ALWAYS rebuild after file renames** - Run `npm run build` to clean dist folder and ensure no stale files remain.
+### 📚 Documentation First
+1. **Reference AI-CONTEXT.md** - Start here for comprehensive project understanding
+2. **Check PROJECT-STATUS.md** - Understand current implementation status
+3. **Use COMPONENT-GUIDE.md** - Find existing Shadcn/ui component patterns
+4. **ALL AI docs go in `/ai/` folder** - Never place AI documentation elsewhere
+
+### 🎨 UI Development Rules  
+1. **Use Shadcn/ui components** - Modern, accessible, well-documented components
+2. **Follow existing patterns** - Reference implemented components in `frontend-nextjs/src/components/`
+3. **Maintain responsiveness** - Mobile-first design with desktop enhancements
+4. **Test integration** - Ensure components work with React Query and API data
+
+### 🔄 Build & Deploy Process
+1. **Frontend changes**: Build with `npm run build` in `frontend-nextjs/`
+2. **Backend integration**: Rebuild JAR with `mvn clean package -DskipTests`
+3. **Test deployment**: Verify at `http://localhost:8080/nextjs/dashboard/`
+4. **API validation**: Confirm data loading from Spring Boot endpoints
+
+### 🎯 Key Implementation Areas
+- **User Management**: Table with CRUD operations, filtering, sorting
+- **Dashboard Layout**: Responsive sidebar, mobile drawer, header navigation  
+- **Component Library**: Consistent Shadcn/ui usage across all features
+- **API Integration**: React Query for data fetching, error handling, loading states
+
+### 🚨 Critical Notes
+- **Tailwind v4**: Use Shadcn canary version for compatibility
+- **Static Export**: Next.js builds to Spring Boot static directory
+- **Asset Paths**: Use `/nextjs/` base path for all frontend assets
+- **Database**: H2 in-memory, data resets on server restart

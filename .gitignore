@@ -7,8 +7,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build outputs
-dist/
+# Build outputs  
 build/
 *.tgz
 *.tar.gz
@@ -116,7 +115,6 @@ temp/
 **/node_modules/
 
 # Build artifacts
-**/dist/
 **/build/
 
 # Archive and backup files
@@ -174,5 +172,18 @@ local.properties
 
 # Project specific
 .claude/
-CLAUDE.md
-vendor-usage.txt 
+
+# Keep CLAUDE.md and ai/ folder in the repository
+# CLAUDE.md
+# ai/
+
+# Next.js export output (deployed to Spring Boot)
+backend/src/main/resources/static/nextjs/
+
+# Multiple lockfiles warning fix
+frontend/package-lock.json
+
+# Server logs
+backend/server.log
+backend/backend.log
+frontend/frontend.log 
