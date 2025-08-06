@@ -361,7 +361,7 @@ export default function UserProfilePage() {
                   </TabsList>
 
                   <TabsContent value="posts" className="space-y-4 mt-4">
-                    {mockExtendedData.activities.map((activity) => (
+                    {mockExtendedProfiles.activities.map((activity) => (
                       <Card key={activity.id}>
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
@@ -423,13 +423,13 @@ export default function UserProfilePage() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-semibold mb-2">In short</h3>
-                    <p className="text-gray-600">{mockExtendedData.about.short}</p>
+                    <p className="text-gray-600">{profileData.about?.short || 'No description available'}</p>
                   </div>
 
                   <div>
                     <h3 className="font-semibold mb-2">Industries</h3>
                     <div className="flex flex-wrap gap-2">
-                      {mockExtendedData.about.industries.map((industry, i) => (
+                      {(profileData.about?.industries || profileData.interests || []).slice(0, 4).map((industry, i) => (
                         <Badge key={i} variant="secondary">{industry}</Badge>
                       ))}
                     </div>
@@ -437,18 +437,18 @@ export default function UserProfilePage() {
 
                   <div>
                     <h3 className="font-semibold mb-2">Looking for</h3>
-                    <p className="text-gray-600">{mockExtendedData.about.lookingFor}</p>
+                    <p className="text-gray-600">{profileData.about?.lookingFor || 'Open to opportunities'}</p>
                   </div>
 
                   <div>
                     <h3 className="font-semibold mb-2">Offering</h3>
-                    <p className="text-gray-600">{mockExtendedData.about.offering}</p>
+                    <p className="text-gray-600">{profileData.about?.offering || 'Skills and expertise'}</p>
                   </div>
 
                   <div>
                     <h3 className="font-semibold mb-2">Languages</h3>
                     <div className="flex gap-2">
-                      {mockExtendedData.about.languages.map((lang, i) => (
+                      {(profileData.about?.languages || ['English']).map((lang, i) => (
                         <Badge key={i} variant="secondary">{lang}</Badge>
                       ))}
                     </div>
@@ -467,7 +467,7 @@ export default function UserProfilePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockExtendedData.peopleViewed.map((person, index) => (
+                  {mockExtendedProfiles.peopleViewed.map((person, index) => (
                     <div key={index} className="space-y-3">
                       <div className="flex items-start gap-3">
                         <Avatar className="h-12 w-12">
@@ -488,7 +488,7 @@ export default function UserProfilePage() {
                           </Button>
                         </div>
                       </div>
-                      {index < mockExtendedData.peopleViewed.length - 1 && <div className="border-t pt-3" />}
+                      {index < mockExtendedProfiles.peopleViewed.length - 1 && <div className="border-t pt-3" />}
                     </div>
                   ))}
                 </div>
@@ -502,7 +502,7 @@ export default function UserProfilePage() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {mockExtendedData.skills.map((skill, i) => (
+                  {(profileData.skills || []).map((skill, i) => (
                     <Badge key={i} variant="secondary">{skill}</Badge>
                   ))}
                 </div>
@@ -516,7 +516,7 @@ export default function UserProfilePage() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {mockExtendedData.interests.map((interest, i) => (
+                  {(profileData.interests || []).map((interest, i) => (
                     <Badge key={i} variant="outline" className="text-xs">
                       {interest}
                     </Badge>
