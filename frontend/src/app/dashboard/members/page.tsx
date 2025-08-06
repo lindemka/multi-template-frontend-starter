@@ -46,94 +46,328 @@ import { User } from '@/types/api';
 const mockFoundersData = [
   {
     id: 1,
-    name: "Ahmed",
+    name: "Ahmed Salman",
     location: "New York City, US",
     avatar: "/api/placeholder/40/40",
-    followers: 3,
-    rating: 4,
+    followers: 342,
+    rating: 4.5,
     goals: ["Join a team", "Support startups"],
-    interests: ["Advertising & Marketing", "AI & Machine Learning"],
-    skills: [],
+    interests: ["Advertising & Marketing", "AI & Machine Learning", "Software & SaaS"],
+    skills: ["Marketing Manager", "Growth Manager", "Data Scientist"],
     assets: null,
     status: null
   },
   {
     id: 2,
-    name: "Andy",
-    location: "Dallas, US",
+    name: "Andy Mitchell",
+    location: "San Francisco, US",
     avatar: "/api/placeholder/40/40",
-    followers: 2,
+    followers: 1289,
     rating: 5,
     goals: ["Build up a team", "Find investors", "Need support"],
-    interests: ["Tourism & Hospitality", "Marketing & Sales", "Business Developer", "Growth & Venture Relations", "Sales Manager"],
-    skills: [],
-    assets: { type: "Startup", label: "Startup" },
+    interests: ["Tourism & Hospitality", "Marketing & Sales", "Business Developer", "Growth & Venture Relations"],
+    skills: ["Business Developer", "Sales Manager"],
+    assets: { type: "Startup", label: "TravelTech Inc." },
     status: "Open Jobs"
   },
   {
     id: 3,
-    name: "Kinne",
-    location: "Cambridge, US",
+    name: "Kinne Zhang",
+    location: "London, UK",
     avatar: "/api/placeholder/40/40",
-    followers: 6,
-    rating: 5,
-    goals: ["Build up a team", "Find investors", "Need support"],
-    interests: ["Advertising & Marketing", "Architecture & Construction"],
-    skills: [],
-    assets: { type: "Startup", label: "Startup" },
-    status: null
+    followers: 567,
+    rating: 4.8,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["Advertising & Marketing", "Architecture & Construction", "AI & Machine Learning"],
+    skills: ["Product Manager", "Designer (UX/UI)"],
+    assets: { type: "Startup", label: "BuildSmart AI" },
+    status: "Funded Series A"
   },
   {
     id: 4,
-    name: "Brent",
-    location: "Kansas City, US",
+    name: "Brent Thompson",
+    location: "Berlin, Germany",
     avatar: "/api/placeholder/40/40",
-    followers: 4,
+    followers: 423,
     rating: 4.5,
-    goals: ["Build up a team", "Join a team", "Support startups"],
-    interests: ["AI & Machine Learning", "Healthcare & Medical Devices"],
-    skills: [],
+    goals: ["Join a team", "Support startups"],
+    interests: ["AI & Machine Learning", "Healthcare & Medical Devices", "Biotech & Pharmaceuticals"],
+    skills: ["Developer (Backend)", "Software Engineer", "Data Scientist"],
     assets: null,
     status: null
   },
   {
     id: 5,
-    name: "Theresa",
-    location: "San Diego, US",
+    name: "Theresa Chen",
+    location: "Toronto, Canada",
     avatar: "/api/placeholder/40/40",
-    followers: 3,
-    rating: 4.5,
-    goals: ["Build up a team", "Find investors", "Need support"],
-    interests: ["AI & Machine Learning", "Human-Machine Interaction & UX Design", "Tech", "Product & Design", "Developer (Frontend)", "Developer (Backend)", "Software Engineer"],
-    skills: [],
-    assets: null,
-    status: null
+    followers: 892,
+    rating: 4.9,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["AI & Machine Learning", "Human-Machine Interaction & UX Design", "Tech", "Product & Design"],
+    skills: ["Developer (Frontend)", "Developer (Backend)", "Software Engineer", "Designer (UX/UI)"],
+    assets: { type: "Startup", label: "DesignAI Labs" },
+    status: "Hiring Engineers"
   },
   {
     id: 6,
-    name: "Alex",
-    location: "Boston, US",
+    name: "Alex Rodriguez",
+    location: "Paris, France",
     avatar: "/api/placeholder/40/40",
-    followers: 10,
+    followers: 1023,
     rating: 5,
-    goals: ["Build up a team"],
-    interests: ["Food & Beverage", "Recruiting & Human Resources"],
-    skills: [],
-    assets: null,
-    status: null
+    goals: ["Invest"],
+    interests: ["Food & Beverage", "Recruiting & Human Resources", "Social Impact & Community Development"],
+    skills: ["Business Developer", "Growth Manager"],
+    assets: { type: "VC Fund", label: "Emerge Ventures" },
+    status: "Accepting Pitches"
   },
   {
     id: 7,
     name: "Rohith Reddy",
-    location: "San Jose, US",
+    location: "Singapore",
     avatar: "/api/placeholder/40/40",
-    followers: 5,
-    rating: 4,
-    goals: ["Build up a team"],
-    interests: ["AI & Machine Learning", "Consumer Hardware & Electronics"],
-    skills: [],
+    followers: 645,
+    rating: 4.7,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["AI & Machine Learning", "Consumer Hardware & Electronics", "Space Technology & Exploration"],
+    skills: ["Software Engineer", "Developer (Backend)", "Product Manager"],
     assets: null,
     status: null
+  },
+  {
+    id: 8,
+    name: "Sarah Kim",
+    location: "Sydney, Australia",
+    avatar: "/api/placeholder/40/40",
+    followers: 234,
+    rating: 4.3,
+    goals: ["Join a team"],
+    interests: ["Healthcare & Medical Devices", "Biotech & Pharmaceuticals", "AI & Machine Learning"],
+    skills: ["Data Scientist", "Developer (Backend)"],
+    assets: null,
+    status: "Looking for Opportunities"
+  },
+  {
+    id: 9,
+    name: "Marcus Johnson",
+    location: "Remote",
+    avatar: "/api/placeholder/40/40",
+    followers: 1567,
+    rating: 4.9,
+    goals: ["Support startups", "Invest"],
+    interests: ["Software & SaaS", "AI & Machine Learning", "Tech"],
+    skills: ["Software Engineer", "Developer (Frontend)", "Developer (Backend)"],
+    assets: { type: "Angel Investor", label: "50+ Portfolio Companies" },
+    status: null
+  },
+  {
+    id: 10,
+    name: "Lisa Wang",
+    location: "Dallas, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 445,
+    rating: 4.6,
+    goals: ["Build up a team", "Need support"],
+    interests: ["Marketing & Sales", "Growth & Venture Relations", "Social Impact & Community Development"],
+    skills: ["Marketing Manager", "Sales Manager", "Growth Manager"],
+    assets: { type: "Startup", label: "SocialGood Platform" },
+    status: "Pre-Seed"
+  },
+  {
+    id: 11,
+    name: "David Park",
+    location: "Boston, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 789,
+    rating: 4.8,
+    goals: ["Find investors", "Build up a team"],
+    interests: ["Space Technology & Exploration", "AI & Machine Learning", "Consumer Hardware & Electronics"],
+    skills: ["Software Engineer", "Product Manager"],
+    assets: { type: "Startup", label: "SpaceTech Solutions" },
+    status: "Seeking $2M Seed"
+  },
+  {
+    id: 12,
+    name: "Emma Wilson",
+    location: "Los Angeles, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 923,
+    rating: 5,
+    goals: ["Join a team", "Support startups"],
+    interests: ["Human-Machine Interaction & UX Design", "Product & Design", "Tech"],
+    skills: ["Designer (UX/UI)", "Product Manager", "Marketing Manager"],
+    assets: null,
+    status: null
+  },
+  {
+    id: 13,
+    name: "James Liu",
+    location: "Vancouver, Canada",
+    avatar: "/api/placeholder/40/40",
+    followers: 156,
+    rating: 4.2,
+    goals: ["Join a team"],
+    interests: ["Developer (Frontend)", "Developer (Backend)", "Software & SaaS"],
+    skills: ["Developer (Frontend)", "Developer (Backend)", "Software Engineer"],
+    assets: null,
+    status: "Open to Work"
+  },
+  {
+    id: 14,
+    name: "Sophia Martinez",
+    location: "Miami, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 2341,
+    rating: 4.9,
+    goals: ["Invest", "Support startups"],
+    interests: ["Tourism & Hospitality", "Food & Beverage", "Marketing & Sales"],
+    skills: ["Business Developer", "Sales Manager"],
+    assets: { type: "VC Fund", label: "Hospitality Ventures" },
+    status: null
+  },
+  {
+    id: 15,
+    name: "Oliver Brown",
+    location: "Chicago, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 567,
+    rating: 4.5,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["Safety & Security Solutions", "AI & Machine Learning", "Software & SaaS"],
+    skills: ["Software Engineer", "Developer (Backend)", "Data Scientist"],
+    assets: { type: "Startup", label: "SecureAI" },
+    status: "Series A Ready"
+  },
+  {
+    id: 16,
+    name: "Nina Patel",
+    location: "Austin, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 432,
+    rating: 4.7,
+    goals: ["Join a team", "Build up a team"],
+    interests: ["Biotech & Pharmaceuticals", "Healthcare & Medical Devices"],
+    skills: ["Data Scientist", "Product Manager"],
+    assets: null,
+    status: null
+  },
+  {
+    id: 17,
+    name: "Carlos Rivera",
+    location: "Mexico City, Mexico",
+    avatar: "/api/placeholder/40/40",
+    followers: 876,
+    rating: 4.8,
+    goals: ["Build up a team", "Need support"],
+    interests: ["Food & Beverage", "Tourism & Hospitality", "Social Impact & Community Development"],
+    skills: ["Business Developer", "Marketing Manager"],
+    assets: { type: "Startup", label: "LocalEats" },
+    status: "Bootstrapped"
+  },
+  {
+    id: 18,
+    name: "Anna Schmidt",
+    location: "Berlin, Germany",
+    avatar: "/api/placeholder/40/40",
+    followers: 1234,
+    rating: 5,
+    goals: ["Support startups", "Invest"],
+    interests: ["Tech", "AI & Machine Learning", "Software & SaaS"],
+    skills: ["Software Engineer", "Growth Manager"],
+    assets: { type: "Accelerator", label: "TechStars Berlin" },
+    status: null
+  },
+  {
+    id: 19,
+    name: "Robert Taylor",
+    location: "Seattle, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 345,
+    rating: 4.4,
+    goals: ["Join a team"],
+    interests: ["Software & SaaS", "Developer (Backend)", "Tech"],
+    skills: ["Developer (Backend)", "Software Engineer", "Data Scientist"],
+    assets: null,
+    status: "Exploring Opportunities"
+  },
+  {
+    id: 20,
+    name: "Maya Johnson",
+    location: "Atlanta, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 678,
+    rating: 4.6,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["Social Impact & Community Development", "Human-Machine Interaction & UX Design"],
+    skills: ["Designer (UX/UI)", "Product Manager", "Marketing Manager"],
+    assets: { type: "Startup", label: "ImpactHub" },
+    status: "Raising Seed"
+  },
+  {
+    id: 21,
+    name: "Thomas Anderson",
+    location: "Remote",
+    avatar: "/api/placeholder/40/40",
+    followers: 2890,
+    rating: 4.9,
+    goals: ["Support startups"],
+    interests: ["AI & Machine Learning", "Software & SaaS", "Tech"],
+    skills: ["Software Engineer", "Developer (Frontend)", "Developer (Backend)"],
+    assets: { type: "Consultant", label: "Tech Advisory" },
+    status: null
+  },
+  {
+    id: 22,
+    name: "Isabella Garcia",
+    location: "Barcelona, Spain",
+    avatar: "/api/placeholder/40/40",
+    followers: 556,
+    rating: 4.7,
+    goals: ["Build up a team", "Need support"],
+    interests: ["Tourism & Hospitality", "Marketing & Sales", "Product & Design"],
+    skills: ["Marketing Manager", "Designer (UX/UI)", "Growth Manager"],
+    assets: { type: "Startup", label: "TravelConnect" },
+    status: "MVP Launched"
+  },
+  {
+    id: 23,
+    name: "Kevin Wu",
+    location: "Tokyo, Japan",
+    avatar: "/api/placeholder/40/40",
+    followers: 423,
+    rating: 4.5,
+    goals: ["Join a team", "Support startups"],
+    interests: ["Consumer Hardware & Electronics", "AI & Machine Learning", "Space Technology & Exploration"],
+    skills: ["Software Engineer", "Product Manager"],
+    assets: null,
+    status: null
+  },
+  {
+    id: 24,
+    name: "Rachel Green",
+    location: "Denver, US",
+    avatar: "/api/placeholder/40/40",
+    followers: 890,
+    rating: 4.8,
+    goals: ["Invest"],
+    interests: ["Healthcare & Medical Devices", "Biotech & Pharmaceuticals", "AI & Machine Learning"],
+    skills: ["Business Developer", "Data Scientist"],
+    assets: { type: "VC Fund", label: "HealthTech Capital" },
+    status: "Active Investing"
+  },
+  {
+    id: 25,
+    name: "Mohamed Ali",
+    location: "Dubai, UAE",
+    avatar: "/api/placeholder/40/40",
+    followers: 1456,
+    rating: 4.9,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["Architecture & Construction", "AI & Machine Learning", "Safety & Security Solutions"],
+    skills: ["Product Manager", "Business Developer"],
+    assets: { type: "Startup", label: "SmartBuild MENA" },
+    status: "Series B"
   }
 ];
 
@@ -163,24 +397,36 @@ export default function MembersPage() {
       setLoading(true);
       const users = await userApi.getAll();
       
-      // Merge API data with mock extended data
-      const enrichedMembers = users.map((user: User) => {
-        const mockData = mockFoundersData.find(m => m.name === user.name) || mockFoundersData[0];
-        return {
-          ...user,
-          location: `${user.city || 'New York'}, ${user.country || 'US'}`,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`,
-          followers: Math.floor(Math.random() * 10) + 1,
-          rating: 3 + Math.random() * 2,
-          goals: mockData.goals,
-          interests: mockData.interests,
-          skills: mockData.skills || [],
-          assets: mockData.assets,
-          status: mockData.status
-        };
-      });
-      
-      setMembers(enrichedMembers);
+      // If API returns data, enrich it with mock data details
+      if (users && users.length > 0) {
+        const enrichedMembers = users.map((user: User, index: number) => {
+          // Use corresponding mock data or cycle through if more API users than mock data
+          const mockData = mockFoundersData[index % mockFoundersData.length];
+          return {
+            ...user,
+            location: mockData.location,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`,
+            followers: mockData.followers,
+            rating: mockData.rating,
+            goals: mockData.goals,
+            interests: mockData.interests,
+            skills: mockData.skills || [],
+            assets: mockData.assets,
+            status: mockData.status
+          };
+        });
+        
+        // If API returns fewer than 10 users, add some mock data to have more variety
+        if (enrichedMembers.length < 10) {
+          const additionalMocks = mockFoundersData.slice(enrichedMembers.length, 25);
+          setMembers([...enrichedMembers, ...additionalMocks]);
+        } else {
+          setMembers(enrichedMembers);
+        }
+      } else {
+        // No API data, use all mock data
+        setMembers(mockFoundersData);
+      }
     } catch (err) {
       console.error('Failed to fetch members:', err);
       // Fallback to mock data if API fails
