@@ -14,10 +14,37 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 
+type MemberData = {
+  id: number;
+  name: string;
+  email?: string;
+  role?: string;
+  status?: string;
+  lastLogin?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  location: string;
+  avatar: string;
+  followers: number;
+  rating: number;
+  goals: string[];
+  interests: string[];
+  skills?: string[];
+  assets?: { label: string } | null;
+  tagline?: string;
+  about?: {
+    short: string;
+    industries: string[];
+    lookingFor: string;
+    offering: string;
+    languages: string[];
+  };
+};
+
 interface ProfileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  member: any;
+  member: MemberData | null;
   onViewFullProfile: (id: number) => void;
 }
 

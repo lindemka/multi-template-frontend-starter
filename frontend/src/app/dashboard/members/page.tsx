@@ -49,23 +49,52 @@ import {
 } from "@/components/ui/select";
 import FiltersModal from '@/components/members/FiltersModal';
 import ProfileDrawer from '@/components/members/ProfileDrawer';
-import { userApi } from '@/lib/api';
-import { User } from '@/types/api';
-import { mockFoundersData } from '@/data/mockMembers';
+import { memberApi, Member } from '@/lib/memberApi';
+
+type MemberData = {
+  id: number;
+  name: string;
+  email?: string;
+  role?: 'ADMIN' | 'EDITOR' | 'VIEWER' | 'MODERATOR';
+  status?: 'ACTIVE' | 'PENDING' | 'INACTIVE';
+  lastLogin?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  location: string;
+  avatar: string;
+  followers: number;
+  rating: number;
+  goals: string[];
+  interests: string[];
+  skills?: string[];
+  assets?: { label: string } | null;
+  tagline?: string;
+  about?: {
+    short: string;
+    industries: string[];
+    lookingFor: string;
+    offering: string;
+    languages: string[];
+  };
+};
 
 export default function MembersPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPlatform, setSelectedPlatform] = useState('@PlatformUSA');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<MemberData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [selectedMember, setSelectedMember] = useState<MemberData | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    goals: string[];
+    interests: string[];
+    skills: string[];
+    availability: string[];
+    location: string;
+  }>({
     goals: [],
     interests: [],
     skills: [],
@@ -81,42 +110,40 @@ export default function MembersPage() {
   const fetchMembers = async () => {
     try {
       setLoading(true);
-      const users = await userApi.getAll();
+      const membersData = await memberApi.getAll();
       
-      // If API returns data, enrich it with mock data details
-      if (users && users.length > 0) {
-        const enrichedMembers = users.map((user: User, index: number) => {
-          // Use corresponding mock data or cycle through if more API users than mock data
-          const mockData = mockFoundersData[index % mockFoundersData.length];
-          return {
-            ...user,
-            location: mockData.location,
-            avatar: mockData.avatar,
-            followers: mockData.followers,
-            rating: mockData.rating,
-            goals: mockData.goals,
-            interests: mockData.interests,
-            skills: mockData.skills || [],
-            assets: mockData.assets,
-            status: mockData.status
-          };
-        });
-        
-        // If API returns fewer than 10 users, add some mock data to have more variety
-        if (enrichedMembers.length < 10) {
-          const additionalMocks = mockFoundersData.slice(enrichedMembers.length, 25);
-          setMembers([...enrichedMembers, ...additionalMocks]);
-        } else {
-          setMembers(enrichedMembers);
-        }
+      // Transform the API response to match MemberData type
+      if (membersData && membersData.length > 0) {
+        const transformedMembers = membersData.map((member: Member) => ({
+          id: member.id,
+          name: member.name,
+          location: member.location,
+          avatar: member.avatar,
+          followers: member.followers,
+          rating: member.rating,
+          goals: member.goals,
+          interests: member.interests,
+          skills: member.skills || [],
+          assets: member.assets ? { label: member.assets.label } : null,
+          status: member.status as 'ACTIVE' | 'PENDING' | 'INACTIVE' | undefined,
+          tagline: member.tagline,
+          about: member.about ? {
+            short: member.about.shortDescription,
+            industries: member.about.industries,
+            lookingFor: member.about.lookingFor,
+            offering: member.about.offering,
+            languages: member.about.languages
+          } : undefined
+        }));
+        setMembers(transformedMembers);
       } else {
-        // No API data, use all mock data
-        setMembers(mockFoundersData);
+        // No data from API
+        setMembers([]);
       }
     } catch (err) {
       console.error('Failed to fetch members:', err);
-      // Fallback to mock data if API fails
-      setMembers(mockFoundersData);
+      // Show empty state on error instead of mock data
+      setMembers([]);
     } finally {
       setLoading(false);
     }
@@ -183,7 +210,7 @@ export default function MembersPage() {
     router.push(`/dashboard/profile/${memberId}`);
   };
 
-  const handleRowClick = (member: any) => {
+  const handleRowClick = (member: MemberData) => {
     setSelectedMember(member);
     setIsDrawerOpen(true);
   };
@@ -221,7 +248,7 @@ export default function MembersPage() {
     }
   };
 
-  const applyFilters = (newFilters: any) => {
+  const applyFilters = (newFilters: typeof filters) => {
     setFilters(newFilters);
     // Apply filtering logic here
     setIsFiltersOpen(false);

@@ -6,11 +6,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
-  // Static export in production (no basePath - same paths as dev!)
-  ...(isDevelopment ? {} : {
-    output: 'export',
-    distDir: '../backend/src/main/resources/static',
-  }),
+  // Static export for Spring Boot
+  output: 'export',
   
   // Always have trailing slash for consistency
   trailingSlash: true,

@@ -115,7 +115,7 @@ export default function ProfilePage() {
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="font-medium">Tell Us More About You</p>
-                            <p className="text-sm text-gray-600">Share who you are and why you're on Foundersbase</p>
+                            <p className="text-sm text-gray-600">Share who you are and why you&apos;re on Foundersbase</p>
                           </div>
                           <Button size="sm" variant="ghost" className="text-blue-600">
                             Ready →
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                       <Badge variant="secondary" className="text-xs">Support startups</Badge>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
-                      I bring a deep technical foundation, a product-first mindset, and a bias for action. I don't just build — I build with purpose...
+                      I bring a deep technical foundation, a product-first mindset, and a bias for action. I don&apos;t just build — I build with purpose...
                     </p>
                     <Button variant="outline" size="sm" className="mt-2">
                       View Profile →
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                   <div>
                     <h3 className="font-semibold mb-2">In short</h3>
                     <p className="text-gray-600">
-                      It's important for me to support entrepreneurial thinkers and contribute to seeing more business ideas come to life. 
+                      It&apos;s important for me to support entrepreneurial thinkers and contribute to seeing more business ideas come to life. 
                       With foundersbase I am at providing a missing piece of infrastructure for founders and startups worldwide.
                     </p>
                   </div>

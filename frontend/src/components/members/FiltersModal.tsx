@@ -23,11 +23,19 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 
+interface FilterData {
+  goals: string[];
+  interests: string[];
+  skills: string[];
+  availability: string[];
+  location: string;
+}
+
 interface FiltersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onApply: (filters: any) => void;
-  currentFilters: any;
+  onApply: (filters: FilterData) => void;
+  currentFilters: FilterData;
 }
 
 const goalOptions = [
@@ -84,8 +92,7 @@ export default function FiltersModal({ isOpen, onClose, onApply, currentFilters 
     interests: currentFilters.interests || [],
     skills: currentFilters.skills || [],
     availability: currentFilters.availability || [],
-    location: currentFilters.location || '',
-    platforms: currentFilters.platforms || []
+    location: currentFilters.location || ''
   });
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -124,8 +131,7 @@ export default function FiltersModal({ isOpen, onClose, onApply, currentFilters 
       interests: [],
       skills: [],
       availability: [],
-      location: '',
-      platforms: []
+      location: ''
     });
   };
 
@@ -205,7 +211,7 @@ export default function FiltersModal({ isOpen, onClose, onApply, currentFilters 
               <TabsContent value="goals" className="mt-6 space-y-4">
                 <div>
                   <Label className="text-sm font-medium mb-3 block">
-                    Type of co-founder you're looking for
+                    Type of co-founder you&apos;re looking for
                   </Label>
                   <div className="grid grid-cols-2 gap-3">
                     {goalOptions.map((goal) => {
