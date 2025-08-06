@@ -15,41 +15,122 @@ import {
 import EditProfileModal from '@/components/profile/EditProfileModal';
 import { userApi } from '@/lib/api';
 import { User } from '@/types/api';
+import { mockFoundersData, mockExtendedProfiles } from '@/data/mockMembers';
 
-// Mock extended data for demonstration
-const mockExtendedData = {
-  goals: ["Build up a team", "Find investors", "Support startups"],
-  interests: ["AI & Machine Learning", "Software & SaaS", "Biotech & Pharmaceuticals"],
-  skills: ["Product Management", "Business Development", "Strategic Planning"],
-  tagline: "Senior Product Manager, Ex-Scout24, Business Angel, Startup Enthusiast",
-  followers: 41,
-  contacts: 29,
-  completionPercentage: 95,
-  about: {
-    short: "It's important for me to support entrepreneurial thinkers and contribute to seeing more business ideas come to life.",
-    industries: ["Aerospace & Aircraft", "AI & Machine Learning", "Biotech & Pharmaceuticals", "Software & SaaS"],
-    lookingFor: "Entrepreneurial minds. Founders who start building or want to join their next startup team.",
-    offering: "Hands-on mentality, Marathon not sprint, Impact driven, Better try than sorry. MSc. Developmental Biology, Ex-Scout24, Senior Product Manager, Private Pilot (SPL)",
-    age: "Not Specified",
-    languages: ["German", "English", "Spanish", "French"]
+// Old mock data structure for fallback
+const oldMockFoundersData = [
+  {
+    id: 1,
+    name: "Ahmed Salman",
+    location: "New York City, US",
+    avatar: "https://i.pravatar.cc/150?img=14",
+    followers: 342,
+    rating: 4.5,
+    goals: ["Join a team", "Support startups"],
+    interests: ["Advertising & Marketing", "AI & Machine Learning", "Software & SaaS"],
+    skills: ["Marketing Manager", "Growth Manager", "Data Scientist"],
+    assets: null,
+    status: null,
+    tagline: "Growth Marketing Expert | Data-Driven Strategist | Startup Enthusiast",
+    about: {
+      short: "Passionate about helping startups scale through data-driven marketing strategies and growth hacking techniques.",
+      industries: ["Advertising & Marketing", "AI & Machine Learning", "Software & SaaS"],
+      lookingFor: "Innovative teams working on AI-powered marketing solutions.",
+      offering: "10+ years of growth marketing experience, expertise in A/B testing, analytics, and user acquisition.",
+      languages: ["English", "Arabic", "Spanish"]
+    }
   },
-  activities: [
-    { id: 1, type: "post", content: "Excited about the new AI developments in healthcare!", date: "6d" },
-    { id: 2, type: "post", content: "Looking for co-founders in the biotech space.", date: "2w" },
-    { id: 3, type: "post", content: "Just invested in an amazing EdTech startup!", date: "1m" }
-  ],
-  peopleViewed: [
-    { name: "Andrew Jernigan", role: "Outside the box thinker, connector and builder", following: false },
-    { name: "Alec Brewer", role: "Working to change the way we think about self, wealth, & the...", following: true },
-    { name: "Michael Thompson", role: "Founder & CEO of FinFlow and fintech evangelist by heart |...", following: false },
-    { name: "Emily Davis", role: "Results driven UX Design - I make your interfaces shine!", following: true }
-  ]
-};
+  {
+    id: 2,
+    name: "Andy Mitchell",
+    location: "San Francisco, US",
+    avatar: "https://i.pravatar.cc/150?img=33",
+    followers: 1289,
+    rating: 5,
+    goals: ["Build up a team", "Find investors", "Need support"],
+    interests: ["Tourism & Hospitality", "Marketing & Sales", "Business Developer", "Growth & Venture Relations"],
+    skills: ["Business Developer", "Sales Manager"],
+    assets: { type: "Startup", label: "TravelTech Inc." },
+    status: "Open Jobs",
+    tagline: "CEO @ TravelTech Inc. | Revolutionizing Travel Experiences",
+    about: {
+      short: "Building the future of travel technology with AI-powered personalization and seamless booking experiences.",
+      industries: ["Tourism & Hospitality", "Marketing & Sales", "Tech"],
+      lookingFor: "Technical co-founder with expertise in ML and passionate investors in travel tech.",
+      offering: "Industry connections, proven track record in hospitality tech, Series A ready.",
+      languages: ["English", "French"]
+    }
+  },
+  {
+    id: 3,
+    name: "Kinne Zhang",
+    location: "London, UK",
+    avatar: "https://i.pravatar.cc/150?img=5",
+    followers: 567,
+    rating: 4.8,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["Advertising & Marketing", "Architecture & Construction", "AI & Machine Learning"],
+    skills: ["Product Manager", "Designer (UX/UI)"],
+    assets: { type: "Startup", label: "BuildSmart AI" },
+    status: "Funded Series A",
+    tagline: "Founder @ BuildSmart AI | Making Construction Smarter",
+    about: {
+      short: "Using AI to revolutionize the construction industry with predictive analytics and smart project management.",
+      industries: ["Architecture & Construction", "AI & Machine Learning"],
+      lookingFor: "Engineers passionate about PropTech and investors for Series B.",
+      offering: "Deep industry knowledge, technical expertise, proven product-market fit.",
+      languages: ["English", "Mandarin", "Cantonese"]
+    }
+  },
+  {
+    id: 4,
+    name: "Brent Thompson",
+    location: "Berlin, Germany",
+    avatar: "https://i.pravatar.cc/150?img=7",
+    followers: 423,
+    rating: 4.5,
+    goals: ["Join a team", "Support startups"],
+    interests: ["AI & Machine Learning", "Healthcare & Medical Devices", "Biotech & Pharmaceuticals"],
+    skills: ["Developer (Backend)", "Software Engineer", "Data Scientist"],
+    assets: null,
+    status: null,
+    tagline: "Full-Stack ML Engineer | Healthcare Tech Specialist",
+    about: {
+      short: "Combining software engineering with machine learning to solve healthcare challenges.",
+      industries: ["Healthcare & Medical Devices", "AI & Machine Learning", "Biotech & Pharmaceuticals"],
+      lookingFor: "HealthTech startups working on meaningful problems.",
+      offering: "8 years experience in ML/AI, expertise in Python, TensorFlow, cloud architecture.",
+      languages: ["English", "German"]
+    }
+  },
+  {
+    id: 5,
+    name: "Theresa Chen",
+    location: "Toronto, Canada",
+    avatar: "https://i.pravatar.cc/150?img=9",
+    followers: 892,
+    rating: 4.9,
+    goals: ["Build up a team", "Find investors"],
+    interests: ["AI & Machine Learning", "Human-Machine Interaction & UX Design", "Tech", "Product & Design"],
+    skills: ["Developer (Frontend)", "Developer (Backend)", "Software Engineer", "Designer (UX/UI)"],
+    assets: { type: "Startup", label: "DesignAI Labs" },
+    status: "Hiring Engineers",
+    tagline: "CTO @ DesignAI Labs | Making Design Accessible with AI",
+    about: {
+      short: "Building AI tools that empower designers and democratize great design.",
+      industries: ["AI & Machine Learning", "Human-Machine Interaction & UX Design", "Tech"],
+      lookingFor: "Senior engineers and seed investors passionate about design tools.",
+      offering: "Technical leadership, full-stack expertise, design thinking methodology.",
+      languages: ["English", "Mandarin", "French"]
+    }
+  }
+];
 
 export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -65,12 +146,36 @@ export default function UserProfilePage() {
     try {
       setLoading(true);
       
-      // Check if viewing own profile (you can get current user ID from auth context)
-      // For now, assume ID 1 is the current user
+      // Check if viewing own profile
       setIsOwnProfile(userId === '1');
       
-      const userData = await userApi.getById(parseInt(userId));
-      setUser(userData);
+      // Try to find the user in mock data first
+      const mockUser = mockFoundersData.find(u => u.id === parseInt(userId));
+      
+      if (mockUser) {
+        setUser(mockUser);
+        setProfileData(mockUser);
+      } else {
+        // Try API if not in mock data
+        try {
+          const userData = await userApi.getById(parseInt(userId));
+          // Enrich with default profile data
+          const enrichedUser = {
+            ...userData,
+            ...mockFoundersData[0], // Use first mock user as template
+            id: userData.id,
+            name: userData.name,
+            email: userData.email
+          };
+          setUser(enrichedUser);
+          setProfileData(enrichedUser);
+        } catch (apiErr) {
+          // If API fails, use mock data
+          const fallbackUser = mockFoundersData[parseInt(userId) % mockFoundersData.length] || mockFoundersData[0];
+          setUser({ ...fallbackUser, id: parseInt(userId) });
+          setProfileData({ ...fallbackUser, id: parseInt(userId) });
+        }
+      }
     } catch (err) {
       console.error('Failed to fetch user profile:', err);
       setError('Failed to load user profile');
@@ -87,7 +192,7 @@ export default function UserProfilePage() {
     );
   }
 
-  if (error || !user) {
+  if (error || !user || !profileData) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto p-4">
@@ -134,7 +239,7 @@ export default function UserProfilePage() {
                   <div className="absolute -top-16 left-6">
                     <div className="h-32 w-32 rounded-full ring-4 ring-white bg-white overflow-hidden">
                       <Avatar className="h-full w-full">
-                        <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`} />
+                        <AvatarImage src={profileData.avatar} />
                         <AvatarFallback className="text-3xl bg-gray-100">
                           {user.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -172,8 +277,8 @@ export default function UserProfilePage() {
                   {/* Profile Info */}
                   <div className="mt-8 space-y-4">
                     <div>
-                      <h1 className="text-2xl font-bold">{user.name}</h1>
-                      <p className="text-gray-600">@{user.email?.split('@')[0] || 'username'}</p>
+                      <h1 className="text-2xl font-bold">{profileData.name}</h1>
+                      <p className="text-gray-600">@{profileData.email?.split('@')[0] || profileData.name.toLowerCase().replace(/\s+/g, '')}</p>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">
@@ -182,20 +287,20 @@ export default function UserProfilePage() {
                     </div>
 
                     <p className="text-gray-700">
-                      {mockExtendedData.tagline}
+                      {profileData.tagline || 'Building something amazing'}
                     </p>
 
                     <div className="text-sm text-gray-600">
-                      Goals: {mockExtendedData.goals.join(', ')}
+                      Goals: {profileData.goals?.join(', ') || 'Not specified'}
                     </div>
 
                     <div className="flex items-center gap-6 text-sm">
                       <span className="text-gray-600">
-                        {mockExtendedData.followers} Followers · {mockExtendedData.contacts} Contacts
+                        {profileData.followers || 0} Followers · {Math.floor(profileData.followers * 0.3) || 0} Contacts
                       </span>
                       <span className="flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
-                        {user.city || 'New York'}, {user.country || 'US'}
+                        {profileData.location || 'New York, US'}
                       </span>
                     </div>
 
@@ -221,7 +326,7 @@ export default function UserProfilePage() {
                         <div className="flex items-start gap-3">
                           <div className="bg-white rounded-full p-3">
                             <div className="text-2xl font-bold text-green-600">
-                              {mockExtendedData.completionPercentage}%
+                              {mockExtendedProfiles.completionPercentage}%
                             </div>
                           </div>
                           <div className="flex-1">
@@ -261,7 +366,7 @@ export default function UserProfilePage() {
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`} />
+                              <AvatarImage src={profileData.avatar} />
                               <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
