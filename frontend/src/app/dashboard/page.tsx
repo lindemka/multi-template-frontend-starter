@@ -2,12 +2,6 @@
 
 import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { AppSidebar } from "@/components/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
 import UserTableShadcn from '@/components/dashboard/UserTableShadcn';
 import Feed from '@/components/feed/Feed';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -38,20 +32,8 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <div>
-      <SidebarProvider className="flex flex-col min-h-screen">
-        <SiteHeader />
-        <div className="flex flex-1">
-          <AppSidebar />
-          <SidebarInset>
-            <div className="flex flex-1 flex-col gap-4 p-4">
-              <Suspense fallback={<div>Loading...</div>}>
-                <DashboardContent />
-              </Suspense>
-            </div>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
