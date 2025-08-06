@@ -351,7 +351,7 @@ export default function MembersPage() {
                 ×
               </button>
             </Badge>
-          ))
+          )}
           
           <Button
             variant="ghost"
