@@ -339,8 +339,8 @@ export default function MembersPage() {
         />
       </div>
 
-      {/* Members Table */}
-      <Card>
+      {/* Members Table - Desktop */}
+      <Card className="hidden lg:block">
         {loading ? (
           <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -472,14 +472,151 @@ export default function MembersPage() {
         )}
       </Card>
 
+      {/* Members Cards - Mobile */}
+      <div className="lg:hidden">
+        {loading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : paginatedMembers.length === 0 ? (
+          <Card className="p-8 text-center text-muted-foreground">
+            No members found
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {paginatedMembers.map((member) => (
+              <Card 
+                key={member.id} 
+                className="cursor-pointer hover:shadow-lg transition-all"
+                onClick={() => handleRowClick(member)}
+              >
+                <CardContent className="p-4">
+                  {/* Member Header */}
+                  <div className="flex items-start gap-3 mb-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={member.avatar} />
+                      <AvatarFallback>{member.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-semibold">{member.name}</h3>
+                      <p className="text-sm text-muted-foreground">{member.location}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-muted-foreground">
+                          {member.followers} Followers
+                        </span>
+                        <div className="flex gap-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                i < Math.floor(member.rating)
+                                  ? 'bg-orange-400'
+                                  : 'bg-gray-200'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Assets and Status */}
+                  {(member.assets || member.status) && (
+                    <div className="mb-3 pb-3 border-b">
+                      {member.assets && (
+                        <div className="flex items-center gap-2 mb-1">
+                          <Briefcase className="h-3 w-3 text-blue-500" />
+                          <span className="text-sm font-medium">{member.assets.label}</span>
+                        </div>
+                      )}
+                      {member.status && (
+                        <Badge variant="outline" className="text-xs">
+                          {member.status}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Goals */}
+                  {member.goals && member.goals.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-gray-500 mb-2">GOALS</p>
+                      <div className="flex flex-wrap gap-1">
+                        {member.goals.map((goal: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs gap-0.5">
+                            {getGoalIcon(goal)}
+                            <span className="truncate">{goal}</span>
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Skills */}
+                  {member.skills && member.skills.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs font-medium text-gray-500 mb-2">SKILLS</p>
+                      <div className="flex flex-wrap gap-1">
+                        {member.skills.slice(0, 3).map((skill: string, index: number) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {skill}
+                          </Badge>
+                        ))}
+                        {member.skills.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{member.skills.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Interests */}
+                  {member.interests && member.interests.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs font-medium text-gray-500 mb-2">INTERESTS</p>
+                      <div className="flex flex-wrap gap-1">
+                        {member.interests.slice(0, 3).map((interest: string, index: number) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {interest}
+                          </Badge>
+                        ))}
+                        {member.interests.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{member.interests.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Button */}
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewProfile(member.id);
+                    }}
+                  >
+                    View Full Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Pagination Controls */}
       {filteredMembers.length > 0 && (
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <p className="text-sm text-muted-foreground text-center sm:text-left">
               Showing {startIndex + 1} to {Math.min(endIndex, filteredMembers.length)} of {filteredMembers.length} results
             </p>
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Show</span>
               <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
                 <SelectTrigger className="w-20">
@@ -507,8 +644,8 @@ export default function MembersPage() {
               Previous
             </Button>
 
-            {/* Page Numbers */}
-            <div className="flex gap-1">
+            {/* Page Numbers - Hidden on mobile */}
+            <div className="hidden sm:flex gap-1">
               {/* First page */}
               {currentPage > 3 && (
                 <>
@@ -568,6 +705,11 @@ export default function MembersPage() {
                 </>
               )}
             </div>
+
+            {/* Simple page indicator for mobile */}
+            <span className="sm:hidden text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </span>
 
             <Button
               variant="outline"
