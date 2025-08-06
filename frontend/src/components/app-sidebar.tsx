@@ -9,6 +9,7 @@ import {
   LifeBuoy,
   Send,
   Settings2,
+  User,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -46,6 +47,12 @@ const data = {
           url: "/dashboard?tab=users",
         },
       ],
+    },
+    {
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: User,
+      items: [],
     },
     {
       title: "Home",
