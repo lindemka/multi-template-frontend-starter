@@ -13,29 +13,17 @@ import {
   ArrowRight, CheckCircle2, ArrowLeft, Loader2 
 } from "lucide-react";
 import EditProfileModal from '@/components/profile/EditProfileModal';
-import { userApi } from '@/lib/api';
-import { User } from '@/types/api';
+import { memberApi, Member } from '@/lib/memberApi';
 
-type ProfileData = {
-  id: number;
-  name: string;
+type ProfileData = Member & {
   email?: string;
   role?: string;
-  status?: string;
   lastLogin?: string | null;
   createdAt?: string;
   updatedAt?: string;
-  location: string;
-  avatar: string;
-  followers: number;
-  rating: number;
-  goals: string[];
-  interests: string[];
-  skills?: string[];
-  assets?: { label: string } | null;
-  tagline?: string;
   about?: {
-    short: string;
+    short?: string;
+    shortDescription?: string;
     industries: string[];
     lookingFor: string;
     offering: string;
@@ -155,7 +143,6 @@ const oldMockFoundersData = [
 
 export default function ProfilePageClient({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -175,46 +162,34 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
       // Check if viewing own profile
       setIsOwnProfile(userId === '1');
       
-      // Try to find the user in mock data first
-      const mockUser = mockFoundersData.find(u => u.id === parseInt(userId));
-      
-      if (mockUser) {
-        setUser(null); // Mock user doesn't have all User fields
-        setProfileData({
-          ...mockUser,
-          status: mockUser.status || undefined,
-          assets: mockUser.assets ? { label: mockUser.assets.label } : undefined
-        });
-      } else {
-        // Try API if not in mock data
-        try {
-          const userData = await userApi.getById(parseInt(userId));
-          // Enrich with default profile data
-          const enrichedProfile = {
-            ...mockFoundersData[0], // Use first mock user as template
-            id: userData.id,
-            name: userData.name,
-            email: userData.email,
-            status: mockFoundersData[0].status || undefined,
-            assets: mockFoundersData[0].assets ? { label: mockFoundersData[0].assets.label } : undefined
-          };
-          setUser(userData);
-          setProfileData(enrichedProfile);
-        } catch (apiErr) {
-          // If API fails, use mock data
+      try {
+        // Try to fetch member from API
+        const memberData = await memberApi.getById(parseInt(userId));
+        setProfileData(memberData as ProfileData);
+      } catch (apiErr) {
+        // If API fails, try mock data
+        const mockUser = mockFoundersData.find(u => u.id === parseInt(userId));
+        
+        if (mockUser) {
+          setProfileData({
+            ...mockUser,
+            status: mockUser.status || undefined,
+            assets: mockUser.assets ? { label: mockUser.assets.label } : undefined
+          } as ProfileData);
+        } else {
+          // Use fallback mock data
           const fallbackUser = mockFoundersData[parseInt(userId) % mockFoundersData.length] || mockFoundersData[0];
-          setUser(null);
           setProfileData({
             ...fallbackUser,
             id: parseInt(userId),
             status: fallbackUser.status || undefined,
             assets: fallbackUser.assets ? { label: fallbackUser.assets.label } : undefined
-          });
+          } as ProfileData);
         }
       }
     } catch (err) {
-      console.error('Failed to fetch user profile:', err);
-      setError('Failed to load user profile');
+      console.error('Failed to fetch member profile:', err);
+      setError('Failed to load member profile');
     } finally {
       setLoading(false);
     }
@@ -277,7 +252,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                       <Avatar className="h-full w-full">
                         <AvatarImage src={profileData.avatar} />
                         <AvatarFallback className="text-3xl bg-gray-100">
-                          {(user?.name || profileData.name || '').split(' ').map(n => n[0]).join('')}
+                          {(profileData?.name || '').split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
                       </Avatar>
                     </div>
@@ -319,7 +294,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
 
                     <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="h-4 w-4" />
-                      <span>{user?.role || 'Member'}</span>
+                      <span>{profileData?.location || 'Location not set'}</span>
                     </div>
 
                     <p className="text-gray-700">
@@ -403,11 +378,11 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10">
                               <AvatarImage src={profileData.avatar} />
-                              <AvatarFallback>{(user?.name || profileData.name || '').split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                              <AvatarFallback>{(profileData?.name || '').split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold">{user?.name || profileData.name}</span>
+                                <span className="font-semibold">{profileData?.name}</span>
                                 <span className="text-sm text-gray-500">posted this • {activity.date}</span>
                               </div>
                               <p className="mt-2">{activity.content}</p>
@@ -459,7 +434,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-semibold mb-2">In short</h3>
-                    <p className="text-gray-600">{profileData.about?.short || 'No description available'}</p>
+                    <p className="text-gray-600">{profileData.about?.shortDescription || profileData.about?.short || 'No description available'}</p>
                   </div>
 
                   <div>

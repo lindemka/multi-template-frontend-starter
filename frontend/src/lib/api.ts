@@ -41,3 +41,26 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// User API endpoints
+export const userApi = {
+  async getById(id: string | number) {
+    const response = await api.get(`/api/users/${id}`);
+    return response.data;
+  },
+  
+  async getAll() {
+    const response = await api.get('/api/users');
+    return response.data;
+  },
+  
+  async update(id: string | number, data: Record<string, unknown>) {
+    const response = await api.put(`/api/users/${id}`, data);
+    return response.data;
+  },
+  
+  async delete(id: string | number) {
+    const response = await api.delete(`/api/users/${id}`);
+    return response.data;
+  }
+};

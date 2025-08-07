@@ -43,7 +43,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/members/**").permitAll() // Temporarily allow public access
                 .requestMatchers("/api/db/**").permitAll() // Database management endpoints
-                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/", "/index.html", "/static/**", "/_next/**").permitAll()
                 .requestMatchers("/dashboard/**", "/test/**", "/404/**").permitAll()
                 .anyRequest().authenticated()
@@ -53,9 +52,6 @@ public class SecurityConfig {
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // H2 Console config
-        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }

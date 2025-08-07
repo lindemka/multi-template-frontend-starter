@@ -108,13 +108,13 @@ public class MemberDataFactory {
         );
     }
     
-    private Member createMember(Long id, String name, String location, String avatar, int followers, double rating,
+    private Member createMember(Long ignored, String name, String location, String avatar, int followers, double rating,
                                 String tagline, List<String> goals, List<String> interests, List<String> skills,
                                 String startupTag, String startupName, String startupBadge,
                                 String shortAbout, List<String> industries, String lookingFor,
                                 String offering, List<String> languages) {
         Member member = new Member();
-        member.setId(id);
+        // Don't set ID - let JPA generate it
         member.setName(name);
         member.setLocation(location);
         member.setAvatar(avatar);
@@ -127,9 +127,8 @@ public class MemberDataFactory {
         
         if (startupTag != null) {
             Member.Asset asset = new Member.Asset();
-            asset.setTag(startupTag);
-            asset.setName(startupName);
-            asset.setBadge(startupBadge);
+            asset.setType(startupTag);
+            asset.setLabel(startupName);
             member.setAssets(asset);
         }
         

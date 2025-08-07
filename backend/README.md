@@ -24,9 +24,10 @@ mvn spring-boot:run
 ### 4. Access Application
 - **Frontend Templates**: http://localhost:8080
 - **API Endpoints**: http://localhost:8080/api/users
-- **H2 Console**: http://localhost:8080/h2-console
-  - JDBC URL: `jdbc:h2:mem:testdb`
-  - Username: `sa`
+- **PostgreSQL Database**: 
+  - Host: `localhost:5432`
+  - Database: `project1`
+  - Username: `postgres`
   - Password: `password`
 
 ## API Endpoints
@@ -76,5 +77,5 @@ The application initializes with 5 demo users matching the frontend user table:
 
 - Frontend assets are served from `/static/` in Spring Boot
 - CORS is configured for `localhost:3000` and `localhost:8080`
-- H2 in-memory database for demo purposes
+- PostgreSQL database for persistent data storage
 - Auto-generated avatars using ui-avatars.com service

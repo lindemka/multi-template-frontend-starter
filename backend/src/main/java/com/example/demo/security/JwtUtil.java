@@ -18,13 +18,13 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${spring.security.jwt.secret}")
+    @Value("${spring.security.jwt.secret:ThisIsATemporarySecretKeyForDevelopmentOnlyChangeThisInProduction123456789}")
     private String secret;
 
     @Value("${spring.security.jwt.expiration:86400000}") // 24 hours in milliseconds
     private Long expiration;
     
-    @Value("${spring.security.jwt.refresh-secret:}")
+    @Value("${spring.security.jwt.refresh-secret:AnotherTemporarySecretKeyForRefreshTokensChangeThisInProduction123456789}")
     private String refreshSecret;
     
     @Value("${spring.security.jwt.refresh-expiration:604800000}") // 7 days in milliseconds

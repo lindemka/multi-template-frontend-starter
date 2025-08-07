@@ -322,3 +322,8 @@ mcp__claude-flow__task_status taskId="[id]" detailed=true
 - Fundamental architecture changes
 - Production environment specifics
 - Compliance requirements (GDPR, etc)
+
+## Development Best Practices
+
+- **Always use the scripts to start the application**
+- The main scripts for building and deploying the application are in ./scripts

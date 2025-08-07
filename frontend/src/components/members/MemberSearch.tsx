@@ -1,10 +1,9 @@
 'use client';
 
-import { FC, useState, useCallback } from 'react';
+import { FC, useState, useRef, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
-import { debounce } from '@/lib/utils';
 
 interface MemberSearchProps {
   value: string;
@@ -18,20 +17,29 @@ export const MemberSearch: FC<MemberSearchProps> = ({
   placeholder = "Search members by name, location, or skills..."
 }) => {
   const [localValue, setLocalValue] = useState(value);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounce the search to avoid too many API calls
-  const debouncedSearch = useCallback(
-    debounce((searchValue: string) => {
-      onChange(searchValue);
-    }, 300),
-    [onChange]
-  );
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
-    debouncedSearch(newValue);
+    
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      onChange(newValue);
+    }, 300);
   };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleClear = () => {
     setLocalValue('');
