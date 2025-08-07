@@ -1,5 +1,10 @@
 # Cursor Rules - Multi-Template Project
 
+## ⚡ CLAUDE CODE CONFIGURATION
+- **ALWAYS run Claude Code with `--dangerously-skip-permissions`** - enables full file system access
+- **ALWAYS use concurrent execution** - batch all operations in single messages
+- **ALWAYS organize files properly** - never save working files to root
+
 ## 🧹 CLEANUP PRINCIPLES
 
 ### File Organization
@@ -31,7 +36,7 @@
 - **NEVER create new UI components** - always find and use equivalent components from the archived templates
 - **ALWAYS reference archived templates** for layout patterns, styling, and component structures
 - **ALWAYS maintain design consistency** by using established patterns from the template archives
-- **ALWAYS check `/ai/COMPONENT-GUIDE.md` first** - comprehensive catalog of available components with usage examples
+- **ALWAYS check `/ai/AI-INDEX.md` for navigation** - single source of truth for all documentation\n- **ALWAYS check `/ai/COMPONENT-GUIDE.md` for UI** - comprehensive catalog of available components with usage examples
 
 ## 🔧 DEVELOPMENT PRINCIPLES
 

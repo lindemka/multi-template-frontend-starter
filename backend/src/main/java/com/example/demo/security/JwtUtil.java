@@ -18,11 +18,17 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:ThisIsAVeryLongSecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong123456789}")
+    @Value("${spring.security.jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
+    @Value("${spring.security.jwt.expiration:86400000}") // 24 hours in milliseconds
     private Long expiration;
+    
+    @Value("${spring.security.jwt.refresh-secret:}")
+    private String refreshSecret;
+    
+    @Value("${spring.security.jwt.refresh-expiration:604800000}") // 7 days in milliseconds
+    private Long refreshExpiration;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);

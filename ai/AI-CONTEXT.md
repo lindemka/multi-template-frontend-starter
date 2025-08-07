@@ -10,15 +10,16 @@ This document provides comprehensive context for AI assistants (Claude, Cursor, 
 ```
 project1/
 ├── ai/                          # 🤖 ALL AI documentation goes here
+│   ├── AI-INDEX.md             # Primary navigation hub for all docs
 │   ├── AI-CONTEXT.md           # This file - comprehensive AI context
 │   ├── PROJECT-STATUS.md       # Current project status and completed features
 │   ├── ARCHITECTURE.md         # System architecture overview
 │   ├── COMPONENT-GUIDE.md      # Component usage and patterns
-│   ├── QUICK-START.md          # Development setup instructions
-│   ├── backend-integration-guide.md # Backend integration specifics
-│   ├── README.md               # AI folder overview
+│   ├── DEVELOPMENT-GUIDE.md    # Unified development guide
+│   ├── BACKEND-GUIDE.md        # Backend API development
+│   ├── MCP-GUIDE.md            # Model Context Protocol integration
 │   ├── CLAUDE.md               # Build commands and project instructions
-│   └── MCP-SETUP.md            # Model Context Protocol for Shadcn integration
+│   └── SCRIPTS-GUIDE.md        # Development scripts reference
 ├── frontend-nextjs/            # Next.js app with Shadcn/ui
 ├── backend/                    # Spring Boot API
 └── src/                        # Original Gulp template assets
