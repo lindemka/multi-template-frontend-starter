@@ -4,14 +4,10 @@ import * as React from "react"
 import Link from "next/link"
 import { auth } from "@/lib/auth"
 import {
-  BarChart3,
   Users,
   Home,
-  Command,
   LifeBuoy,
   Send,
-  Settings2,
-  User,
   Rocket,
 } from "lucide-react"
 
@@ -36,20 +32,11 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Feed",
       url: "/dashboard",
-      icon: BarChart3,
+      icon: Home,
       isActive: true,
-      items: [
-        {
-          title: "Activity Feed",
-          url: "/dashboard?tab=feed",
-        },
-        {
-          title: "User Management",
-          url: "/dashboard?tab=users",
-        },
-      ],
+      items: [],
     },
     {
       title: "Members",
@@ -73,42 +60,6 @@ const data = {
         {
           title: "Fundraising",
           url: "/dashboard/startups?filter=fundraising",
-        },
-      ],
-    },
-    {
-      title: "Profile",
-      url: "/dashboard/profile",
-      icon: User,
-      items: [],
-    },
-    {
-      title: "Home",
-      url: "/",
-      icon: Home,
-      items: [
-        {
-          title: "Landing Page",
-          url: "/",
-        },
-        {
-          title: "Test Page",
-          url: "/test",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "Profile",
-          url: "#",
-        },
-        {
-          title: "Preferences",
-          url: "#",
         },
       ],
     },
@@ -143,17 +94,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="relative z-10">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <BarChart3 className="size-4" />
+              <Link href="/" className="flex items-center gap-2">
+                <div className="bg-primary text-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg font-bold text-lg">
+                  F
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">fbase</span>
-                  <span className="truncate text-xs">Dashboard</span>
+                  <span className="truncate font-bold text-base">Foundersbase</span>
+                  <span className="truncate text-xs text-muted-foreground">Startup Network</span>
                 </div>
               </Link>
             </SidebarMenuButton>
