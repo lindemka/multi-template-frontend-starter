@@ -15,7 +15,7 @@ export default function HotReloadTest() {
 
   useEffect(() => {
     // Check API status
-    fetch('/api/users')
+    fetch('/api/members')
       .then(() => setApiStatus('online'))
       .catch(() => setApiStatus('offline'));
   }, []);

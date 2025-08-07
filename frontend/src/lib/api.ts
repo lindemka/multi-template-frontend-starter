@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, ApiError } from '@/types/api';
+import { ApiError } from '@/types/api';
 
 // Create axios instance
 const api = axios.create({
@@ -39,22 +39,5 @@ api.interceptors.response.use(
     return Promise.reject(apiError);
   }
 );
-
-// User API functions
-export const userApi = {
-  getAll: (): Promise<User[]> => api.get('/api/users').then(res => res.data),
-  
-  getById: (id: number): Promise<User> => 
-    api.get(`/api/users/${id}`).then(res => res.data),
-  
-  create: (user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> =>
-    api.post('/api/users', user).then(res => res.data),
-  
-  update: (id: number, user: Partial<User>): Promise<User> =>
-    api.put(`/api/users/${id}`, user).then(res => res.data),
-  
-  delete: (id: number): Promise<void> =>
-    api.delete(`/api/users/${id}`).then(res => res.data),
-};
 
 export default api;

@@ -42,7 +42,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/members/**").permitAll() // Temporarily allow public access
-                .requestMatchers("/api/users/**").permitAll() // Temporarily allow public access
+                .requestMatchers("/api/db/**").permitAll() // Database management endpoints
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/", "/index.html", "/static/**", "/_next/**").permitAll()
                 .requestMatchers("/dashboard/**", "/test/**", "/404/**").permitAll()
