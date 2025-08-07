@@ -201,6 +201,11 @@ claude-flow.config.json
 .swarm/
 .hive-mind/
 
+# Claude Flow wrapper scripts (not needed with global install)
+claude-flow
+claude-flow.bat
+claude-flow.ps1
+
 # Claude Flow memory and coordination
 memory/claude-flow-data.json
 memory/sessions/*
