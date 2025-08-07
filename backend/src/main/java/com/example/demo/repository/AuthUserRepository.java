@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.AuthUser;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -12,4 +13,10 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, Long> {
     Optional<AuthUser> findByEmail(String email);
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
+    
+    @Query("SELECT u FROM AuthUser u LEFT JOIN FETCH u.userProfile WHERE u.id = :id")
+    Optional<AuthUser> findByIdWithProfile(Long id);
+    
+    @Query("SELECT u FROM AuthUser u LEFT JOIN FETCH u.userProfile WHERE u.username = :username")
+    Optional<AuthUser> findByUsernameWithProfile(String username);
 }

@@ -160,7 +160,8 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
       setLoading(true);
       
       // Check if viewing own profile
-      setIsOwnProfile(userId === '1');
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      setIsOwnProfile(currentUser.id && currentUser.id.toString() === userId);
       
       try {
         // Try to fetch member from API

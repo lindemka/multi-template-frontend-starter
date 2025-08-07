@@ -40,11 +40,11 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/health").permitAll() // Health endpoint only
+                .requestMatchers("/api/auth/**").permitAll() // Auth endpoints
                 .requestMatchers("/api/members/**").permitAll() // Temporarily allow public access
+                .requestMatchers("/api/startups/**").permitAll() // Allow public access to startups
                 .requestMatchers("/api/db/**").permitAll() // Database management endpoints
-                .requestMatchers("/", "/index.html", "/static/**", "/_next/**").permitAll()
-                .requestMatchers("/dashboard/**", "/test/**", "/404/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

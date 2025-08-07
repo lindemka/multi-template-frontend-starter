@@ -6,6 +6,7 @@ import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.security.JwtUtil;
+import com.example.demo.service.UserProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,9 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private UserProfileService userProfileService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -74,6 +78,11 @@ public class AuthController {
             
             String jwt = jwtUtil.generateToken(loginRequest.getUsername(), claims);
 
+            // Get the user's profile ID
+            Long profileId = userProfileService.getProfileByUserId(authUser.getId())
+                    .map(profile -> profile.getId())
+                    .orElse(null);
+            
             // Create response
             LoginResponse response = new LoginResponse(
                     jwt,
@@ -82,7 +91,8 @@ public class AuthController {
                     authUser.getEmail(),
                     authUser.getRole(),
                     authUser.getFirstName(),
-                    authUser.getLastName()
+                    authUser.getLastName(),
+                    profileId
             );
 
             return ResponseEntity.ok(response);
@@ -122,6 +132,9 @@ public class AuthController {
 
             // Save user
             authUser = authUserRepository.save(authUser);
+            
+            // Create user profile
+            userProfileService.createProfileForUser(authUser);
 
             // Generate JWT token
             Map<String, Object> claims = new HashMap<>();
@@ -133,6 +146,11 @@ public class AuthController {
             
             String jwt = jwtUtil.generateToken(authUser.getUsername(), claims);
 
+            // Get the user's profile ID
+            Long profileId = userProfileService.getProfileByUserId(authUser.getId())
+                    .map(profile -> profile.getId())
+                    .orElse(null);
+            
             // Create response
             LoginResponse response = new LoginResponse(
                     jwt,
@@ -141,7 +159,8 @@ public class AuthController {
                     authUser.getEmail(),
                     authUser.getRole(),
                     authUser.getFirstName(),
-                    authUser.getLastName()
+                    authUser.getLastName(),
+                    profileId
             );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

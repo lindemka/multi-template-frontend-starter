@@ -15,8 +15,7 @@ import java.util.Arrays;
 public class CacheConfig {
     
     @Bean
-    @Profile("!production")
-    public CacheManager simpleCacheManager() {
+    public CacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(Arrays.asList(
             new ConcurrentMapCache("members"),

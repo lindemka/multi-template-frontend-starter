@@ -24,6 +24,23 @@ export interface Member {
     offering: string;
     languages: string[];
   };
+  isFounder?: boolean;
+  isInvestor?: boolean;
+  founderProfile?: {
+    completeness: number;
+    myIntroduction: string;
+    myMotivation: string;
+    lookingForCofounder: boolean;
+    lookingForInvestor: boolean;
+    yearsExperience: number;
+  };
+  investorProfile?: {
+    completeness: number;
+    investmentFocus: string;
+    investmentExperience: string;
+    investmentRangeMin: number;
+    investmentRangeMax: number;
+  };
 }
 
 export const memberApi = {

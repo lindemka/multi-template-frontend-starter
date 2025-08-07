@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "auth_users")
+@Table(name = "users")
 public class AuthUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class AuthUser {
     @Column(nullable = false)
     private String role = "USER"; // USER, ADMIN, MODERATOR
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean enabled = true;
 
     @Column(name = "created_at")
@@ -142,5 +142,16 @@ public class AuthUser {
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+    
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
+    
+    public UserProfile getUserProfile() {
+        return userProfile;
+    }
+    
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
     }
 }

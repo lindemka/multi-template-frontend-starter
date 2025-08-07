@@ -405,7 +405,19 @@ export default function MembersPage() {
                       <AvatarFallback>{member.name[0]}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">{member.name}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{member.name}</span>
+                        {(member as any).isFounder && (
+                          <Badge className="bg-purple-100 text-purple-700 text-xs">
+                            Founder
+                          </Badge>
+                        )}
+                        {(member as any).isInvestor && (
+                          <Badge className="bg-green-100 text-green-700 text-xs">
+                            Investor
+                          </Badge>
+                        )}
+                      </div>
                       <div className="text-sm text-muted-foreground">{member.location}</div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs text-muted-foreground">

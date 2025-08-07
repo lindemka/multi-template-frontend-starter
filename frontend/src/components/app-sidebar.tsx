@@ -12,6 +12,7 @@ import {
   Send,
   Settings2,
   User,
+  Rocket,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -55,6 +56,25 @@ const data = {
       url: "/dashboard/members",
       icon: Users,
       items: [],
+    },
+    {
+      title: "Startups",
+      url: "/dashboard/startups",
+      icon: Rocket,
+      items: [
+        {
+          title: "All Startups",
+          url: "/dashboard/startups",
+        },
+        {
+          title: "Hiring Now",
+          url: "/dashboard/startups?filter=hiring",
+        },
+        {
+          title: "Fundraising",
+          url: "/dashboard/startups?filter=fundraising",
+        },
+      ],
     },
     {
       title: "Profile",

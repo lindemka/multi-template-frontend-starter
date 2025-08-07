@@ -264,6 +264,142 @@ Message 4: Write "file.js"
 
 Remember: **Claude Flow coordinates, Claude Code creates!**
 
+## ✅ CORRECT DEVELOPMENT SETUP
+
+### Port Usage (Based on Standard Full-Stack Architecture)
+
+**Development Environment:**
+- **Port 3000**: Next.js Frontend (User Interface) - THIS IS WHERE USERS GO
+- **Port 8080**: Spring Boot Backend (API Only) - FOR API TESTING ONLY
+
+**What to Open in Browser:**
+👉 **ALWAYS open http://localhost:3000** - This is your application
+❌ **NEVER expect port 8080 to show UI** - It's API-only
+
+### How It Works:
+1. **Frontend (3000)** serves the user interface
+2. **Next.js proxy** forwards `/api/*` requests to backend (8080)
+3. **Backend (8080)** provides JSON API responses
+4. **Same PostgreSQL database** used by both
+
+### API Flow:
+```
+Browser → localhost:3000/dashboard/startups
+  ↓
+Next.js renders page
+  ↓  
+Page calls /api/startups
+  ↓
+Next.js proxy forwards to localhost:8080/api/startups
+  ↓
+Spring Boot returns JSON data
+```
+
+### Test Commands:
+- **Frontend**: `curl http://localhost:3000/` → Returns HTML page
+- **API Direct**: `curl http://localhost:8080/api/startups` → Returns JSON
+- **API via Proxy**: `curl http://localhost:3000/api/startups` → Returns JSON
+
+### Production Notes:
+- Both services run behind reverse proxy (nginx/cloud)
+- Domain serves frontend, `/api/*` routes to backend
+- No raw port exposure (no :3000 or :8080 in URLs)
+
+## 🚨 CRITICAL TESTING LESSONS LEARNED
+
+### Backend Testing Must Include User-Visible Verification
+
+**MISTAKE**: Assuming backend works because API endpoints respond
+**REALITY**: User opens http://localhost:8080 and sees 403 Forbidden/blank page
+**CONSEQUENCE**: User thinks backend is broken even when APIs work
+
+### CORRECT Backend Testing Protocol:
+
+1. **In Development - Backend is API-only:**
+   - Port 8080 should NOT serve HTML pages
+   - Port 8080 is for API testing only
+   - Users should NEVER visit port 8080 directly
+
+2. **ALWAYS verify backend with:**
+   ```bash
+   # Test API endpoints (what backend actually does)
+   curl http://localhost:8080/api/startups
+   curl http://localhost:8080/health
+   
+   # Test user experience (via frontend)
+   open http://localhost:3000
+   curl http://localhost:3000/api/startups  # Tests proxy
+   ```
+
+3. **IMPLEMENT user-friendly endpoints:**
+   - Add `/health` or `/` endpoint that returns HTML status page
+   - Show "Backend is running" message
+   - List available API endpoints
+   - Display application version/status
+
+4. **CONSEQUENCES for future behavior:**
+   - Always test from USER perspective, not just technical
+   - Implement visible health checks before claiming "it works"
+   - Add user-friendly root page to all Spring Boot apps
+   - Test by opening in browser, not just curl commands
+   - Document that 403 on root means "API-only backend"
+   - **USE EXISTING SCRIPTS FIRST** - don't reinvent deployment
+   - Check for deploy-production.sh, deploy-simple.sh before manual steps
+   - Production should serve frontend from backend (8080), not separate ports
+   - Frontend static files should be built and copied to backend/resources/static
+
+### Deployment Scripts Priority:
+
+**ALWAYS use existing deployment scripts FIRST:**
+
+#### Primary Scripts (Root Directory):
+1. `./deploy-simple.sh` - **MOST USED** - Quick dev deployment (backend + optional frontend)
+2. `./deploy-production.sh` - Full production build (static frontend + backend on 8080)
+3. `./deploy-unified.sh` - Alternative production deployment
+4. `./test-api.sh` - Test API endpoints
+
+#### Additional Scripts (/scripts directory):
+- `./scripts/status.sh` - Check system status
+- `./scripts/dev.sh` - Start development
+- `./scripts/dev-clean.sh` - Clean development start
+- `./scripts/build.sh` - Build both frontend and backend
+- `./scripts/deploy-optimized.sh` - Optimized production deployment
+
+**NEVER manually run `mvn`, `npm`, or `java` commands directly**
+
+**Production Pattern:**
+- Frontend builds to `out/` directory 
+- Copy `out/*` to `backend/src/main/resources/static/`
+- Spring Boot serves frontend + API on single port (8080)
+- No separate frontend server needed in production
+
+### Example Health Controller to Add:
+```java
+@RestController
+public class HealthController {
+    @GetMapping("/")
+    public ResponseEntity<String> root() {
+        return ResponseEntity.ok("""
+            <h1>Backend API is Running</h1>
+            <p>Available endpoints:</p>
+            <ul>
+                <li>/api/members</li>
+                <li>/api/auth/login</li>
+                <li>/api/auth/register</li>
+            </ul>
+            """);
+    }
+    
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> health() {
+        return ResponseEntity.ok(Map.of(
+            "status", "UP",
+            "timestamp", Instant.now().toString()
+        ));
+    }
+}
+```
+
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
@@ -327,3 +463,7 @@ mcp__claude-flow__task_status taskId="[id]" detailed=true
 
 - **Always use the scripts to start the application**
 - The main scripts for building and deploying the application are in ./scripts
+
+## Project Development Best Practices
+
+- **Backend Development Reminder**: after build backend always test if its actually running

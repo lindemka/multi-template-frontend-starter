@@ -3,9 +3,7 @@ import { ApiError } from '@/types/api';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: typeof window !== 'undefined' 
-    ? window.location.origin  // Use current origin when in browser (Spring Boot serves at same origin)
-    : process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080',
+  baseURL: '', // Use relative URLs, Next.js proxy handles routing
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,7 +14,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Add authentication token if available
-    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

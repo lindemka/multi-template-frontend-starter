@@ -1,8 +1,8 @@
 package com.example.demo.config;
 
-import com.example.demo.entity.Member;
-import com.example.demo.repository.MemberRepository;
-import com.example.demo.factory.MemberDataFactory;
+import com.example.demo.entity.UserProfile;
+import com.example.demo.repository.UserProfileRepository;
+import com.example.demo.factory.UserProfileDataFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,21 +13,20 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
     
     @Autowired
-    private MemberRepository memberRepository;
+    private UserProfileRepository userProfileRepository;
     
     @Autowired
-    private MemberDataFactory memberDataFactory;
+    private UserProfileDataFactory userProfileDataFactory;
 
     @Override
     public void run(String... args) throws Exception {
-        if (memberRepository.count() == 0) {
-            initializeMembers();
-        }
+        // DataInitializer is disabled - data is now initialized through DatabaseFixer
+        // This prevents conflicts with the new user/profile relationship
     }
     
-    private void initializeMembers() {
-        List<Member> members = memberDataFactory.createAllMembers();
-        memberRepository.saveAll(members);
-        System.out.println("Demo members initialized successfully! Total: " + members.size());
+    private void initializeUserProfiles() {
+        List<UserProfile> profiles = userProfileDataFactory.createAllProfiles();
+        userProfileRepository.saveAll(profiles);
+        System.out.println("Demo user profiles initialized successfully! Total: " + profiles.size());
     }
 }
