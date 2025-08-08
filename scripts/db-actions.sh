@@ -25,14 +25,16 @@ run_sql() {
 }
 
 parse_args() {
-  # Simple flag parser: --key value → sets KEY variable
+  # Simple flag parser: --key value → sets KEY variable (dashes→underscores, uppercased)
   while [ $# -gt 0 ]; do
     case "$1" in
       --*)
         key=${1#--}
         val=${2:-}
         [ -z "$val" ] && fail "Missing value for $1"
-        export ${key^^}="$val"
+        var=${key//-/_}
+        var_u=$(printf '%s' "$var" | tr '[:lower:]' '[:upper:]')
+        export "$var_u=$val"
         shift 2
         ;;
       *)
