@@ -28,6 +28,24 @@ This is the authoritative guide for running the app in development and productio
 
 - Under the hood this uses the backend `/api/db/*` endpoints for safety and consistency.
 
+### DB Quick Actions
+
+- Users:
+  - Add: `./scripts/db-actions.sh user add --username alice --email alice@example.com --password pass --first Alice --last Doe`
+  - Rename: `./scripts/db-actions.sh user rename --old alice --new alice2`
+  - Delete: `./scripts/db-actions.sh user delete --username alice`
+
+- Profiles:
+  - Add: `./scripts/db-actions.sh profile add --user-id 12 --name "Alice Doe"`
+  - Update: `./scripts/db-actions.sh profile update --profile-id 34 --name "Alice D."`
+
+- Startups:
+  - Add: `./scripts/db-actions.sh startup add --name "Acme AI" --tagline "AI co-pilot" --website https://acme.ai --stage growth --industry AI --location Berlin`
+
+- Tables:
+  - Add column: `./scripts/db-actions.sh table add-column --table users --column bio --type text`
+  - Drop: `./scripts/db-actions.sh table drop --table tmp_test`
+
 ## Daily Development
 
 - Start: `./scripts/dev.sh`
