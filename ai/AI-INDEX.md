@@ -16,6 +16,7 @@
 ### Component & UI
 8. **[COMPONENT-GUIDE.md](./COMPONENT-GUIDE.md)** - Shadcn/ui component usage patterns and examples
 9. **[SCRIPTS-GUIDE.md](./SCRIPTS-GUIDE.md)** - Development scripts reference
+10. **[OPERATIONS-RUNBOOK.md](./OPERATIONS-RUNBOOK.md)** - Dev/Prod run, build, deploy, testing
 
 ### Project Management
 10. **[PROJECT-CLEANUP-SUMMARY.md](./PROJECT-CLEANUP-SUMMARY.md)** - Recent cleanup and improvements
@@ -90,9 +91,9 @@ ai/
 - Use components from `/frontend/src/components/ui/`
 
 ### For Deployment
-- Follow [CLAUDE.md](./CLAUDE.md) for build commands
+- Start with [OPERATIONS-RUNBOOK.md](./OPERATIONS-RUNBOOK.md)
 - Use [SCRIPTS-GUIDE.md](./SCRIPTS-GUIDE.md) for automation
-- Check [DEVELOPMENT-GUIDE.md](./DEVELOPMENT-GUIDE.md) for production builds
+- Reference [ARCHITECTURE.md](./ARCHITECTURE.md) for system context
 
 ## 📋 Document Status
 
@@ -108,6 +109,7 @@ ai/
 | MCP-GUIDE.md | ✅ NEW | Consolidated MCP guide | Today |
 | COMPONENT-GUIDE.md | ✅ Active | UI patterns | Current |
 | SCRIPTS-GUIDE.md | ✅ Active | Script reference | Current |
+| OPERATIONS-RUNBOOK.md | ✅ NEW | Dev/Prod run, build, deploy, test | Today |
 
 ## 🗂️ Archived Documents
 
