@@ -72,6 +72,7 @@ Confused about status? → ./scripts/status.sh
 Need production build? → ./scripts/build.sh
 Need to test prod while developing? → ./scripts/deploy.sh
 Need cleanup/migration/tests? → scripts/optional/*
+Before pushing CI or larger changes? → ./scripts/checks.sh
 ```
 
 ## 📋 Common Workflows
