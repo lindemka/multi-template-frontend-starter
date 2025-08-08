@@ -1,8 +1,8 @@
 # 📚 Scripts Guide - Simplified Development
 
-## 🎯 Only 4 Scripts (Cleaned Up!)
+## 🎯 Scripts Overview
 
-We removed confusing and redundant scripts. Here's what remains:
+All scripts live in `scripts/`. Use the essential ones for day-to-day; optional ones are for specific tasks.
 
 ## 🚀 Essential Scripts
 
@@ -49,19 +49,17 @@ We removed confusing and redundant scripts. Here's what remains:
   - Keeps dev servers running
 - **When to use**: Test production build while keeping development running
 
-## 🧹 What We Removed (And Why)
+## 🛠️ Optional Scripts (under `scripts/optional/`)
 
-### ❌ Removed Scripts
-- **`dev-frontend.sh`** - Redundant (dev.sh starts both)
-- **`backend-restart.sh`** - Confusing (just restart dev.sh)
-- **`backend-dev.sh`** - Redundant (dev.sh has hot reload)
-- **`run.sh`** - Confusing (overlapped with build.sh)
+- `dev-clean.sh`: remove caches, restart fresh
+- `migrate-to-postgres.sh`: run backend with Postgres profile
+- `test-api.sh`: quick API smoke tests
+- `test-dashboard.sh`: quick UI smoke steps
+- `create-test-user.sh`: helper for seeding a user
 
-### ✅ Why This Is Better
-- **Simpler**: Just use dev.sh for daily work
-- **Less confusing**: No more "which script should I use?"
-- **More reliable**: One script that always works
-- **Cleaner**: Focused on essential tasks only
+## ❌ Removed Scripts
+
+- `deploy-isolated.sh`, `deploy-safe.sh`, `deploy-optimized.sh` (redundant)
 
 ## 🎯 Decision Tree
 
@@ -71,6 +69,7 @@ Need to stop? → ./scripts/dev.sh stop
 Confused about status? → ./scripts/status.sh
 Need production build? → ./scripts/build.sh
 Need to test prod while developing? → ./scripts/deploy.sh
+Need cleanup/migration/tests? → scripts/optional/*
 ```
 
 ## 📋 Common Workflows
