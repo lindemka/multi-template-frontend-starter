@@ -1,21 +1,23 @@
 # fbase
 
-A full-stack application built with Spring Boot backend and Next.js frontend using shadcn/ui components.
+A full-stack application: Spring Boot backend + Next.js frontend using shadcn/ui.
 
-## Quick Start
+## Prerequisites
+
+- Java 21 (via jenv recommended): `eval "$(jenv init -)" && jenv local 21 && jenv shell 21`
+- Node.js 22.x and npm
+- Maven 3.9+
+
+## Quick Start (Development)
 
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
+# From project root
+./scripts/dev.sh           # start backend (8080) + frontend (3000)
+./scripts/status.sh        # check what's running
+./scripts/dev.sh stop      # stop both
 ```
 
-## Available Pages
+## Available Pages (Dev)
 
 - **Home**: `http://localhost:3000/` - Landing page
 - **Dashboard**: `http://localhost:3000/dashboard` - Dashboard with shadcn/ui components
@@ -50,8 +52,8 @@ fbase/
 ├── backend/                       # Spring Boot backend
 │   ├── src/main/java/            # Java source code
 │   └── pom.xml
-├── scripts/                       # Build and deployment scripts
-├── archive/                       # Legacy template files (to be removed)
+├── scripts/                       # Build and deployment scripts (essential + optional/legacy)
+├── archive/                       # Legacy template files
 └── ai/                           # Documentation
 ```
 
@@ -66,24 +68,21 @@ fbase/
 - ✅ **API Integration**: RESTful backend with React Query client
 - ✅ **Development Tools**: ESLint, TypeScript checking, and more
 
-## Development
+## Builds & Deployment (Local)
 
 ```bash
-# Start development server with hot reload
-npm run dev
+# Build artifacts only (keep dev running)
+./scripts/deploy.sh
 
-# Build for production
-npm run build
-
-# Clean build directory
-npm run clean
+# Full production build + run (stops dev servers)
+./scripts/build.sh
 ```
 
 ## Documentation
 
 All detailed documentation is available in the `/ai` folder:
 
-- `ai/README.md` - Comprehensive project overview
-- `ai/COMPONENT-GUIDE.md` - **Navigation guide for template components**
+- `ai/AI-INDEX.md` - Single source of truth for all docs
+- `ai/OPERATIONS-RUNBOOK.md` - Run, build, deploy, and testing guide
+- `ai/SCRIPTS-GUIDE.md` - Script usage (dev, status, build, deploy)
 - `ai/ARCHITECTURE.md` - Technical architecture details
-- `ai/QUICK-START.md` - Essential commands and workflows for AI 
