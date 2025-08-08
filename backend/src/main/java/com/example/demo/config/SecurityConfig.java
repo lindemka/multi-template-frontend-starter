@@ -42,6 +42,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/health").permitAll() // Health endpoint only
                 .requestMatchers("/api/auth/**").permitAll() // Auth endpoints
+                .requestMatchers("/api/account/confirm-email").permitAll()
                 .requestMatchers("/api/members/**").permitAll() // Temporarily allow public access
                 .requestMatchers("/api/startups/**").permitAll() // Allow public access to startups
                 .requestMatchers("/api/db/**").hasRole("ADMIN") // Restrict DB management endpoints

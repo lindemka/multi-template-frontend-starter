@@ -8,13 +8,13 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   // No static export - we'll run Next.js server in production
   // output: 'export', // Can't use with dynamic routes
-  
+
   // Image optimization disabled 
   images: {
     unoptimized: true,
   },
-  
-  // API proxy for both dev and production
+
+  // API proxy for backend endpoints not handled by our BFF route handlers
   async rewrites() {
     return [
       {
@@ -23,46 +23,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
+
   // React strict mode for better development
   reactStrictMode: true,
-  
+
   // Skip linting during build to avoid blocking deployment
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   // Skip TypeScript errors during build
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Webpack configuration to prevent module loading issues
-  webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      // Prevent webpack module conflicts in development
-      config.optimization = {
-        ...config.optimization,
-        splitChunks: {
-          ...config.optimization.splitChunks,
-          cacheGroups: {
-            ...config.optimization.splitChunks.cacheGroups,
-            default: false,
-            vendors: false,
-          },
-        },
-      };
-      
-      // Better error handling for hot module replacement
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-      };
-    }
-    
-    return config;
-  },
+
+  // Use Next.js default webpack settings to avoid chunk issues
 };
 
 export default withNextIntl(nextConfig);

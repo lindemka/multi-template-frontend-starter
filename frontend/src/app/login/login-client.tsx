@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from 'next/link';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// Use BFF route handlers under /api/* so tokens are set as httpOnly cookies
 
 export default function LoginClient() {
   const router = useRouter();
@@ -20,20 +20,19 @@ export default function LoginClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
+
   // Check if already logged in
   useEffect(() => {
-    if (auth.isAuthenticated()) {
+    const hasAccessCookie = typeof document !== 'undefined' && document.cookie.includes('accessToken=');
+    const hasRefreshCookie = typeof document !== 'undefined' && document.cookie.includes('refreshToken=');
+    if (hasAccessCookie || hasRefreshCookie || auth.isAuthenticated()) {
       const from = searchParams.get('from') || '/dashboard';
-      router.push(from);
+      router.replace(from);
     }
   }, [router, searchParams]);
 
   // Login form state
-  const [loginData, setLoginData] = useState({
-    username: '',
-    password: ''
-  });
+  const [loginData, setLoginData] = useState({ usernameOrEmail: '', password: '' });
 
   // Registration form state
   const [registerData, setRegisterData] = useState({
@@ -51,7 +50,7 @@ export default function LoginClient() {
     setError('');
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,23 +58,20 @@ export default function LoginClient() {
         body: JSON.stringify(loginData),
       });
 
-      const data = await response.json();
+      let data: any = null;
+      try { data = await response.json(); } catch { }
 
       if (response.ok) {
-        auth.login(data.token, {
-          id: data.id,
-          username: data.username,
-          email: data.email,
-          role: data.role,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          profileId: data.profileId
-        });
-        
+        // Tokens are set by BFF as httpOnly cookies
         const from = searchParams.get('from') || '/dashboard';
-        router.push(from);
+        router.replace(from);
       } else {
-        setError(data.message || 'Invalid username or password');
+        const serverMsg = data?.error || data?.message;
+        if (response.status === 403 && /email/i.test(String(serverMsg))) {
+          setError('Email not verified. Please check your inbox for the verification link.');
+        } else {
+          setError(serverMsg || 'Invalid username or password');
+        }
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -97,7 +93,7 @@ export default function LoginClient() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const response = await fetch(`/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,20 +109,11 @@ export default function LoginClient() {
 
       const data = await response.json();
 
-      if (response.ok) {
-        auth.login(data.token, {
-          id: data.id,
-          username: data.username,
-          email: data.email,
-          role: data.role,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          profileId: data.profileId
-        });
-        
-        router.push('/dashboard');
-      } else {
+      if (!response.ok) {
         setError(data.message || 'Registration failed');
+      } else {
+        // Inform the user to verify email before logging in
+        setError('Registration successful. Check your email to verify your account.');
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -151,17 +138,17 @@ export default function LoginClient() {
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username">Username or Email</Label>
                   <Input
                     id="username"
                     type="text"
-                    placeholder="Enter your username"
-                    value={loginData.username}
-                    onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                    placeholder="Enter your username or email"
+                    value={loginData.usernameOrEmail}
+                    onChange={(e) => setLoginData({ ...loginData, usernameOrEmail: e.target.value })}
                     required
                     disabled={isLoading}
                   />
@@ -204,7 +191,7 @@ export default function LoginClient() {
                 </Button>
               </form>
             </TabsContent>
-            
+
             <TabsContent value="register">
               <form onSubmit={handleRegister} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -308,7 +295,7 @@ export default function LoginClient() {
           </div>
         </CardFooter>
       </Card>
-      
+
       {/* Test credentials hint */}
       <div className="fixed bottom-4 right-4 p-4 bg-white rounded-lg shadow-lg border max-w-xs">
         <p className="text-sm font-semibold mb-1">Test Credentials:</p>

@@ -1,24 +1,24 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.LoginRequest;
-import com.example.demo.dto.LoginResponse;
-import com.example.demo.dto.RegisterRequest;
-import com.example.demo.entity.AuthUser;
-import com.example.demo.repository.AuthUserRepository;
+import com.example.demo.dto.AuthDtos.*;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import com.example.demo.security.JwtUtil;
-import com.example.demo.service.UserProfileService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.*;
+import io.github.bucket4j.Bucket;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,178 +27,184 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 @CrossOrigin(originPatterns = "*")
 public class AuthController {
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+    private final AuthUserRepository authUserRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserProfileService userProfileService;
+    private final JwtTokenService jwtTokenService;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailChangeRequestRepository emailChangeRequestRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
+    private final RateLimiterService rateLimiterService;
+    private final String appOrigin;
+    private final boolean requireEmailVerification;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private AuthUserRepository authUserRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    
-    @Autowired
-    private UserProfileService userProfileService;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            // Authenticate the user
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getUsername(),
-                            loginRequest.getPassword()
-                    )
-            );
-
-            // Load user details
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-            
-            // Get the full user entity
-            AuthUser authUser = authUserRepository.findByUsername(loginRequest.getUsername())
-                    .orElseThrow(() -> new BadCredentialsException("User not found"));
-
-            // Update last login
-            authUser.setLastLogin(LocalDateTime.now());
-            authUserRepository.save(authUser);
-
-            // Generate JWT token with additional claims
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("userId", authUser.getId());
-            claims.put("email", authUser.getEmail());
-            claims.put("role", authUser.getRole());
-            claims.put("firstName", authUser.getFirstName());
-            claims.put("lastName", authUser.getLastName());
-            
-            String jwt = jwtUtil.generateToken(loginRequest.getUsername(), claims);
-
-            // Get the user's profile ID
-            Long profileId = userProfileService.getProfileByUserId(authUser.getId())
-                    .map(profile -> profile.getId())
-                    .orElse(null);
-            
-            // Create response
-            LoginResponse response = new LoginResponse(
-                    jwt,
-                    authUser.getId(),
-                    authUser.getUsername(),
-                    authUser.getEmail(),
-                    authUser.getRole(),
-                    authUser.getFirstName(),
-                    authUser.getLastName(),
-                    profileId
-            );
-
-            return ResponseEntity.ok(response);
-        } catch (BadCredentialsException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Invalid username or password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        }
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil,
+                          AuthUserRepository authUserRepository,
+                          PasswordEncoder passwordEncoder,
+                          UserProfileService userProfileService,
+                          JwtTokenService jwtTokenService,
+                          EmailVerificationTokenRepository emailVerificationTokenRepository,
+                          PasswordResetTokenRepository passwordResetTokenRepository,
+                          EmailChangeRequestRepository emailChangeRequestRepository,
+                          RefreshTokenRepository refreshTokenRepository,
+                          EmailService emailService,
+                          RateLimiterService rateLimiterService,
+                           @Value("${app.origin:http://localhost:3000}") String appOrigin,
+                           @Value("${app.auth.requireEmailVerification:true}") boolean requireEmailVerification) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.authUserRepository = authUserRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userProfileService = userProfileService;
+        this.jwtTokenService = jwtTokenService;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.emailChangeRequestRepository = emailChangeRequestRepository;
+        this.emailService = emailService;
+        this.rateLimiterService = rateLimiterService;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.appOrigin = appOrigin;
+        this.requireEmailVerification = requireEmailVerification;
+        log.info("AuthController initialized. requireEmailVerification={} appOrigin={}", this.requireEmailVerification, this.appOrigin);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        try {
-            // Check if username already exists
-            if (authUserRepository.existsByUsername(registerRequest.getUsername())) {
-                Map<String, String> error = new HashMap<>();
-                error.put("error", "Username already exists");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            }
-
-            // Check if email already exists
-            if (authUserRepository.existsByEmail(registerRequest.getEmail())) {
-                Map<String, String> error = new HashMap<>();
-                error.put("error", "Email already exists");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            }
-
-            // Create new user
-            AuthUser authUser = new AuthUser();
-            authUser.setUsername(registerRequest.getUsername());
-            authUser.setEmail(registerRequest.getEmail());
-            authUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-            authUser.setFirstName(registerRequest.getFirstName());
-            authUser.setLastName(registerRequest.getLastName());
-            authUser.setRole("USER");
-            authUser.setEnabled(true);
-
-            // Save user
-            authUser = authUserRepository.save(authUser);
-            
-            // Create user profile
-            userProfileService.createProfileForUser(authUser);
-
-            // Generate JWT token
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("userId", authUser.getId());
-            claims.put("email", authUser.getEmail());
-            claims.put("role", authUser.getRole());
-            claims.put("firstName", authUser.getFirstName());
-            claims.put("lastName", authUser.getLastName());
-            
-            String jwt = jwtUtil.generateToken(authUser.getUsername(), claims);
-
-            // Get the user's profile ID
-            Long profileId = userProfileService.getProfileByUserId(authUser.getId())
-                    .map(profile -> profile.getId())
-                    .orElse(null);
-            
-            // Create response
-            LoginResponse response = new LoginResponse(
-                    jwt,
-                    authUser.getId(),
-                    authUser.getUsername(),
-                    authUser.getEmail(),
-                    authUser.getRole(),
-                    authUser.getFirstName(),
-                    authUser.getLastName(),
-                    profileId
-            );
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", "Registration failed: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
+        if (authUserRepository.existsByUsername(req.username)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Username already exists"));
         }
+        if (authUserRepository.existsByEmail(req.email)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already exists"));
+        }
+        AuthUser user = new AuthUser();
+        user.setUsername(req.username);
+        user.setEmail(req.email);
+        user.setPassword(passwordEncoder.encode(req.password));
+        user.setFirstName(req.firstName);
+        user.setLastName(req.lastName);
+        user.setRole("USER");
+        user.setEnabled(true);
+        user.setLastLogin(null);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user = authUserRepository.save(user);
+        userProfileService.createProfileForUser(user);
+
+        // Email verification token (24h)
+        EmailVerificationToken evt = new EmailVerificationToken();
+        evt.setUser(user);
+        evt.setToken(java.util.UUID.randomUUID().toString());
+        evt.setExpiresAt(LocalDateTime.now().plusDays(1));
+        emailVerificationTokenRepository.save(evt);
+        String verifyLink = appOrigin + "/verify-email?token=" + evt.getToken();
+        emailService.sendEmail(user.getEmail(), "Verify your email",
+                "<p>Click to verify: <a href='" + verifyLink + "'>Verify Email</a></p>");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Registration successful. Please verify your email."));
     }
 
-    @GetMapping("/validate")
-    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authHeader) {
-        try {
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
-                if (jwtUtil.validateToken(token)) {
-                    String username = jwtUtil.extractUsername(token);
-                    AuthUser authUser = authUserRepository.findByUsername(username)
-                            .orElseThrow(() -> new RuntimeException("User not found"));
-                    
-                    Map<String, Object> response = new HashMap<>();
-                    response.put("valid", true);
-                    response.put("username", authUser.getUsername());
-                    response.put("email", authUser.getEmail());
-                    response.put("role", authUser.getRole());
-                    
-                    return ResponseEntity.ok(response);
-                }
-            }
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("valid", false);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("valid", false);
-            response.put("error", e.getMessage());
-            return ResponseEntity.ok(response);
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req, @RequestHeader(value = "X-Forwarded-For", required = false) String ip,
+                                   @RequestHeader(value = "User-Agent", required = false) String userAgent) {
+        String clientIp = ip != null ? ip : "unknown";
+        Bucket bucket = rateLimiterService.resolveBucket("login:" + clientIp, 5, Duration.ofMinutes(1));
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(429).body(Map.of("error", "Too many login attempts"));
         }
+        log.info("Login attempt for {}", req.usernameOrEmail);
+        AuthUser user = authUserRepository.findByUsername(req.usernameOrEmail)
+                .or(() -> authUserRepository.findByEmail(req.usernameOrEmail))
+                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+        if (!Boolean.TRUE.equals(user.getEnabled())) throw new BadCredentialsException("Account disabled");
+        log.info("User found={}, emailVerified={}, requireEmailVerification={}", user.getUsername(), user.getEmailVerified(), requireEmailVerification);
+        if (requireEmailVerification && !Boolean.TRUE.equals(user.getEmailVerified()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Email not verified"));
+
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), req.password));
+        user.setLastLogin(LocalDateTime.now());
+        authUserRepository.save(user);
+        Map<String, String> tokens = jwtTokenService.generateTokensForUser(user, clientIp, userAgent);
+        return ResponseEntity.ok(Map.of("accessToken", tokens.get("access"), "refreshToken", tokens.get("refresh")));
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestParam("token") String token) {
+        EmailVerificationToken evt = emailVerificationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+        if (evt.isUsed() || evt.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Token invalid or expired"));
+        }
+        AuthUser user = evt.getUser();
+        user.setEmailVerified(true);
+        authUserRepository.save(user);
+        evt.setUsed(true);
+        emailVerificationTokenRepository.save(evt);
+        return ResponseEntity.ok(Map.of("message", "Email verified"));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshRequest req, @RequestHeader(value = "X-Forwarded-For", required = false) String ip,
+                                     @RequestHeader(value = "User-Agent", required = false) String userAgent) {
+        RefreshToken current = refreshTokenRepository.findByTokenId(req.refreshToken)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid refresh token"));
+        AuthUser user = current.getUser();
+        RefreshToken next = jwtTokenService.rotateRefreshToken(current.getTokenId(), user, ip, userAgent);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId()); claims.put("email", user.getEmail()); claims.put("role", user.getRole());
+        String access = jwtUtil.generateToken(user.getUsername(), claims);
+        return ResponseEntity.ok(Map.of("accessToken", access, "refreshToken", next.getTokenId()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody(required = false) RefreshRequest req, @RequestAttribute(name = "user", required = false) AuthUser user) {
+        if (user == null && req != null) {
+            RefreshToken current = refreshTokenRepository.findByTokenId(req.refreshToken).orElse(null);
+            if (current != null) user = current.getUser();
+        }
+        if (user != null) {
+            jwtTokenService.revokeAllUserTokens(user);
+        }
+        return ResponseEntity.ok(Map.of("message", "Logged out"));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
+        Bucket bucket = rateLimiterService.resolveBucket("forgot:" + req.email, 5, Duration.ofHours(1));
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(429).body(Map.of("error", "Too many requests"));
+        }
+        AuthUser user = authUserRepository.findByEmail(req.email).orElse(null);
+        if (user != null) {
+            PasswordResetToken prt = new PasswordResetToken();
+            prt.setUser(user);
+            prt.setToken(java.util.UUID.randomUUID().toString());
+            prt.setExpiresAt(LocalDateTime.now().plusHours(2));
+            passwordResetTokenRepository.save(prt);
+            String resetLink = appOrigin + "/reset-password?token=" + prt.getToken();
+            emailService.sendEmail(user.getEmail(), "Reset your password",
+                    "<p>Reset link: <a href='" + resetLink + "'>Reset Password</a></p>");
+        }
+        return ResponseEntity.ok(Map.of("message", "If that email exists, a reset link has been sent."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
+        PasswordResetToken prt = passwordResetTokenRepository.findByToken(req.token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
+        if (prt.isUsed() || prt.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Token invalid or expired"));
+        }
+        AuthUser user = prt.getUser();
+        user.setPassword(passwordEncoder.encode(req.newPassword));
+        authUserRepository.save(user);
+        prt.setUsed(true);
+        passwordResetTokenRepository.save(prt);
+        return ResponseEntity.ok(Map.of("message", "Password updated"));
     }
 }

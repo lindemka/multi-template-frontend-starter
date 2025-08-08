@@ -22,7 +22,8 @@ stop_servers() {
     echo -e "${BLUE}Stopping development servers...${NC}"
     pkill -f "java.*fbase" || true
     pkill -f "next dev" || true
-    rm -f backend/backend.log frontend/frontend.log 2>/dev/null || true
+    pkill -f "maildev --smtp 1025 --web 1080" || true
+    rm -f backend/backend.log frontend/frontend.log maildev.log 2>/dev/null || true
     echo -e "${GREEN}✅ Servers stopped${NC}"
     exit 0
 }
@@ -46,6 +47,7 @@ USAGE
 START_BACKEND=true
 START_FRONTEND=true
 WAIT_FOR_READY=true
+START_MAILDEV=true
 
 for arg in "$@"; do
   case "$arg" in
@@ -55,6 +57,8 @@ for arg in "$@"; do
       START_FRONTEND=false ;;
     --frontend-only)
       START_BACKEND=false ;;
+    --no-maildev)
+      START_MAILDEV=false ;;
     --no-wait)
       WAIT_FOR_READY=false ;;
     -h|--help)
@@ -79,12 +83,14 @@ echo -e "${YELLOW}Node:${NC} ${NODE_VER}"
 echo -e "${BLUE}🚀 Starting development environment...${NC}"
 echo -e "${YELLOW}  - Backend: http://localhost:8080${NC}"
 echo -e "${YELLOW}  - Frontend: http://localhost:3000${NC}"
+echo -e "${YELLOW}  - MailDev SMTP/Web: 1025 / http://localhost:1080${NC}"
 echo -e "${YELLOW}  - Dashboard: http://localhost:3000/dashboard/${NC}"
 echo ""
 
 # Clean up any existing processes
 pkill -f "java.*fbase" || true
 pkill -f "next dev" || true
+pkill -f "maildev --smtp 1025 --web 1080" || true
 sleep 2
 
 if [ "$START_BACKEND" = true ]; then
@@ -101,18 +107,31 @@ if [ "$START_FRONTEND" = true ]; then
   cd ..
 fi
 
+if [ "$START_MAILDEV" = true ]; then
+  if ! command -v maildev >/dev/null 2>&1; then
+    echo -e "${YELLOW}MailDev not found. Installing globally...${NC}"
+    npm install -g maildev >/dev/null 2>&1 || true
+  fi
+  echo -e "${BLUE}Starting MailDev (SMTP:1025, Web:1080)...${NC}"
+  nohup maildev --smtp 1025 --web 1080 > maildev.log 2>&1 &
+fi
+
 if [ "$WAIT_FOR_READY" = true ]; then
   echo -e "${BLUE}Waiting for servers to start...${NC}"
   for i in {1..90}; do
       BACKEND_UP=yes
       FRONTEND_UP=yes
+      MAILDEV_UP=yes
       if [ "$START_BACKEND" = true ]; then
         BACKEND_UP=$(curl -s http://localhost:8080/health > /dev/null 2>&1 && echo "yes" || echo "no")
       fi
       if [ "$START_FRONTEND" = true ]; then
         FRONTEND_UP=$(curl -s http://localhost:3000 > /dev/null 2>&1 && echo "yes" || echo "no")
       fi
-      if [ "$BACKEND_UP" = "yes" ] && [ "$FRONTEND_UP" = "yes" ]; then
+      if [ "$START_MAILDEV" = true ]; then
+        MAILDEV_UP=$(curl -s http://localhost:1080 > /dev/null 2>&1 && echo "yes" || echo "no")
+      fi
+      if [ "$BACKEND_UP" = "yes" ] && [ "$FRONTEND_UP" = "yes" ] && [ "$MAILDEV_UP" = "yes" ]; then
           break
       fi
       echo -n "."
@@ -127,6 +146,7 @@ echo ""
 echo -e "${GREEN}Access Points:${NC}"
 echo -e "  ${YELLOW}Dashboard:${NC} http://localhost:3000/dashboard/"
 echo -e "  ${YELLOW}API Health:${NC} http://localhost:8080/health"
+echo -e "  ${YELLOW}MailDev Web:${NC} http://localhost:1080"
 echo ""
 echo -e "${GREEN}Commands:${NC}"
 echo -e "  ${YELLOW}Stop:${NC} ./scripts/dev.sh stop"
@@ -135,3 +155,4 @@ echo ""
 echo -e "${GREEN}Logs:${NC}"
 echo -e "  ${YELLOW}Backend:${NC} tail -f backend/backend.log"
 echo -e "  ${YELLOW}Frontend:${NC} tail -f frontend/frontend.log"
+echo -e "  ${YELLOW}MailDev:${NC} tail -f maildev.log"

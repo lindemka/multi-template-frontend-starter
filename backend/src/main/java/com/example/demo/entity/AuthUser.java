@@ -31,6 +31,12 @@ public class AuthUser {
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean enabled = true;
 
+    @Column(name = "email_verified", columnDefinition = "boolean default false")
+    private Boolean emailVerified = false;
+
+    @Column(name = "google_id")
+    private String googleId;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -115,6 +121,12 @@ public class AuthUser {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
+
+    public Boolean getEmailVerified() { return emailVerified; }
+    public void setEmailVerified(Boolean emailVerified) { this.emailVerified = emailVerified; }
+
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
