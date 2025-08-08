@@ -26,7 +26,7 @@ This is the authoritative guide for running the app in development and productio
   - DDL: `./scripts/sql.sh -t ddl "ALTER TABLE users ADD COLUMN bio text"`
   - Batch (newline separated): `./scripts/sql.sh -t batch -f statements.sql`
 
-- Under the hood this uses the backend `/api/db/*` endpoints for safety and consistency.
+- Under the hood this uses the backend `/api/db/*` endpoints for safety and consistency. In production, these endpoints must be ADMIN-only (enforced in `SecurityConfig`). For local rapid development, use `scripts/sql.sh` and `scripts/db-actions.sh` which call these endpoints.
 
 ### DB Quick Actions
 

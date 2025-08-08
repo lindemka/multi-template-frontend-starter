@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll() // Auth endpoints
                 .requestMatchers("/api/members/**").permitAll() // Temporarily allow public access
                 .requestMatchers("/api/startups/**").permitAll() // Allow public access to startups
-                .requestMatchers("/api/db/**").permitAll() // Database management endpoints
+                .requestMatchers("/api/db/**").hasRole("ADMIN") // Restrict DB management endpoints
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
