@@ -1,0 +1,101 @@
+# Optimized Spring Boot Configuration
+spring:
+  config:
+    activate:
+      on-profile: optimized
+      
+  datasource:
+    hikari:
+      # Optimized connection pool settings
+      maximum-pool-size: 20  # Increased for better concurrency
+      minimum-idle: 10       # Higher minimum for faster response
+      connection-timeout: 10000  # Reduced timeout
+      idle-timeout: 600000       # 10 minutes
+      max-lifetime: 1800000      # 30 minutes
+      connection-test-query: SELECT 1
+      leak-detection-threshold: 60000  # Detect connection leaks
+      
+  jpa:
+    properties:
+      hibernate:
+        # Batch operations for better performance
+        jdbc:
+          batch_size: 50
+          batch_versioned_data: true
+          fetch_size: 100
+        order_inserts: true
+        order_updates: true
+        # Second-level cache
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+        # Statistics for monitoring
+        generate_statistics: false  # Enable only for debugging
+        
+  cache:
+    type: caffeine
+    caffeine:
+      spec: |
+        maximumSize=1000
+        expireAfterWrite=5m
+        expireAfterAccess=2m
+        recordStats
+    cache-names:
+      - users
+      - profiles
+      - startups
+      - members
+      - searchResults
+      
+  task:
+    execution:
+      pool:
+        core-size: 8
+        max-size: 20
+        queue-capacity: 500
+        
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+      
+server:
+  tomcat:
+    # Optimize Tomcat settings
+    accept-count: 100
+    max-connections: 10000
+    max-threads: 200
+    min-spare-threads: 10
+    connection-timeout: 20000
+    
+  compression:
+    enabled: true
+    mime-types: 
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - text/javascript
+      - application/javascript
+      - application/json
+      - application/xml
+    min-response-size: 512
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,caches
+  metrics:
+    cache:
+      enabled: true
+    export:
+      prometheus:
+        enabled: true
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true

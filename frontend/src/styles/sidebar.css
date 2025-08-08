@@ -1,0 +1,50 @@
+/* Sidebar Logo Fix */
+.sidebar-header {
+  position: relative;
+  z-index: 100 !important;
+  background: var(--background);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Ensure logo is always on top */
+[data-sidebar="sidebar"] header {
+  z-index: 100 !important;
+  position: relative;
+}
+
+/* Logo container styling */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-logo:hover {
+  background: var(--accent);
+}
+
+/* Logo icon */
+.sidebar-logo-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 0.5rem;
+  font-weight: bold;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Collapsed state */
+[data-state="collapsed"] .sidebar-logo-text {
+  display: none;
+}
+
+[data-state="collapsed"] .sidebar-logo-icon {
+  margin: 0 auto;
+}
