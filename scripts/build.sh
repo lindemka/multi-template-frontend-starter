@@ -4,8 +4,7 @@
 # This script STOPS all servers and runs production build
 # Use ./deploy.sh if you want to keep dev servers running
 
-# Exit on any error
-set -e
+set -euo pipefail
 
 # Get the project root directory (parent of scripts directory)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -32,7 +31,7 @@ rm -rf backend/target
 echo -e "${BLUE}Step 2: Building Next.js application...${NC}"
 cd frontend
 # Ensure dependencies are up to date
-npm install
+npm ci || npm install
 # Clean any previous builds
 rm -rf .next
 # Build with production flag
@@ -54,7 +53,7 @@ echo -e "${BLUE}Step 4: Next.js exports directly to root (no redirect needed)...
 # Step 5: Build Spring Boot application
 echo -e "${BLUE}Step 5: Building Spring Boot application...${NC}"
 cd backend
-mvn clean package -DskipTests
+mvn -q -DskipTests package
 
 # Verify Spring Boot build
 if [ ! -f "target/fbase-0.0.1-SNAPSHOT.jar" ]; then
@@ -78,8 +77,8 @@ echo "Spring Boot started with PID: $SPRING_PID"
 
 # Wait for Spring Boot to start
 echo -e "${BLUE}Waiting for Spring Boot to start...${NC}"
-for i in {1..30}; do
-    if curl -s http://localhost:8080/api/users > /dev/null; then
+for i in {1..60}; do
+    if curl -s http://localhost:8080/health > /dev/null; then
         echo -e "${GREEN}✅ Application is running!${NC}"
         break
     fi

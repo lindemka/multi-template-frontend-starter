@@ -9,7 +9,10 @@ All scripts live in `scripts/`. Use the essential ones for day-to-day; optional 
 ### `./scripts/dev.sh` - Development Environment
 - **Purpose**: Start both frontend and backend for development
 - **Usage**: 
-  - `./scripts/dev.sh` - Start servers
+  - `./scripts/dev.sh` - Start both
+  - `./scripts/dev.sh --backend-only` - Start backend only
+  - `./scripts/dev.sh --frontend-only` - Start frontend only
+  - `./scripts/dev.sh --no-wait` - Do not wait for readiness
   - `./scripts/dev.sh stop` - Stop servers
 - **What it does**:
   - Starts Spring Boot backend on port 8080
@@ -23,9 +26,8 @@ All scripts live in `scripts/`. Use the essential ones for day-to-day; optional 
 - **Usage**: `./scripts/status.sh`
 - **Shows**:
   - Frontend status (port 3000)
-  - Backend status (port 8080)
+  - Backend status (port 8080) via `/health`
   - Process IDs
-  - Database user count
   - Quick commands
 - **When to use**: When you're confused about server state
 

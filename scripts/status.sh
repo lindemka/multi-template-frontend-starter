@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Simple status check for development servers
+set -euo pipefail
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -25,12 +26,12 @@ echo ""
 
 # Check Backend
 echo -e "${YELLOW}Backend (port 8080):${NC}"
-if curl -s http://localhost:8080/api/users > /dev/null 2>&1; then
+if curl -s http://localhost:8080/health > 
+/dev/null 2>&1; then
     echo -e "${GREEN}✅ Running${NC}"
     BACKEND_PID=$(lsof -ti:8080 2>/dev/null || echo "unknown")
     echo -e "   PID: $BACKEND_PID"
-    USER_COUNT=$(curl -s http://localhost:8080/api/users | jq 'length' 2>/dev/null || echo "?")
-    echo -e "   Users in database: $USER_COUNT"
+    echo -e "   Health: OK"
 else
     echo -e "${RED}❌ Not running${NC}"
 fi
