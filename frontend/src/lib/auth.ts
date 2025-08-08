@@ -1,5 +1,16 @@
 // Authentication utility functions
 export const auth = {
+  login: (token: string, user: unknown) => {
+    if (typeof window !== 'undefined') {
+      auth.setToken(token)
+      try {
+        localStorage.setItem('user', JSON.stringify(user))
+      } catch (e) {
+        console.error('Error saving user data:', e)
+      }
+    }
+  },
+
   setToken: (token: string) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('token', token);
@@ -39,10 +50,10 @@ export const auth = {
       // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      
+
       // Clear cookie
       document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      
+
       // Redirect to login
       window.location.href = '/login';
     }

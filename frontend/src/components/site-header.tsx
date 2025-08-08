@@ -1,6 +1,6 @@
 "use client"
 
-import { SidebarIcon } from "lucide-react"
+import { PanelLeft } from "lucide-react"
 
 import { SearchForm } from "@/components/search-form"
 import {
@@ -19,15 +19,16 @@ export function SiteHeader() {
   const { toggleSidebar } = useSidebar()
 
   return (
-    <header className="bg-background sticky top-0 z-50 flex h-16 w-full items-center border-b">
+    <header className="bg-background flex h-16 w-full items-center border-b">
       <div className="flex h-full w-full items-center gap-2 px-4">
         <Button
           className="h-8 w-8"
           variant="ghost"
           size="icon"
           onClick={toggleSidebar}
+          title="Toggle sidebar"
         >
-          <SidebarIcon />
+          <PanelLeft className="h-4 w-4" />
         </Button>
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb className="hidden sm:block">

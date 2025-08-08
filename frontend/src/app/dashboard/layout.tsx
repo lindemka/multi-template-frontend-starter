@@ -17,15 +17,17 @@ export default function DashboardLayout({
   return (
     <ProtectedRoute>
       <div>
-        <SidebarProvider className="flex flex-col min-h-screen">
-          <SiteHeader />
-          <div className="flex flex-1">
+        <SidebarProvider>
+          <div className="flex min-h-screen w-full">
             <AppSidebar />
-            <SidebarInset>
-              <div className="flex flex-1 flex-col gap-4 p-4">
-                {children}
-              </div>
-            </SidebarInset>
+            <div className="flex flex-1 flex-col">
+              <SiteHeader />
+              <SidebarInset>
+                <div className="flex flex-1 flex-col gap-4 p-4">
+                  {children}
+                </div>
+              </SidebarInset>
+            </div>
           </div>
         </SidebarProvider>
       </div>

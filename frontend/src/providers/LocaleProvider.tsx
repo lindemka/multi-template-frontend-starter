@@ -19,6 +19,7 @@ interface LocaleProviderProps {
 }
 
 export function LocaleProvider({ children, initialMessages }: LocaleProviderProps) {
+  const timeZone = 'Europe/Berlin'
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
   const [messages, setMessages] = useState(initialMessages);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,9 +27,9 @@ export function LocaleProvider({ children, initialMessages }: LocaleProviderProp
 
   const setLocale = useCallback(async (newLocale: Locale): Promise<void> => {
     if (newLocale === locale || isLoading) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       // Load new messages with error handling
       let newMessages;
@@ -38,11 +39,11 @@ export function LocaleProvider({ children, initialMessages }: LocaleProviderProp
         console.warn(`Failed to load messages for ${newLocale}, using fallback`);
         newMessages = initialMessages; // Use initial messages as fallback
       }
-      
+
       // Update state atomically
       setLocaleState(newLocale);
       setMessages(newMessages);
-      
+
       // Save to cookie with error handling
       try {
         document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}`;
@@ -60,13 +61,13 @@ export function LocaleProvider({ children, initialMessages }: LocaleProviderProp
   // Load locale from cookie on mount with better error handling
   useEffect(() => {
     if (isInitialized) return;
-    
+
     try {
       const savedLocale = document.cookie
         .split('; ')
         .find(row => row.startsWith('NEXT_LOCALE='))
         ?.split('=')[1];
-      
+
       if (savedLocale && (savedLocale === 'en' || savedLocale === 'de')) {
         setLocale(savedLocale as Locale).catch((error) => {
           console.error('Failed to restore saved locale:', error);
@@ -82,7 +83,7 @@ export function LocaleProvider({ children, initialMessages }: LocaleProviderProp
   // Prevent rendering until initialized to avoid hydration mismatches
   if (!isInitialized) {
     return (
-      <NextIntlClientProvider locale={defaultLocale} messages={initialMessages}>
+      <NextIntlClientProvider locale={defaultLocale} messages={initialMessages} timeZone={timeZone}>
         {children}
       </NextIntlClientProvider>
     );
@@ -90,7 +91,7 @@ export function LocaleProvider({ children, initialMessages }: LocaleProviderProp
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale, messages, isLoading }}>
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
         {children}
       </NextIntlClientProvider>
     </LocaleContext.Provider>

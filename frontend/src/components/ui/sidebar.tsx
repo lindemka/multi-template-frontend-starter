@@ -256,9 +256,22 @@ function Sidebar({
 function SidebarTrigger({
   className,
   onClick,
+  children,
+  asChild,
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
+
+  // When using asChild, the consumer must provide a single React element child.
+  // Otherwise render the default trigger content.
+  const content = asChild ? (
+    children
+  ) : (
+    <>
+      <PanelLeftIcon />
+      <span className="sr-only">Toggle Sidebar</span>
+    </>
+  )
 
   return (
     <Button
@@ -271,10 +284,10 @@ function SidebarTrigger({
         onClick?.(event)
         toggleSidebar()
       }}
+      asChild={asChild}
       {...props}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      {content}
     </Button>
   )
 }
@@ -569,7 +582,7 @@ function SidebarMenuAction({
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
+        "peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0",
         className
       )}
       {...props}

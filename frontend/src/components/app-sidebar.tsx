@@ -9,6 +9,8 @@ import {
   LifeBuoy,
   Send,
   Rocket,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -22,6 +24,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 const data = {
@@ -93,13 +97,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, []);
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="relative z-10">
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton size="lg" asChild tooltip="Foundersbase">
               <Link href="/" className="flex items-center gap-2">
-                <div className="bg-primary text-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg font-bold text-lg">
+                <div className="bg-primary text-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg font-bold text-xl shadow-sm">
                   F
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -117,6 +121,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarTrigger asChild>
+              <SidebarMenuButton tooltip="Toggle Sidebar">
+                <ChevronsLeft className="transition-transform group-data-[state=collapsed]:rotate-180" />
+                <span>Collapse</span>
+              </SidebarMenuButton>
+            </SidebarTrigger>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )
