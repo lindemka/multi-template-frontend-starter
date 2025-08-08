@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "dev:turbo": "next dev --turbo",
     "dev:backend": "cd ../backend && mvn spring-boot:run",
     "dev:all": "concurrently -n \"backend,frontend\" -c \"green,blue\" \"npm run dev:backend\" \"npm run dev:turbo\"",
@@ -58,6 +60,10 @@
     "eslint-config-next": "15.4.5",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.0.5",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.4.8",
+    "jsdom": "^25.0.0"
   }
 }

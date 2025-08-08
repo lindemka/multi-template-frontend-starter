@@ -58,6 +58,16 @@ Always verify these after meaningful edits:
   - `./scripts/deploy.sh` completes without errors
   - Optionally run the JAR and spot-check key routes
 
+## Automated Tests
+
+- Backend (JUnit):
+  - Run: `cd backend && mvn -q -DskipITs test`
+  - Example: `HealthControllerTest` asserts `/health` returns `status=UP`
+
+- Frontend (Vitest + RTL):
+  - Run: `cd frontend && npm run test`
+  - Watch: `cd frontend && npm run test:watch`
+
 ## Troubleshooting
 
 - Port in use: stop with `./scripts/dev.sh stop`, or kill processes on 3000/8080
