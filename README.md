@@ -86,3 +86,4 @@ All detailed documentation is available in the `/ai` folder:
 - `ai/OPERATIONS-RUNBOOK.md` - Run, build, deploy, and testing guide
 - `ai/SCRIPTS-GUIDE.md` - Script usage (dev, status, build, deploy)
 - `ai/ARCHITECTURE.md` - Technical architecture details
+ - Database quick actions and SQL helpers documented in `ai/OPERATIONS-RUNBOOK.md` and `ai/SCRIPTS-GUIDE.md`

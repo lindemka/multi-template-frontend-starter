@@ -121,3 +121,26 @@ java -jar target/fbase-0.0.1-SNAPSHOT.jar
 ---
 
 **Bottom line: Just use `./scripts/dev.sh` for daily development!**
+
+## 🗄️ Database & Data Scripts
+
+- `./scripts/db.sh`:
+  - `up`/`down` Postgres + Adminer
+  - `psql` shell
+  - Example: `./scripts/db.sh up` then open Adminer at http://localhost:8081
+
+- `./scripts/sql.sh` (via `/api/db/*` endpoints):
+  - Query: `echo "SELECT COUNT(*) FROM users" | ./scripts/sql.sh`
+  - DML: `./scripts/sql.sh -t dml "UPDATE users SET enabled=false WHERE id=42"`
+  - DDL: `./scripts/sql.sh -t ddl "ALTER TABLE users ADD COLUMN bio text"`
+  - Batch: `./scripts/sql.sh -t batch -f statements.sql`
+
+- `./scripts/db-actions.sh` quick actions:
+  - Users: `user add|rename|delete` (e.g., `./scripts/db-actions.sh user rename --old alice --new alice2`)
+  - Profiles: `profile add|update` (e.g., `./scripts/db-actions.sh profile add --user-id 12 --name "Alice"`)
+  - Startups: `startup add` (e.g., `./scripts/db-actions.sh startup add --name "Acme AI" ...`)
+  - Tables: `table add-column|drop` (e.g., `./scripts/db-actions.sh table add-column --table users --column bio --type text`)
+
+Notes:
+- In production, `/api/db/**` endpoints must be ADMIN-only (see `SecurityConfig`).
+- For full context and examples, see `ai/OPERATIONS-RUNBOOK.md` (Database sections).
