@@ -11,6 +11,23 @@ This is the authoritative guide for running the app in development and productio
   - `DB_PASSWORD` (backend; defaults to `password` for local)
   - Optional: `SPRING_PROFILES_ACTIVE=postgres` if using Postgres
 
+## Local Postgres & Adminer
+
+- Start DB + Adminer: `./scripts/db.sh up`
+- Stop DB + Adminer: `./scripts/db.sh down`
+- Inspect DB in browser: `http://localhost:8081` (server: db, user: postgres, db: project1)
+- psql shell: `./scripts/db.sh psql`
+
+## Rapid DB Operations (for humans and AIs)
+
+- One-liner SQL:
+  - Query: `echo "SELECT COUNT(*) FROM users" | ./scripts/sql.sh`
+  - DML: `./scripts/sql.sh -t dml "UPDATE users SET enabled=false WHERE id=42"`
+  - DDL: `./scripts/sql.sh -t ddl "ALTER TABLE users ADD COLUMN bio text"`
+  - Batch (newline separated): `./scripts/sql.sh -t batch -f statements.sql`
+
+- Under the hood this uses the backend `/api/db/*` endpoints for safety and consistency.
+
 ## Daily Development
 
 - Start: `./scripts/dev.sh`
