@@ -1,8 +1,7 @@
-// Authentication utility functions
+// Authentication utility functions (cookie-based via BFF)
 export const auth = {
-  login: (token: string, user: unknown) => {
+  login: (_token: string, user: unknown) => {
     if (typeof window !== 'undefined') {
-      auth.setToken(token)
       try {
         localStorage.setItem('user', JSON.stringify(user))
       } catch (e) {
@@ -11,20 +10,10 @@ export const auth = {
     }
   },
 
-  setToken: (token: string) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('token', token);
-      // Also set as cookie for middleware to check
-      document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
-    }
-  },
+  // Deprecated: tokens are httpOnly cookies set by BFF. Keep for backward-compat no-op.
+  setToken: (_token: string) => { },
 
-  getToken: () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('token');
-    }
-    return null;
-  },
+  getToken: () => null,
 
   getUser: () => {
     if (typeof window !== 'undefined') {
@@ -42,20 +31,20 @@ export const auth = {
   },
 
   isAuthenticated: () => {
-    return auth.getToken() !== null;
+    if (typeof document !== 'undefined') {
+      const c = document.cookie || ''
+      return c.includes('accessToken=') || c.includes('refreshToken=')
+    }
+    return false
   },
 
-  logout: () => {
+  logout: async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch { }
     if (typeof window !== 'undefined') {
-      // Clear localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-
-      // Clear cookie
-      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-
-      // Redirect to login
-      window.location.href = '/login';
+      localStorage.removeItem('user')
+      window.location.href = '/login'
     }
   },
 

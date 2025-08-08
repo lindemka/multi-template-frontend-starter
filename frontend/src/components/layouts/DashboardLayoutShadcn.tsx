@@ -3,9 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  BarChart3, 
-  Menu, 
+import { auth } from '@/lib/auth';
+import {
+  BarChart3,
+  Menu,
   Home,
   LogOut
 } from 'lucide-react';
@@ -61,9 +62,9 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
           <Home className="mr-3 h-4 w-4" />
           Back to Home
         </Link>
-        
+
         <Separator className="my-2" />
-        
+
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -129,7 +130,7 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
               <div className="flex items-center gap-x-4 lg:gap-x-6 ml-auto">
                 {/* Language switcher */}
                 <LanguageSwitcher />
-                
+
                 {/* User menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -150,11 +151,9 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign out
-                      </Link>
+                    <DropdownMenuItem onClick={() => auth.logout()}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
