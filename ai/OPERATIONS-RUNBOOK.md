@@ -23,17 +23,19 @@ What it does:
 
 ## Production Build & Local Verification
 
-- Build both apps: `./scripts/deploy.sh`
+- Build both apps (artifacts only, dev keeps running): `./scripts/deploy.sh`
 - Full stop-and-run production (local): `./scripts/build.sh`
 
 Artifacts:
 - Backend JAR: `backend/target/fbase-0.0.1-SNAPSHOT.jar`
 
-Run JAR manually:
+Run backend JAR manually:
 ```bash
 cd backend
 java -jar target/fbase-0.0.1-SNAPSHOT.jar
 ```
+
+Note: We do not use static export; Next runs as a server in development and its build artifacts are used by the backend in production.
 
 ## Testing After Changes
 
