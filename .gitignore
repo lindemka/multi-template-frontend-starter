@@ -247,3 +247,12 @@ claude-code-*.log
 # AI working directories (keep these committed)
 # ai/
 # CLAUDE.md
+
+# Playwright and E2E test artifacts (videos, reports, temp results)
+frontend/test-artifacts/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/traces/
+frontend/screenshots/
+frontend/videos/
