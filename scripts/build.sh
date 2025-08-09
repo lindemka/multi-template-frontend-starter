@@ -27,33 +27,55 @@ echo -e "${BLUE}Step 1: Cleaning old builds...${NC}"
 rm -rf backend/src/main/resources/static/*
 rm -rf backend/target
 
-# Step 2: Build Next.js application
+# Step 2: Build Next.js application (server mode)
 echo -e "${BLUE}Step 2: Building Next.js application...${NC}"
 cd frontend
 # Ensure dependencies are up to date
 npm ci || npm install
 # Clean any previous builds
 rm -rf .next
-# Build with production flag
+# Build with production flag (Next.js server runtime)
 NODE_ENV=production npm run build
-
-# Verify Next.js build output (it builds directly to Spring Boot static root)
-if [ ! -f "../backend/src/main/resources/static/index.html" ]; then
-    echo -e "${RED}Error: Next.js build failed - no index.html found${NC}"
-    exit 1
-fi
-
-# Step 3 is no longer needed as Next.js builds directly to the right place
-echo -e "${BLUE}Step 3: Next.js already built to Spring Boot location...${NC}"
 cd ..
 
-# Step 4: No redirect needed - Next.js exports to root
-echo -e "${BLUE}Step 4: Next.js exports directly to root (no redirect needed)...${NC}"
+# Step 3: Start Next.js server (port 3000)
+echo -e "${BLUE}Step 3: Starting Next.js server (port 3000)...${NC}"
+pkill -f "next start" || true
+cd frontend
+nohup npx next start -p 3000 > ../frontend-start.log 2>&1 &
+NEXT_PID=$!
+cd ..
+echo "Next.js started with PID: $NEXT_PID"
+
+# Wait for Next.js to start
+for i in {1..60}; do
+    if curl -s http://localhost:3000/ > /dev/null; then
+        echo -e "${GREEN}✅ Next.js server is running on http://localhost:3000${NC}"
+        break
+    fi
+    echo -n "."
+    sleep 1
+done
+echo ""
 
 # Step 5: Build Spring Boot application
 echo -e "${BLUE}Step 5: Building Spring Boot application...${NC}"
 cd backend
-mvn -q -DskipTests package
+# Ensure Java 21 for this Maven invocation
+JAVA_21_PATH=""
+if command -v /usr/libexec/java_home >/dev/null 2>&1; then
+  JAVA_21_PATH=$(/usr/libexec/java_home -v 21 2>/dev/null || echo "")
+fi
+if [ -z "$JAVA_21_PATH" ] && command -v jenv >/dev/null 2>&1; then
+  JAVA_21_PATH=$(jenv which java 2>/dev/null | xargs dirname | xargs dirname || echo "")
+fi
+if [ -n "$JAVA_21_PATH" ]; then
+  echo -e "${BLUE}Using Java 21 at ${JAVA_21_PATH} for Maven build${NC}"
+  JAVA_HOME="$JAVA_21_PATH" PATH="$JAVA_21_PATH/bin:$PATH" mvn -q -DskipTests package
+else
+  echo -e "${YELLOW}Java 21 path not auto-detected; attempting build with current Java...${NC}"
+  mvn -q -DskipTests package
+fi
 
 # Verify Spring Boot build
 if [ ! -f "target/fbase-0.0.1-SNAPSHOT.jar" ]; then
@@ -89,14 +111,14 @@ echo ""
 
 # Step 8: Open browser
 echo -e "${BLUE}Step 8: Opening browser...${NC}"
-open http://localhost:8080/
+open http://localhost:3000/
 
 # Summary
 echo -e "${GREEN}✅ Production build and deployment completed!${NC}"
 echo -e "${GREEN}Application is now running at:${NC}"
-echo -e "${GREEN}  Main: http://localhost:8080/${NC}"
-echo -e "${GREEN}  Dashboard: http://localhost:8080/dashboard/${NC}"
-echo -e "${GREEN}  API: http://localhost:8080/api/users${NC}"
+echo -e "${GREEN}  Frontend: http://localhost:3000/${NC}"
+echo -e "${GREEN}  Dashboard: http://localhost:3000/dashboard/${NC}"
+echo -e "${GREEN}  Backend health: http://localhost:8080/health${NC}"
 echo -e "${GREEN}${NC}"
 echo -e "${GREEN}Commands:${NC}"
 echo -e "${GREEN}  Stop: pkill -f \"java.*fbase\"${NC}"

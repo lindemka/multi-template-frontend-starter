@@ -1,6 +1,8 @@
 "use client"
 import { useEffect, useState } from 'react'
 
+export const dynamic = 'force-dynamic'
+
 export default function ConfirmEmailChangePage() {
     const [status, setStatus] = useState('Confirming...')
     useEffect(() => {

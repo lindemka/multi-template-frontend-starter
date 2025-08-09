@@ -44,14 +44,17 @@ test.describe('Chat from profile', () => {
         await pageA.getByPlaceholder('Write a message').fill('Hello from Sarah via profile!')
         await pageA.getByRole('button', { name: 'Send' }).click()
 
-        // Alex opens dock and sees incoming message
+        // Alex opens dock, selects Sarah, and sees the incoming message in the chat window
         await pageB.getByRole('button', { name: 'Messages' }).click()
-        await expect(pageB.getByText('sarah.chen: Hello from Sarah via profile!').first()).toBeVisible({ timeout: 10000 })
+        await pageB.getByText('sarah.chen').first().click()
+        const threadB = pageB.locator('[data-testid="chat-thread"] [data-testid="chat-scroll"]')
+        await expect(threadB.getByText('Hello from Sarah via profile!').first()).toBeVisible({ timeout: 10000 })
 
-        // Alex replies
+        // Alex replies in the chat window
         await pageB.getByPlaceholder('Write a message').fill('Hi Sarah, received!')
         await pageB.getByRole('button', { name: 'Send' }).click()
-        await expect(pageA.getByText('alex.johnson: Hi Sarah, received!').first()).toBeVisible({ timeout: 10000 })
+        const threadA = pageA.locator('[data-testid="chat-thread"] [data-testid="chat-scroll"]')
+        await expect(threadA.getByText('Hi Sarah, received!').first()).toBeVisible({ timeout: 10000 })
 
         await contextA.close()
         await contextB.close()

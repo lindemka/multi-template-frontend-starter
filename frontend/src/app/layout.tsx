@@ -6,6 +6,8 @@ import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LocaleProvider } from "@/providers/LocaleProvider";
+import Link from 'next/link'
+import MobileNavMessages from '@/components/chat/MobileNavMessages'
 
 const inter = Inter({
   variable: "--font-inter",
@@ -43,6 +45,8 @@ export default async function RootLayout({
         <LocaleProvider initialMessages={messages}>
           <ErrorBoundary>
             <QueryProvider>
+              {/* Top nav messages entry for mobile */}
+              <MobileNavMessages />
               {children}
               { /* Floating chat dock - client-only */}
               <ChatDockHost />

@@ -54,8 +54,9 @@ test('user can log in via UI and is redirected to dashboard', async () => {
 
     const cookies = await context.cookies();
     const names = cookies.map((c) => c.name);
-    expect(names).toContain('accessToken');
-    expect(names).toContain('refreshToken');
+    // After logout the tokens should be cleared
+    expect(names).not.toContain('accessToken');
+    expect(names).not.toContain('refreshToken');
 
     await browser.close();
 });

@@ -8,6 +8,7 @@ import com.example.demo.service.*;
 import io.github.bucket4j.Bucket;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -110,10 +111,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req, @RequestHeader(value = "X-Forwarded-For", required = false) String ip,
-                                   @RequestHeader(value = "User-Agent", required = false) String userAgent) {
-        String clientIp = ip != null ? ip : "unknown";
-        Bucket bucket = rateLimiterService.resolveBucket("login:" + clientIp, 5, Duration.ofMinutes(1));
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginRequest req,
+            @RequestHeader(value = "X-Forwarded-For", required = false) String ip,
+            @RequestHeader(value = "User-Agent", required = false) String userAgent,
+            HttpServletRequest request
+    ) {
+        // Resolve a stable client key: prefer X-Forwarded-For first IP, else remoteAddr
+        String xff = ip != null ? ip.trim() : "";
+        String firstXff = xff.contains(",") ? xff.split(",")[0].trim() : xff;
+        String remote = request != null ? request.getRemoteAddr() : "";
+        String clientIp = !firstXff.isEmpty() ? firstXff : (!remote.isEmpty() ? remote : "unknown");
+        // Rate limit by IP + username to avoid globally locking out all users behind one IP
+        String usernameKey = req.usernameOrEmail != null ? req.usernameOrEmail.toLowerCase() : "unknown";
+        Bucket bucket = rateLimiterService.resolveBucket("login:" + clientIp + ":" + usernameKey, 7, Duration.ofMinutes(1));
         if (!bucket.tryConsume(1)) {
             return ResponseEntity.status(429).body(Map.of("error", "Too many login attempts"));
         }

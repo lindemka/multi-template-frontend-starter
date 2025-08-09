@@ -10,8 +10,9 @@ import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Paperclip, Smile, Search, ChevronDown, MoreHorizontal, SquareArrowOutUpRight, SquarePen } from 'lucide-react'
+import { Search, ChevronDown, MoreHorizontal, SquareArrowOutUpRight, SquarePen } from 'lucide-react'
 import ComposeUserResults from './ComposeUserResults'
+import ChatWindow from './ChatWindow'
 
 type Message = {
     id: number
@@ -32,14 +33,15 @@ export default function ChatDock() {
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [active, setActive] = useState<string | null>(null)
     const [messages, setMessages] = useState<Record<string, Message[]>>({})
-    const [input, setInput] = useState('')
     const [filter, setFilter] = useState('')
     const [composeOpen, setComposeOpen] = useState(false)
     const [composeQuery, setComposeQuery] = useState('')
     const initialized = useRef(false)
     const meRef = useRef<string | null>(null)
     const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
-    const messagesEndRef = useRef<HTMLDivElement | null>(null)
+    // Popout windows: one expanded window and an ordered list of minimized chips (max 3)
+    const [expanded, setExpanded] = useState<string | null>(null)
+    const [minimized, setMinimized] = useState<string[]>([])
     const totalUnread = useMemo(() => conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0), [conversations])
 
     useEffect(() => {
@@ -127,8 +129,7 @@ export default function ChatDock() {
                                 if (exists) return prev
                                 return [{ id: Date.now(), otherUsername: u, updatedAt: new Date().toISOString(), lastMessage: msgs.at?.(-1)?.content, lastMessageAt: msgs.at?.(-1)?.createdAt }, ...prev]
                             })
-                            setActive(u)
-                            await loadThread(u)
+                            await openWindow(u)
                             return
                         }
                         const conv = await resp.json()
@@ -137,13 +138,11 @@ export default function ChatDock() {
                             if (exists) return prev
                             return [{ id: conv.id ?? Date.now(), otherUsername: u, updatedAt: conv.updatedAt ?? new Date().toISOString() }, ...prev]
                         })
-                        setActive(u)
-                        await loadThread(u)
+                        await openWindow(u)
                     } catch {
                         // As a last resort, allow opening the thread UI; backend will enforce permissions
                         setConversations((prev) => prev.some(c => c.otherUsername === u) ? prev : [{ id: Date.now(), otherUsername: u, updatedAt: new Date().toISOString() }, ...prev])
-                        setActive(u)
-                        await loadThread(u)
+                        await openWindow(u)
                     }
                 })()
         }
@@ -200,69 +199,50 @@ export default function ChatDock() {
             })()
     }, [active])
 
-    const activeMessages = useMemo(() => (active ? messages[active] || [] : []), [active, messages])
-
-    // autoscroll on new messages
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [activeMessages])
-
-    const onSend = async () => {
-        if (!active || !input.trim()) return
-        const content = input.trim()
-        setInput('')
-        // optimistic append of my message
+    const sendTo = async (username: string, content: string) => {
+        if (!username || !content.trim()) return
         const me = meRef.current || 'me'
-        const optimistic: Message = { id: Date.now(), content, sender: { username: me }, recipient: { username: active }, createdAt: new Date().toISOString() }
-        setMessages((prev) => ({ ...prev, [active]: [...(prev[active] || []), optimistic] }))
-        // ensure conversation exists in the left list
+        const optimistic: Message = { id: Date.now(), content: content.trim(), sender: { username: me }, recipient: { username }, createdAt: new Date().toISOString() }
+        setMessages((prev) => ({ ...prev, [username]: [...(prev[username] || []), optimistic] }))
         setConversations((prev) => {
-            const exists = prev.some((c) => c.otherUsername === active)
+            const exists = prev.some((c) => c.otherUsername === username)
             const updatedAt = optimistic.createdAt
-            if (exists) {
-                return prev.map((c) => c.otherUsername === active ? { ...c, updatedAt } : c)
-            }
-            return [{ id: Date.now(), otherUsername: active, updatedAt }, ...prev]
+            if (exists) return prev.map((c) => c.otherUsername === username ? { ...c, updatedAt } : c)
+            return [{ id: Date.now(), otherUsername: username, updatedAt }, ...prev]
         })
         try {
-            const res = await sendChat(active, content)
+            const res = await sendChat(username, content.trim())
             if (!res && !(window as any).__wsSent) {
-                // If neither REST nor WS acked, rollback
-                setMessages((prev) => ({ ...prev, [active]: (prev[active] || []).filter((m) => m.id !== optimistic.id) }))
+                setMessages((prev) => ({ ...prev, [username]: (prev[username] || []).filter((m) => m.id !== optimistic.id) }))
                 window.alert('Message could not be delivered. The user might not be available for messaging.')
                 return
             }
         } catch {
-            setMessages((prev) => ({ ...prev, [active]: (prev[active] || []).filter((m) => m.id !== optimistic.id) }))
+            setMessages((prev) => ({ ...prev, [username]: (prev[username] || []).filter((m) => m.id !== optimistic.id) }))
             window.alert('Message could not be delivered. The user might not be available for messaging.')
             return
         }
-        // Force-refresh from server so right pane shows persisted history
-        await loadThread(active)
+        await loadThread(username)
     }
 
     const filteredConversations = conversations.filter(c =>
         !filter.trim() || c.otherUsername.toLowerCase().includes(filter.toLowerCase())
     )
 
-    const groupMessagesByDay = (items: Message[]) => {
-        const groups: { date: string; items: Message[] }[] = []
-        for (const m of items) {
-            const d = new Date(m.createdAt)
-            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-            const last = groups[groups.length - 1]
-            if (!last || last.date !== key) {
-                groups.push({ date: key, items: [m] })
-            } else {
-                last.items.push(m)
+    const openWindow = async (username: string) => {
+        setOpen(true)
+        setExpanded((curr) => {
+            if (curr === username) return curr
+            if (curr) {
+                setMinimized((prev) => {
+                    const withoutNew = prev.filter((u) => u !== username && u !== curr)
+                    return [curr, ...withoutNew].slice(0, 3)
+                })
             }
-        }
-        return groups
-    }
-
-    const formatTime = (iso: string) => {
-        const d = new Date(iso)
-        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            return username
+        })
+        setActive(username)
+        await loadThread(username)
     }
 
     const fetchMessagesWithFallback = async (username: string): Promise<Message[] | null> => {
@@ -312,7 +292,7 @@ export default function ChatDock() {
         <div className="fixed bottom-3 right-3 md:bottom-4 md:right-4 z-50">
             {open && (
                 <>
-                    <Card className="w-[95vw] max-w-[420px] h-[70vh] max-h-[560px] md:w-[420px] md:h-[560px] p-0 flex flex-col shadow-xl rounded-xl overflow-hidden" data-testid="chat-dock">
+                    <Card className="w-[95vw] max-w-[380px] h-[70vh] max-h-[560px] md:w-[360px] md:h-[560px] p-0 flex flex-col shadow-xl rounded-xl overflow-hidden" data-testid="chat-dock">
                         {/* Header - LinkedIn style */}
                         <div className="flex items-center gap-2 p-3 border-b bg-muted/20 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -333,8 +313,8 @@ export default function ChatDock() {
                             </Button>
                         </div>
                         <div className="flex h-full overflow-hidden min-h-0">
-                            {/* Left: conversations */}
-                            <div className="w-56 border-r flex flex-col min-h-0" data-testid="chat-conversations">
+                            {/* Conversations list */}
+                            <div className="flex-1 flex flex-col min-h-0" data-testid="chat-conversations">
                                 <div className="p-2">
                                     <div className="relative">
                                         <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -352,8 +332,8 @@ export default function ChatDock() {
                                         {filteredConversations.map((c) => (
                                             <button
                                                 key={c.id}
-                                                className={`w-full px-3 py-2 hover:bg-accent/70 transition text-left rounded-sm ${active === c.otherUsername ? 'bg-accent' : ''}`}
-                                                onClick={async () => { setActive(c.otherUsername); await loadThread(c.otherUsername) }}
+                                                className={`w-full px-3 py-2 hover:bg-accent/70 transition text-left rounded-sm ${expanded === c.otherUsername ? 'bg-accent' : ''}`}
+                                                onClick={async () => { await openWindow(c.otherUsername) }}
                                             >
                                                 <div className="flex items-start gap-2">
                                                     <Avatar className="h-8 w-8" />
@@ -379,64 +359,6 @@ export default function ChatDock() {
                                         )}
                                     </div>
                                 </ScrollArea>
-                            </div>
-                            {/* Right: thread */}
-                            <div className="flex-1 flex flex-col min-h-0" data-testid="chat-thread">
-                                <div className="h-11 flex items-center px-3 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
-                                    <div className="font-medium text-sm truncate flex-1">{active || 'Select a conversation'}</div>
-                                </div>
-                                <ScrollArea className="flex-1 p-3" data-testid="chat-scroll" type="hover">
-                                    <div className="space-y-3" style={{ minHeight: 0 }}>
-                                        {groupMessagesByDay(activeMessages).map(group => (
-                                            <div key={group.date} className="space-y-2">
-                                                <div className="text-[11px] text-muted-foreground text-center sticky top-0 z-10">
-                                                    {new Date(group.date + 'T00:00:00').toLocaleDateString()}
-                                                </div>
-                                                {group.items.map((m) => {
-                                                    const me = meRef.current
-                                                    const isMine = m.sender?.username === me
-                                                    return (
-                                                        <div key={m.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`} data-testid="chat-msg" data-username={m.sender?.username}>
-                                                            <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm shadow-sm ${isMine ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-muted rounded-bl-sm'}`}>
-                                                                <div className="whitespace-pre-wrap break-words">{m.content}</div>
-                                                                <div className={`text-[10px] mt-1 ${isMine ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{formatTime(m.createdAt)}</div>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })}
-                                            </div>
-                                        ))}
-                                        <div ref={messagesEndRef} />
-                                    </div>
-                                </ScrollArea>
-                                <div className="p-2 border-t">
-                                    <div className="flex items-end gap-2">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Attach file">
-                                            <Paperclip className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Insert emoji">
-                                            <Smile className="h-4 w-4" />
-                                        </Button>
-                                        <Textarea
-                                            value={input}
-                                            onChange={(e) => setInput(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                                                    e.preventDefault()
-                                                    onSend()
-                                                    return
-                                                }
-                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                    e.preventDefault()
-                                                    onSend()
-                                                }
-                                            }}
-                                            placeholder="Write a message"
-                                            className="min-h-10 max-h-32"
-                                        />
-                                        <Button onClick={onSend} disabled={!input.trim()}>Send</Button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </Card>
@@ -498,6 +420,62 @@ export default function ChatDock() {
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </div>
             )}
+            {/* Popout windows - hidden on small screens */}
+            {/* Minimized chips list to the left of the dock */}
+            <div className="hidden md:flex fixed bottom-3 right-[calc(0.75rem+360px+0.75rem)] gap-3 z-50">
+                {minimized.map((u) => (
+                    <button
+                        key={u}
+                        className="h-12 w-[220px] rounded-xl shadow-lg border bg-background flex items-center px-3 gap-2"
+                        onClick={async () => {
+                            // Promote this chip to expanded; demote current expanded to chips
+                            const prevExpanded = expanded
+                            setExpanded(u)
+                            setMinimized((prev) => {
+                                const others = prev.filter((x) => x !== u)
+                                return prevExpanded ? [prevExpanded, ...others].slice(0, 3) : others
+                            })
+                            setActive(u)
+                            await loadThread(u)
+                        }}
+                    >
+                        <Avatar className="h-8 w-8" />
+                        <div className="truncate font-medium">{u}</div>
+                    </button>
+                ))}
+            </div>
+            {/* Expanded window sits left of the dock (dock width: 360px) */}
+            <div className="hidden md:block fixed bottom-3 right-[calc(0.75rem+360px+0.75rem)] z-50">
+                {expanded && (
+                    <ChatWindow
+                        username={expanded}
+                        messages={messages[expanded] || []}
+                        me={meRef.current}
+                        onSend={(text) => sendTo(expanded, text)}
+                        onClose={() => {
+                            // Close expanded and promote the first chip, if any
+                            setMinimized((prev) => {
+                                const [next, ...rest] = prev
+                                if (next) {
+                                    setExpanded(next)
+                                    setActive(next)
+                                } else {
+                                    setExpanded(null)
+                                    setActive(null)
+                                }
+                                return rest
+                            })
+                        }}
+                        onMinimize={() => {
+                            const toMin = expanded
+                            if (!toMin) return
+                            setMinimized((prev) => [toMin, ...prev].slice(0, 3))
+                            setExpanded(null)
+                            setActive(null)
+                        }}
+                    />
+                )}
+            </div>
         </div>
     )
 }

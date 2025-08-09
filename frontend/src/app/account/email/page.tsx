@@ -1,6 +1,8 @@
 "use client"
 import { useState } from 'react'
 
+export const dynamic = 'force-dynamic'
+
 export default function EmailPage() {
     const [newEmail, setNewEmail] = useState('')
     const [message, setMessage] = useState('')

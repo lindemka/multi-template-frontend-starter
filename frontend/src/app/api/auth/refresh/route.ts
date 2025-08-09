@@ -12,7 +12,8 @@ export async function POST(req: NextRequest) {
     const data = await res.json()
     if (!res.ok) return NextResponse.json(data, { status: res.status })
     const response = NextResponse.json({ ok: true })
-    const isSecure = process.env.NODE_ENV === 'production'
+    const reqUrl = new URL(req.url)
+    const isSecure = reqUrl.protocol === 'https:'
     response.cookies.set('accessToken', data.accessToken, { httpOnly: true, secure: isSecure, sameSite: 'lax', path: '/', maxAge: 60 * 15 })
     response.cookies.set('refreshToken', data.refreshToken, { httpOnly: true, secure: isSecure, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30 })
     return response

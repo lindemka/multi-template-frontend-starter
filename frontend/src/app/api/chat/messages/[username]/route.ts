@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
                 const refreshed = await refreshRes.json() as any
                 const retry = await fetchMessages(refreshed.accessToken)
                 const response = NextResponse.json(retry.data, { status: retry.res.status })
-                const isSecure = process.env.NODE_ENV === 'production'
+                const isSecure = new URL(req.url).protocol === 'https:'
                 response.cookies.set('accessToken', refreshed.accessToken, { httpOnly: true, secure: isSecure, sameSite: 'lax', path: '/', maxAge: 60 * 15 })
                 response.cookies.set('refreshToken', refreshed.refreshToken, { httpOnly: true, secure: isSecure, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 30 })
                 return response
