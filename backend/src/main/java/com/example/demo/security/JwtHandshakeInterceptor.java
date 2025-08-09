@@ -36,12 +36,15 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                     }
                 }
             }
+            // If an HTTP-level token is present and valid, attach it.
             if (token != null && jwtUtil.validateToken(token)) {
                 attributes.put("jwt", token);
-                return true;
             }
         }
-        return false;
+        // Always allow the WebSocket handshake to proceed. Authentication will be enforced
+        // at the STOMP CONNECT frame via StompAuthChannelInterceptor using the provided
+        // native Authorization header (ws-ticket).
+        return true;
     }
 
     @Override
