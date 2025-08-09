@@ -11,12 +11,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  MapPin, Building2, Calendar, Users, MessageSquare, 
-  ThumbsUp, Share2, MoreHorizontal, PencilLine, 
+import {
+  MapPin, Building2, Calendar, Users, MessageSquare,
+  ThumbsUp, Share2, MoreHorizontal, PencilLine,
   ArrowLeft, Loader2, Target, Heart, Lightbulb,
   Briefcase, TrendingUp, Globe, Mail, Phone, Star
 } from "lucide-react";
+import { openChatWith, resolveUsernameForProfileId } from '@/lib/openChat'
 
 interface ProfileViewProps {
   profileId: string;
@@ -39,21 +40,21 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      
+
       // Get current user
       const user = auth.getUser();
       setCurrentUser(user);
-      
+
       // Check if viewing own profile or if admin
       if (user) {
         setIsOwnProfile(user.id?.toString() === profileId);
         setIsAdmin(user.role === 'ADMIN');
       }
-      
+
       // Fetch profile data
       const response = await api.get(`/api/members/${profileId}`);
       setProfile(response.data);
-      
+
     } catch (err) {
       console.error('Error loading profile:', err);
       setError('Failed to load profile');
@@ -76,7 +77,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
   };
 
   const getGoalIcon = (goal: string) => {
-    switch(goal.toLowerCase()) {
+    switch (goal.toLowerCase()) {
       case 'find co-founder':
       case 'build up a team':
         return <Users className="h-4 w-4" />;
@@ -109,7 +110,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
 
   if (editMode) {
     return (
-      <ProfileEdit 
+      <ProfileEdit
         profileId={profileId}
         onCancel={handleEditCancel}
         onSave={handleEditSave}
@@ -123,20 +124,29 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           onClick={() => router.push('/dashboard/members')}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Members
         </Button>
-        
-        {canEdit && (
-          <Button onClick={handleEditClick}>
-            <PencilLine className="h-4 w-4 mr-2" />
-            Edit Profile
+
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={async () => {
+            const uname = await resolveUsernameForProfileId(Number(profileId))
+            if (uname) openChatWith(uname)
+          }}>
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Message
           </Button>
-        )}
+          {canEdit && (
+            <Button onClick={handleEditClick}>
+              <PencilLine className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Profile Header Card */}
@@ -151,7 +161,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
               </AvatarFallback>
             </Avatar>
           </div>
-          
+
           <div className="pt-20 space-y-4">
             <div>
               <div className="flex items-center gap-3">
@@ -165,7 +175,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
               </div>
               <p className="text-muted-foreground">{profile.tagline}</p>
             </div>
-            
+
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
@@ -180,7 +190,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                 {profile.rating || 0}
               </div>
             </div>
-            
+
             {/* Goals */}
             {profile.goals && profile.goals.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -217,21 +227,21 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                   {profile.about?.shortDescription || 'No introduction provided yet.'}
                 </p>
               </div>
-              
+
               {profile.about?.lookingFor && (
                 <div>
                   <h3 className="font-semibold mb-2">Looking For</h3>
                   <p className="text-muted-foreground">{profile.about.lookingFor}</p>
                 </div>
               )}
-              
+
               {profile.about?.offering && (
                 <div>
                   <h3 className="font-semibold mb-2">What I Offer</h3>
                   <p className="text-muted-foreground">{profile.about.offering}</p>
                 </div>
               )}
-              
+
               {profile.about?.industries && profile.about.industries.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Industries</h3>
@@ -242,7 +252,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                   </div>
                 </div>
               )}
-              
+
               {profile.about?.languages && profile.about.languages.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Languages</h3>
@@ -276,7 +286,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                   </div>
                 </div>
               )}
-              
+
               {profile.interests && profile.interests.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Interests</h3>
@@ -304,14 +314,14 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                     <p className="text-muted-foreground">{profile.founderProfile.myIntroduction}</p>
                   </div>
                 )}
-                
+
                 {profile.founderProfile.myMotivation && (
                   <div>
                     <h3 className="font-semibold mb-2">Motivation</h3>
                     <p className="text-muted-foreground">{profile.founderProfile.myMotivation}</p>
                   </div>
                 )}
-                
+
                 <div className="flex gap-4">
                   {profile.founderProfile.lookingForCofounder && (
                     <Badge className="bg-purple-100 text-purple-700">
@@ -324,7 +334,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                     </Badge>
                   )}
                 </div>
-                
+
                 {profile.founderProfile.yearsExperience > 0 && (
                   <p className="text-sm text-muted-foreground">
                     {profile.founderProfile.yearsExperience} years of experience
@@ -348,19 +358,19 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
                     <p className="text-muted-foreground">{profile.investorProfile.investmentFocus}</p>
                   </div>
                 )}
-                
+
                 {profile.investorProfile.investmentExperience && (
                   <div>
                     <h3 className="font-semibold mb-2">Experience</h3>
                     <p className="text-muted-foreground">{profile.investorProfile.investmentExperience}</p>
                   </div>
                 )}
-                
+
                 {(profile.investorProfile.investmentRangeMin > 0 || profile.investorProfile.investmentRangeMax > 0) && (
                   <div>
                     <h3 className="font-semibold mb-2">Investment Range</h3>
                     <p className="text-lg font-semibold">
-                      ${(profile.investorProfile.investmentRangeMin || 0).toLocaleString()} - 
+                      ${(profile.investorProfile.investmentRangeMin || 0).toLocaleString()} -
                       ${(profile.investorProfile.investmentRangeMax || 0).toLocaleString()}
                     </p>
                   </div>

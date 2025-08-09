@@ -58,6 +58,22 @@ public class UserProfileController {
         return profile.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{id}/username")
+    public ResponseEntity<Map<String, String>> getUsernameForProfile(@PathVariable Long id) {
+        Optional<UserProfile> profileOpt = userProfileService.getProfileById(id);
+        if (profileOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        UserProfile profile = profileOpt.get();
+        AuthUser user = profile.getUser();
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Map<String, String> body = new HashMap<>();
+        body.put("username", user.getUsername());
+        return ResponseEntity.ok(body);
+    }
     
     @GetMapping("/user/{userId}")
     public ResponseEntity<UserProfile> getProfileByUserId(@PathVariable Long userId) {

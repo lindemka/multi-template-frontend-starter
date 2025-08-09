@@ -17,12 +17,18 @@ SET password = '${PASSWORD_HASH}',
     updated_at = NOW()
 RETURNING id, username, email;"
 
-# Execute the SQL
-PGPASSWORD=password /usr/local/opt/postgresql@16/bin/psql \
-  -h localhost \
-  -p 5432 \
-  -U postgres \
-  -d project1 \
+# Execute the SQL (will use local Postgres by default; override with env vars)
+DB_HOST=${DB_HOST:-localhost}
+DB_PORT=${DB_PORT:-5432}
+DB_NAME=${DB_NAME:-project1}
+DB_USERNAME=${DB_USERNAME:-postgres}
+DB_PASSWORD=${DB_PASSWORD:-password}
+
+PGPASSWORD="$DB_PASSWORD" psql \
+  -h "$DB_HOST" \
+  -p "$DB_PORT" \
+  -U "$DB_USERNAME" \
+  -d "$DB_NAME" \
   -c "$SQL_COMMAND"
 
 echo ""

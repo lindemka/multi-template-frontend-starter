@@ -81,6 +81,9 @@ logging:
     org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
   file:
     name: ${LOG_FILE:logs/application.log}
+
+websocket:
+  allowed-origins: ${WS_ALLOWED_ORIGINS:http://localhost:3000}
     
 management:
   endpoints:
@@ -118,6 +121,7 @@ spring:
     show-sql: true
   flyway:
     baseline-on-migrate: true
+    validate-on-migrate: false
 app:
   auth:
     requireEmailVerification: false

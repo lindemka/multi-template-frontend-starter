@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
+@Profile("foundersbase")
 public class FoundersbaseDataInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(FoundersbaseDataInitializer.class);
@@ -381,7 +383,11 @@ public class FoundersbaseDataInitializer {
                 founder.setUser(users.get(i));
                 founder.setRole("Founder & CEO");
                 founder.setEquityPercentage(new BigDecimal("40.00"));
-                founder.setJoinedDate(startup.getFoundedDate());
+                // Guard against null foundedDate in existing records
+                java.time.LocalDate safeFoundedDate = startup.getFoundedDate() != null
+                        ? startup.getFoundedDate()
+                        : java.time.LocalDate.now().minusMonths(6);
+                founder.setJoinedDate(safeFoundedDate);
                 founder.setIsActive(true);
                 startupMemberRepository.save(founder);
                 membersCreated++;
@@ -395,7 +401,10 @@ public class FoundersbaseDataInitializer {
                 cofounder.setUser(users.get(i + 1));
                 cofounder.setRole("Co-Founder & CTO");
                 cofounder.setEquityPercentage(new BigDecimal("30.00"));
-                cofounder.setJoinedDate(startup.getFoundedDate().plusDays(7));
+                java.time.LocalDate safeFoundedDate = startup.getFoundedDate() != null
+                        ? startup.getFoundedDate()
+                        : java.time.LocalDate.now().minusMonths(6);
+                cofounder.setJoinedDate(safeFoundedDate.plusDays(7));
                 cofounder.setIsActive(true);
                 startupMemberRepository.save(cofounder);
                 membersCreated++;

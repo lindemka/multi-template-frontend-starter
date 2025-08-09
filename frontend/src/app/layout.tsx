@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { getMessages } from 'next-intl/server';
+import ChatDockHost from '@/components/chat/ChatDockHost'
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -43,6 +44,8 @@ export default async function RootLayout({
           <ErrorBoundary>
             <QueryProvider>
               {children}
+              { /* Floating chat dock - client-only */}
+              <ChatDockHost />
             </QueryProvider>
           </ErrorBoundary>
         </LocaleProvider>

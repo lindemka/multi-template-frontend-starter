@@ -8,6 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { openChatWith, resolveUsernameForProfileId } from '@/lib/openChat'
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -52,7 +53,7 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
   if (!member) return null;
 
   const getGoalIcon = (goal: string) => {
-    switch(goal.toLowerCase()) {
+    switch (goal.toLowerCase()) {
       case 'join a team':
         return <Users className="h-3 w-3" />;
       case 'build up a team':
@@ -76,7 +77,7 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
         {/* Header with gradient background */}
         <div className="relative">
           <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-          
+
           {/* Close button */}
           <button
             onClick={onClose}
@@ -125,13 +126,21 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
 
             {/* Action buttons */}
             <div className="flex gap-2 mt-4">
-              <Button 
+              <Button
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
                 onClick={() => onViewFullProfile(member.id)}
               >
                 View Full Profile
               </Button>
-              <Button variant="outline" size="icon">
+              <Button
+                aria-label={`Message ${member.name}`}
+                variant="outline"
+                size="icon"
+                onClick={async () => {
+                  const username = await resolveUsernameForProfileId(member.id)
+                  if (username) openChatWith(username)
+                }}
+              >
                 <MessageCircle className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="icon">
@@ -222,7 +231,7 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
                 <p className="text-sm text-gray-600">
                   {member.about.short}
                 </p>
-                
+
                 {member.about.lookingFor && (
                   <div className="mt-4">
                     <h4 className="font-medium text-sm mb-2">Looking for</h4>

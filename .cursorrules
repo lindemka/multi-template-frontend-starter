@@ -1,136 +1,48 @@
-# Cursor Rules - Multi-Template Project
+# Repository Rules — Next.js + Spring Boot Monorepo
 
-## ⚡ CLAUDE CODE CONFIGURATION
-- **ALWAYS run Claude Code with `--dangerously-skip-permissions`** - enables full file system access
-- **ALWAYS use concurrent execution** - batch all operations in single messages
-- **ALWAYS organize files properly** - never save working files to root
+These rules are high‑level, always‑true guardrails for this repository. They reflect how the project is actually structured and run today.
 
-## 🧹 CLEANUP PRINCIPLES
+## Organization
+- Keep the root clean: only `README.md`, `.cursorrules`, `docker-compose.yml`, `scripts/`, `backend/`, `frontend/`, `ai/`, and `archive/` belong at the top level.
+- Documentation lives in `ai/`. The single exception is the root `README.md`. Module‑level `README.md` files in `backend/` or `frontend/` are allowed.
+- Remove unused files and code when refactoring. Update all references when renaming paths or URLs.
 
-### File Organization
-- **ALL documentation goes in `/ai` folder** - never leave .md files in root
-- **ALWAYS clean up old files** when creating new versions
-- **ALWAYS remove unused code** after refactoring
-- **ALWAYS update references** when changing URLs or page names
+## Development Workflow
+- Use the provided scripts:
+  - `./scripts/dev.sh` to run the full dev stack (backend, frontend, optional MailDev).
+  - `./scripts/status.sh` to check what’s running.
+  - `./scripts/build.sh` and `./scripts/deploy.sh` for production builds.
+- After file renames that affect built assets, perform a clean build using the scripts to prevent stale artifacts in `backend/src/main/resources/static/`.
+- Follow the versions and setup documented in the root `README.md` (Java 21 via jenv, Node.js, Maven) rather than hard‑coding version rules here.
 
-### Documentation
-- **ALWAYS keep documentation current** with actual project state
-- **ALWAYS organize documentation** in appropriate folders
-- **ALWAYS verify URLs and paths** are correct
+## Infrastructure (Local)
+- Databases and tools run via `docker-compose.yml`:
+  - Postgres on `5432`, Adminer on `8081`, MailDev SMTP on `1025`, MailDev Web on `1080`.
+  - Use `docker compose up -d` to start/stop these services.
+- When not using Docker for MailDev, `./scripts/dev.sh` can start a local MailDev instance automatically.
 
-## 🏗️ ARCHITECTURE PRINCIPLES
+## UI/Design System
+- Use the existing shadcn/ui components in `frontend/src/components/ui/` and maintain visual consistency.
+- Reference archived templates in `archive/template-front-dashboard/` and `archive/template-front-multipurpose/` for patterns and inspiration, but do not mix their build systems/assets directly into the app. Curate any copied assets and follow our current styling and tooling.
 
-### Template System
-- **Dashboard Template**: Admin panels, dashboards, management interfaces
-- **Multipurpose Template**: Landing pages, marketing sites, public-facing pages
-- **NEVER mix template assets** - each template uses its own CSS/JS
-- **ALWAYS use correct template structure** for each type
+## Code Quality & Performance
+- Write semantic HTML and ensure proper meta/viewport tags. Verify responsive behavior.
+- Keep TypeScript strict and lint clean in `frontend/`. Follow Spring Boot conventions and avoid dead code in `backend/`.
+- Use optimized, production‑ready assets for builds. Ensure the production build completes without warnings or errors.
 
-### Asset Management
-- **ALWAYS verify asset paths** after making changes
-- **ALWAYS test asset accessibility** after deployment
-- **ALWAYS use production-ready assets** (minified, optimized)
+## Testing & Verification
+- Test core user flows in an actual browser before declaring readiness. Verify navigation works, pages load without console errors, and assets are accessible.
+- For backend, verify health at `http://localhost:8080/health`. For frontend, verify `http://localhost:3000/` and dashboard routes. Confirm MailDev UI at `http://localhost:1080/` when applicable.
 
-### Design System
-- **CRITICAL: ALWAYS use existing designs from archived template folders** - `archive/template-front-dashboard/` and `archive/template-front-multipurpose/`
-- **NEVER create new UI components** - always find and use equivalent components from the archived templates
-- **ALWAYS reference archived templates** for layout patterns, styling, and component structures
-- **ALWAYS maintain design consistency** by using established patterns from the template archives
-- **ALWAYS check `/ai/AI-INDEX.md` for navigation** - single source of truth for all documentation\n- **ALWAYS check `/ai/COMPONENT-GUIDE.md` for UI** - comprehensive catalog of available components with usage examples
+## Change Management
+1. Understand current state and plan the change.
+2. Implement with clean structure and consistent naming.
+3. Rebuild and test locally (frontend + backend) using the scripts.
+4. Clean up old files/refs. Update documentation in `ai/` and root `README.md` if behavior changes.
+5. Ensure no console errors, and that asset paths and links are correct.
 
-## 🔧 DEVELOPMENT PRINCIPLES
-
-### Before Making Changes
-1. **ALWAYS understand current state** before modifying
-2. **ALWAYS plan the change** and its impact
-3. **ALWAYS consider cleanup needs** before starting
-
-### After Making Changes
-1. **ALWAYS rebuild and test** after modifications
-2. **ALWAYS verify all pages work** correctly
-3. **ALWAYS clean up old files** and references
-4. **ALWAYS update documentation** - README.md and /ai folder
-5. **ALWAYS verify URLs and page names** are current
-6. **CRITICAL: ALWAYS run `npm run build` after file renames** - ensures dist folder is clean with correct filenames
-7. **ALWAYS check dist folder** after renaming files to verify old files are removed
-
-### Testing
-- **ALWAYS test all pages** after changes
-- **ALWAYS verify navigation** works correctly
-- **ALWAYS check asset accessibility** with curl commands
-
-## 📁 PROJECT STRUCTURE
-
-### Required Organization
-```
-project1/
-├── src/pages/           # All HTML pages
-├── dist/                # Built files
-├── ai/                  # ALL documentation
-├── README.md           # Main project documentation
-└── .cursorrules        # This file
-```
-
-### Forbidden in Root
-- ❌ Any .md files except README.md
-- ❌ Any unused code or files
-- ❌ Any outdated references or URLs
-
-## 🎯 BEST PRACTICES
-
-### Code Quality
-- **ALWAYS use semantic HTML** with proper structure
-- **ALWAYS include proper meta tags** and viewport settings
-- **ALWAYS test responsive behavior** on different screen sizes
-
-### Performance
-- **ALWAYS use optimized assets** in production
-- **ALWAYS test build process** after changes
-- **ALWAYS verify hot reload** is working
-
-## 🚨 ERROR PREVENTION
-
-### Common Mistakes to Avoid
-1. **Leaving old files** - always clean up when making changes
-2. **Forgetting to rebuild** - always run build after changes
-3. **Mixing template assets** - each template must use its own CSS/JS
-4. **Leaving .md files in root** - move to `/ai` folder
-5. **Outdated documentation** - keep docs current with actual state
-6. **CRITICAL: Stale dist folder after renames** - always rebuild after renaming files to clean dist/
-
-### Verification Steps
-1. Check all pages load correctly
-2. Verify all assets are accessible
-3. Test navigation between pages
-4. Confirm template-specific features work
-5. Verify no console errors
-
-## 📝 CHANGE MANAGEMENT
-
-### When Making Changes
-1. **Plan the change** - understand what needs to be modified
-2. **Check current state** - verify what exists and what's used
-3. **Make the change** - implement the modification
-4. **Test thoroughly** - verify everything works
-5. **Clean up** - remove any old files or references
-6. **Update documentation** - keep docs current
-7. **Verify structure** - ensure project organization is maintained
-
-## 🎯 SUCCESS CRITERIA
-
-### Project is Clean When:
-- ✅ No .md files in root (except README.md)
-- ✅ No unused code or files
-- ✅ All asset paths are correct and accessible
-- ✅ All documentation is current and organized
-- ✅ All pages load without errors
-- ✅ Navigation works between all pages
-
-### Project is Production-Ready When:
-- ✅ Build process works correctly
-- ✅ All assets are optimized
-- ✅ No console errors
-- ✅ Responsive design works on all devices
-- ✅ Clean, maintainable code structure
-- ✅ Comprehensive documentation
-- ✅ Professional project organization 
+## Success Criteria
+- Root is clean; docs organized in `ai/`; only `README.md` remains in root.
+- No unused files or code. Asset paths are valid and accessible.
+- Builds succeed; no runtime console errors; responsive behavior verified.
+- UI aligns with shadcn/ui patterns and project styling. Archived templates are used only as references.

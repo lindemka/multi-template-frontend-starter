@@ -26,14 +26,19 @@ echo ""
 
 # Check Backend
 echo -e "${YELLOW}Backend (port 8080):${NC}"
-if curl -s http://localhost:8080/health > 
-/dev/null 2>&1; then
+if curl -s http://localhost:8080/health > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Running${NC}"
     BACKEND_PID=$(lsof -ti:8080 2>/dev/null || echo "unknown")
     echo -e "   PID: $BACKEND_PID"
     echo -e "   Health: OK"
 else
-    echo -e "${RED}❌ Not running${NC}"
+    # Might still be starting or on a different JVM; report status code
+    STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/health || echo "000")
+    if [ "$STATUS_CODE" != "000" ]; then
+      echo -e "${YELLOW}⚠️  Health responded with $STATUS_CODE${NC}"
+    else
+      echo -e "${RED}❌ Not running${NC}"
+    fi
 fi
 
 echo ""

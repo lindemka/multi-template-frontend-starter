@@ -6,10 +6,12 @@ export default defineConfig({
     expect: { timeout: 10_000 },
     fullyParallel: false,
     reporter: 'line',
+    outputDir: 'test-results',
     use: {
         baseURL: process.env.BASE_URL || 'http://localhost:3000',
         trace: 'on-first-retry',
         headless: false,
+        video: process.env.PWV === 'on' ? 'on' : 'off',
     },
     projects: [
         {

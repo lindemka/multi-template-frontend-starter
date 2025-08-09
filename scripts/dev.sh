@@ -73,11 +73,49 @@ command -v mvn >/dev/null 2>&1 || { echo -e "${RED}Maven not found. Install Mave
 command -v node >/dev/null 2>&1 || { echo -e "${RED}Node.js not found. Install Node.js first.${NC}"; exit 1; }
 command -v npm >/dev/null 2>&1 || { echo -e "${RED}npm not found. Install Node.js/npm first.${NC}"; exit 1; }
 
+# Enforce Java 21 for Spring Boot
+if command -v /usr/libexec/java_home >/dev/null 2>&1; then
+  export JAVA_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null || echo "")
+  if [ -n "${JAVA_HOME}" ]; then
+    export PATH="$JAVA_HOME/bin:$PATH"
+  fi
+fi
+if command -v jenv >/dev/null 2>&1; then
+  eval "$(jenv init -)" >/dev/null 2>&1 || true
+  jenv shell 21 >/dev/null 2>&1 || true
+fi
+
 # Helpful context
 JAVA_VER=$(java -version 2>&1 | head -n1 | sed 's/"/ /g') || true
 NODE_VER=$(node -v 2>/dev/null || echo "?")
 echo -e "${YELLOW}Java:${NC} ${JAVA_VER}"
 echo -e "${YELLOW}Node:${NC} ${NODE_VER}"
+
+# Ensure port 3000 is free and fixed (Next.js must not auto-move)
+export PORT=3000
+if lsof -ti:${PORT} >/dev/null 2>&1; then
+  echo -e "${RED}❌ Port ${PORT} is in use. This project requires a fixed dev port.${NC}"
+  echo -e "${YELLOW}Kill the process using:${NC} lsof -ti:${PORT} | xargs -r kill -9"
+  exit 1
+fi
+
+# Default DB settings (use host Postgres by default). Override via env if needed.
+export DB_HOST=${DB_HOST:-localhost}
+export DB_PORT=${DB_PORT:-5432}
+export DB_NAME=${DB_NAME:-project1}
+export DB_USERNAME=${DB_USERNAME:-postgres}
+export DB_PASSWORD=${DB_PASSWORD:-password}
+
+# Verify DB connectivity and guide the user
+if command -v pg_isready >/dev/null 2>&1; then
+  if ! PGPASSWORD="${DB_PASSWORD}" pg_isready -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USERNAME}" >/dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️  Database at ${DB_HOST}:${DB_PORT} not reachable as ${DB_USERNAME}.${NC}"
+    echo -e "${YELLOW}   If you want to use Docker Postgres, run: docker compose up -d db adminer${NC}"
+    echo -e "${YELLOW}   Or set DB_* env vars before running this script to match your PGAdmin instance.${NC}"
+  else
+    echo -e "${GREEN}✅ Using Postgres at ${DB_HOST}:${DB_PORT}/${DB_NAME} (user: ${DB_USERNAME})${NC}"
+  fi
+fi
 
 # Start servers
 echo -e "${BLUE}🚀 Starting development environment...${NC}"
@@ -101,9 +139,9 @@ if [ "$START_BACKEND" = true ]; then
 fi
 
 if [ "$START_FRONTEND" = true ]; then
-  echo -e "${BLUE}Starting frontend...${NC}"
+  echo -e "${BLUE}Starting frontend on fixed port ${PORT}...${NC}"
   cd frontend
-  nohup npm run dev > frontend.log 2>&1 &
+  nohup env PORT=${PORT} npm run dev > frontend.log 2>&1 &
   cd ..
 fi
 

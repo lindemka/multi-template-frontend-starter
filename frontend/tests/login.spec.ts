@@ -26,7 +26,7 @@ test('user can log in via UI and is redirected to dashboard', async () => {
     const api = await request.newContext();
     const apiRes = await api.post('http://localhost:8080/api/auth/login', {
         headers: { 'Content-Type': 'application/json' },
-        data: { usernameOrEmail: 'kai3', password: 'password123' }
+        data: { usernameOrEmail: 'sarah.chen', password: 'password123' }
     });
     expect(apiRes.ok()).toBeTruthy();
     const tokens = await apiRes.json();

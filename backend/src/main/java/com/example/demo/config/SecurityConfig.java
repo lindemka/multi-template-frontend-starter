@@ -39,13 +39,17 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(form -> form.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/health").permitAll() // Health endpoint only
-                .requestMatchers("/api/auth/**").permitAll() // Auth endpoints
+                .requestMatchers("/health").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/api/account/confirm-email").permitAll()
-                .requestMatchers("/api/members/**").permitAll() // Temporarily allow public access
-                .requestMatchers("/api/startups/**").permitAll() // Allow public access to startups
-                .requestMatchers("/api/db/**").hasRole("ADMIN") // Restrict DB management endpoints
+                .requestMatchers("/api/members/**").permitAll()
+                .requestMatchers("/api/startups/**").permitAll()
+                .requestMatchers("/api/db/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
