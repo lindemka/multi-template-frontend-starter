@@ -145,7 +145,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
         {/* Header */}
         <div className="px-6 py-4 border-b bg-white shrink-0 rounded-t-lg">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Edit</h2>
+            <DialogTitle className="text-xl font-semibold">Edit profile</DialogTitle>
             <button
               onClick={onClose}
               className="rounded-full hover:bg-gray-100 p-1.5 transition-colors"
