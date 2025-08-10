@@ -184,13 +184,13 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
               <div className="grid grid-cols-2 gap-3">
                 <Input
                   value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   placeholder="First name"
                   className="bg-white border-gray-200 focus:border-blue-500 transition-colors"
                 />
                 <Input
                   value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   placeholder="Last name"
                   className="bg-white border-gray-200 focus:border-blue-500 transition-colors"
                 />
@@ -219,7 +219,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                   </Tooltip>
                 </TooltipProvider>
               </div>
-              <Select value={formData.pronoun} onValueChange={(value) => setFormData({...formData, pronoun: value})}>
+              <Select value={formData.pronoun} onValueChange={(value) => setFormData({ ...formData, pronoun: value })}>
                 <SelectTrigger className="bg-white border-gray-200 focus:border-blue-500">
                   <SelectValue />
                 </SelectTrigger>
@@ -260,7 +260,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 value={formData.tagline}
                 onChange={(e) => {
                   if (e.target.value.length <= 160) {
-                    setFormData({...formData, tagline: e.target.value});
+                    setFormData({ ...formData, tagline: e.target.value });
                   }
                 }}
                 placeholder="Your professional tagline"
@@ -303,7 +303,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 {goals.map((goal) => {
                   const Icon = goal.icon;
                   const isSelected = formData.selectedGoals.includes(goal.id);
-                  
+
                   return (
                     <button
                       key={goal.id}
@@ -323,7 +323,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                           </svg>
                         </div>
                       )}
-                      
+
                       <div className="flex flex-col items-center space-y-2">
                         <div className={cn(
                           "p-3 rounded-full transition-colors",
@@ -379,14 +379,14 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                       ? cities.find((city) => city.value === formData.city)?.label
                       : "Select city..."}
                     <svg className="ml-2 h-4 w-4 shrink-0 opacity-50" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 8l4 4 4-4"/>
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 8l4 4 4-4" />
                     </svg>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
-                    <CommandInput 
-                      placeholder="Search city..." 
+                    <CommandInput
+                      placeholder="Search city..."
                       value={citySearch}
                       onValueChange={setCitySearch}
                       className="h-9"
@@ -394,7 +394,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                     <CommandEmpty>No city found.</CommandEmpty>
                     <CommandGroup className="max-h-[200px] overflow-y-auto">
                       {cities
-                        .filter(city => 
+                        .filter(city =>
                           city.label.toLowerCase().includes(citySearch.toLowerCase()) ||
                           city.location.toLowerCase().includes(citySearch.toLowerCase())
                         )
@@ -403,7 +403,7 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                             key={city.value}
                             value={city.value}
                             onSelect={(currentValue) => {
-                              setFormData({...formData, city: currentValue});
+                              setFormData({ ...formData, city: currentValue });
                               setCityOpen(false);
                               setCitySearch('');
                             }}
