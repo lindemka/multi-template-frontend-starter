@@ -49,7 +49,7 @@ export default function ChatDock() {
         const total = 70
         const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
         const idx = (hash % total) + 1
-        return `/api/avatar/${encodeURIComponent(String(idx))}`
+        return `https://i.pravatar.cc/150?img=${idx}`
     }
 
     const initialsFromUsername = (u: string | null | undefined) => {
@@ -360,8 +360,19 @@ export default function ChatDock() {
                                                 onClick={async () => { await openWindow(c.otherUsername) }}
                                             >
                                                 <div className="flex items-start gap-3">
-                                                    <Avatar className="h-10 w-10">
-                                                        <AvatarImage src={avatarUrlForUsername(c.otherUsername)} alt={c.otherUsername} />
+                                                    <Avatar className="h-10 w-10 shrink-0">
+                                                        <AvatarImage
+                                                            src={avatarUrlForUsername(c.otherUsername)}
+                                                            alt={c.otherUsername}
+                                                            onError={(e) => {
+                                                                const target = e.currentTarget as HTMLImageElement
+                                                                const name = c.otherUsername
+                                                                const parts = (name || '').split(/[^a-zA-Z0-9]+/).filter(Boolean)
+                                                                target.style.display = 'none'
+                                                                const fallback = target.nextElementSibling as HTMLElement | null
+                                                                if (fallback) fallback.style.display = 'flex'
+                                                            }}
+                                                        />
                                                         <AvatarFallback delayMs={0}>{initialsFromUsername(c.otherUsername)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0 flex-1">
