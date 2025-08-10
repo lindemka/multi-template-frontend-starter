@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { connectChat, sendChat } from '@/lib/chatClient'
 import { auth } from '@/lib/auth'
-import { Avatar } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -43,6 +43,27 @@ export default function ChatDock() {
     const [expanded, setExpanded] = useState<string | null>(null)
     const [minimized, setMinimized] = useState<string[]>([])
     const totalUnread = useMemo(() => conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0), [conversations])
+
+    const avatarUrlForUsername = (u: string | null | undefined) => {
+        const seed = (u || '').trim() || 'user'
+        const total = 70
+        const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
+        const idx = (hash % total) + 1
+        return `/api/avatar/${encodeURIComponent(String(idx))}`
+    }
+
+    const initialsFromUsername = (u: string | null | undefined) => {
+        if (!u) return 'U'
+        const parts = u.split(/[^a-zA-Z0-9]+/).filter(Boolean)
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+        return (parts[0][0] + parts[1][0]).toUpperCase()
+    }
+
+    const displayNameFromUsername = (u: string) => {
+        if (!u) return 'User'
+        const parts = u.split(/[^a-zA-Z0-9]+/).filter(Boolean)
+        return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ') || u
+    }
 
     useEffect(() => {
         if (initialized.current) return
@@ -296,7 +317,10 @@ export default function ChatDock() {
                         {/* Header - LinkedIn style */}
                         <div className="flex items-center gap-2 p-3 border-b bg-muted/20 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <Avatar className="h-6 w-6" />
+                                <Avatar className="h-6 w-6">
+                                    <AvatarImage src={avatarUrlForUsername(meRef.current)} alt={meRef.current || 'Me'} />
+                                    <AvatarFallback delayMs={0}>{initialsFromUsername(meRef.current)}</AvatarFallback>
+                                </Avatar>
                                 <div className="font-semibold text-base truncate">Nachrichten</div>
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="New message" onClick={() => { setComposeOpen(true); setComposeQuery('') }}>
@@ -332,20 +356,23 @@ export default function ChatDock() {
                                         {filteredConversations.map((c) => (
                                             <button
                                                 key={c.id}
-                                                className={`w-full px-3 py-2 hover:bg-accent/70 transition text-left rounded-sm ${expanded === c.otherUsername ? 'bg-accent' : ''}`}
+                                                className={`w-full px-3 py-2 hover:bg-accent/70 transition text-left rounded-md ${expanded === c.otherUsername ? 'bg-accent' : ''}`}
                                                 onClick={async () => { await openWindow(c.otherUsername) }}
                                             >
-                                                <div className="flex items-start gap-2">
-                                                    <Avatar className="h-8 w-8" />
+                                                <div className="flex items-start gap-3">
+                                                    <Avatar className="h-10 w-10">
+                                                        <AvatarImage src={avatarUrlForUsername(c.otherUsername)} alt={c.otherUsername} />
+                                                        <AvatarFallback delayMs={0}>{initialsFromUsername(c.otherUsername)}</AvatarFallback>
+                                                    </Avatar>
                                                     <div className="min-w-0 flex-1">
-                                                        <div className="flex items-center justify-between gap-2">
-                                                            <div className={`truncate text-sm ${c.unreadCount ? 'font-semibold' : 'font-medium'}`}>{c.otherUsername}</div>
-                                                            <div className="text-[11px] text-muted-foreground whitespace-nowrap">
+                                                        <div className="flex items-start justify-between gap-2">
+                                                            <div className={`truncate ${c.unreadCount ? 'font-semibold' : 'font-medium'}`}>{displayNameFromUsername(c.otherUsername)}</div>
+                                                            <div className="text-[11px] text-muted-foreground whitespace-nowrap pt-0.5">
                                                                 {c.lastMessageAt ? new Date(c.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-2">
-                                                            <div className="truncate text-xs text-muted-foreground max-w-[150px]">{c.lastMessage || ''}</div>
+                                                            <div className="truncate text-sm text-muted-foreground max-w-[200px]">{c.lastMessage || ''}</div>
                                                             {c.unreadCount ? (
                                                                 <span className="ml-auto inline-flex items-center justify-center h-5 min-w-5 px-1 rounded-full bg-primary text-primary-foreground text-[10px]">{c.unreadCount}</span>
                                                             ) : null}
@@ -408,7 +435,9 @@ export default function ChatDock() {
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(true) } }}
                     className="w-[95vw] max-w-[360px] md:w-[360px] h-12 md:h-14 rounded-xl overflow-hidden shadow-lg border bg-background flex items-center px-3 gap-3 cursor-pointer"
                 >
-                    <Avatar className="h-8 w-8" />
+                    <Avatar className="h-8 w-8">
+                        <AvatarFallback delayMs={0}>MS</AvatarFallback>
+                    </Avatar>
                     <div className="flex-1 min-w-0">
                         <div className="font-semibold leading-tight truncate">Nachrichten</div>
                     </div>
@@ -439,7 +468,10 @@ export default function ChatDock() {
                             await loadThread(u)
                         }}
                     >
-                        <Avatar className="h-8 w-8" />
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={avatarUrlForUsername(u)} alt={u} />
+                            <AvatarFallback delayMs={0}>{initialsFromUsername(u)}</AvatarFallback>
+                        </Avatar>
                         <div className="truncate font-medium">{u}</div>
                     </button>
                 ))}

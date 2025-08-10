@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Search, 
-  Filter, 
-  Users, 
-  Briefcase, 
-  MapPin, 
-  Mail, 
+import {
+  Search,
+  Filter,
+  Users,
+  Briefcase,
+  MapPin,
+  Mail,
   Phone,
   Building2,
   Target,
@@ -107,18 +107,26 @@ export default function MembersPage() {
     fetchMembers();
   }, []);
 
+  const avatarForName = (name: string) => {
+    const seed = (name || '').trim() || 'user'
+    const total = 70
+    const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
+    const idx = (hash % total) + 1
+    return `/api/avatar/${idx}`
+  }
+
   const fetchMembers = async () => {
     try {
       setLoading(true);
       const membersData = await memberApi.getAll();
-      
+
       // Transform the API response to match MemberData type
       if (membersData && membersData.length > 0) {
         const transformedMembers = membersData.map((member: Member) => ({
           id: member.id,
           name: member.name,
           location: member.location,
-          avatar: member.avatar,
+          avatar: avatarForName(member.name),
           followers: member.followers,
           rating: member.rating,
           goals: member.goals,
@@ -152,35 +160,35 @@ export default function MembersPage() {
   // Apply all filters
   const filteredMembers = members.filter(member => {
     // Search query filter
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.interests.some((interest: string) => interest.toLowerCase().includes(searchQuery.toLowerCase()));
-    
+
     // Goals filter
     const matchesGoals = filters.goals.length === 0 ||
-      filters.goals.some((goalId: string) => 
-        member.goals.some((goal: string) => 
+      filters.goals.some((goalId: string) =>
+        member.goals.some((goal: string) =>
           goal.toLowerCase().replace(/\s+/g, '-').includes(goalId)
         )
       );
-    
+
     // Interests filter
     const matchesInterests = filters.interests.length === 0 ||
-      filters.interests.some((interest: string) => 
+      filters.interests.some((interest: string) =>
         member.interests.includes(interest)
       );
-    
+
     // Skills filter
     const matchesSkills = filters.skills.length === 0 ||
-      filters.skills.some((skill: string) => 
+      filters.skills.some((skill: string) =>
         member.skills && member.skills.includes(skill)
       );
-    
+
     // Location filter
     const matchesLocation = !filters.location ||
       member.location.toLowerCase().includes(filters.location.toLowerCase());
-    
+
     return matchesSearch && matchesGoals && matchesInterests && matchesSkills && matchesLocation;
   });
 
@@ -232,7 +240,7 @@ export default function MembersPage() {
   };
 
   const getGoalIcon = (goal: string) => {
-    switch(goal.toLowerCase()) {
+    switch (goal.toLowerCase()) {
       case 'join a team':
         return <Users className="h-4 w-4" />;
       case 'build up a team':
@@ -283,7 +291,7 @@ export default function MembersPage() {
       {(filters.goals.length > 0 || filters.interests.length > 0 || filters.skills.length > 0 || filters.location) && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-muted-foreground">Active filters:</span>
-          
+
           {filters.goals.map((goalId: string) => (
             <Badge key={goalId} variant="secondary" className="gap-1 bg-blue-100 text-blue-700 border-0">
               {goalId.replace(/-/g, ' ')}
@@ -298,7 +306,7 @@ export default function MembersPage() {
               </button>
             </Badge>
           ))}
-          
+
           {filters.interests.slice(0, 3).map((interest: string) => (
             <Badge key={interest} variant="secondary" className="gap-1 bg-blue-100 text-blue-700 border-0">
               {interest}
@@ -316,7 +324,7 @@ export default function MembersPage() {
           {filters.interests.length > 3 && (
             <Badge variant="secondary">+{filters.interests.length - 3} more</Badge>
           )}
-          
+
           {filters.skills.map((skill: string) => (
             <Badge key={skill} variant="secondary" className="gap-1 bg-green-100 text-green-700 border-0">
               {skill}
@@ -331,7 +339,7 @@ export default function MembersPage() {
               </button>
             </Badge>
           ))}
-          
+
           {filters.location && (
             <Badge variant="secondary" className="gap-1 bg-blue-100 text-blue-700 border-0">
               📍 {filters.location}
@@ -343,7 +351,7 @@ export default function MembersPage() {
               </button>
             </Badge>
           )}
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -392,120 +400,119 @@ export default function MembersPage() {
                 </TableRow>
               ) : (
                 paginatedMembers.map((member) => (
-              <TableRow 
-                key={member.id}
-                className="cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => handleRowClick(member)}
-              >
-                {/* Member Info */}
-                <TableCell>
-                  <div className="flex items-start gap-3">
-                    <Avatar>
-                      <AvatarImage src={member.avatar} />
-                      <AvatarFallback>{member.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{member.name}</span>
-                        {(member as any).isFounder && (
-                          <Badge className="bg-purple-100 text-purple-700 text-xs">
-                            Founder
-                          </Badge>
-                        )}
-                        {(member as any).isInvestor && (
-                          <Badge className="bg-green-100 text-green-700 text-xs">
-                            Investor
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="text-sm text-muted-foreground">{member.location}</div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-muted-foreground">
-                          {member.followers} Followers
-                        </span>
-                        <div className="flex gap-0.5">
-                          {[...Array(5)].map((_, i) => (
-                            <div
-                              key={i}
-                              className={`h-2 w-2 rounded-full ${
-                                i < Math.floor(member.rating)
-                                  ? 'bg-orange-400'
-                                  : 'bg-gray-200'
-                              }`}
-                            />
-                          ))}
+                  <TableRow
+                    key={member.id}
+                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => handleRowClick(member)}
+                  >
+                    {/* Member Info */}
+                    <TableCell>
+                      <div className="flex items-start gap-3">
+                        <Avatar>
+                          <AvatarImage src={member.avatar || avatarForName(member.name)} />
+                          <AvatarFallback>{member.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{member.name}</span>
+                            {(member as any).isFounder && (
+                              <Badge className="bg-purple-100 text-purple-700 text-xs">
+                                Founder
+                              </Badge>
+                            )}
+                            {(member as any).isInvestor && (
+                              <Badge className="bg-green-100 text-green-700 text-xs">
+                                Investor
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-sm text-muted-foreground">{member.location}</div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-muted-foreground">
+                              {member.followers} Followers
+                            </span>
+                            <div className="flex gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`h-2 w-2 rounded-full ${i < Math.floor(member.rating)
+                                    ? 'bg-orange-400'
+                                    : 'bg-gray-200'
+                                    }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </TableCell>
+                    </TableCell>
 
-                {/* Goals */}
-                <TableCell>
-                  <div className="flex flex-wrap gap-2">
-                    {member.goals.map((goal: string, index: number) => (
+                    {/* Goals */}
+                    <TableCell>
+                      <div className="flex flex-wrap gap-2">
+                        {member.goals.map((goal: string, index: number) => (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            className="h-7 gap-1 text-xs"
+                          >
+                            {getGoalIcon(goal)}
+                            {goal}
+                          </Button>
+                        ))}
+                      </div>
+                    </TableCell>
+
+                    {/* Interests & Roles */}
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1 max-w-md">
+                        {member.interests.slice(0, 3).map((interest: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {interest}
+                          </Badge>
+                        ))}
+                        {member.interests.length > 3 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{member.interests.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+
+                    {/* Assets */}
+                    <TableCell>
+                      {member.assets ? (
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="h-4 w-4 text-blue-500" />
+                          <span className="text-sm">{member.assets.label}</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">None</span>
+                      )}
+                      {member.status && (
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {member.status}
+                        </Badge>
+                      )}
+                    </TableCell>
+
+                    {/* Actions */}
+                    <TableCell className="text-right">
                       <Button
-                        key={index}
                         variant="outline"
                         size="sm"
-                        className="h-7 gap-1 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click
+                          handleViewProfile(member.id);
+                        }}
                       >
-                        {getGoalIcon(goal)}
-                        {goal}
+                        View Profile
                       </Button>
-                    ))}
-                  </div>
-                </TableCell>
-
-                {/* Interests & Roles */}
-                <TableCell>
-                  <div className="flex flex-wrap gap-1 max-w-md">
-                    {member.interests.slice(0, 3).map((interest: string, index: number) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {interest}
-                      </Badge>
-                    ))}
-                    {member.interests.length > 3 && (
-                      <Badge variant="secondary" className="text-xs">
-                        +{member.interests.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
-                </TableCell>
-
-                {/* Assets */}
-                <TableCell>
-                  {member.assets ? (
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm">{member.assets.label}</span>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">None</span>
-                  )}
-                  {member.status && (
-                    <Badge variant="outline" className="mt-1 text-xs">
-                      {member.status}
-                    </Badge>
-                  )}
-                </TableCell>
-
-                {/* Actions */}
-                <TableCell className="text-right">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent row click
-                      handleViewProfile(member.id);
-                    }}
-                  >
-                    View Profile
-                  </Button>
-                </TableCell>
-              </TableRow>
-              ))
-            )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         )}
@@ -524,8 +531,8 @@ export default function MembersPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {paginatedMembers.map((member) => (
-              <Card 
-                key={member.id} 
+              <Card
+                key={member.id}
                 className="cursor-pointer hover:shadow-lg transition-all"
                 onClick={() => handleRowClick(member)}
               >
@@ -533,7 +540,7 @@ export default function MembersPage() {
                   {/* Member Header */}
                   <div className="flex items-start gap-3 mb-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={member.avatar} />
+                      <AvatarImage src={member.avatar || avatarForName(member.name)} />
                       <AvatarFallback>{member.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
@@ -547,11 +554,10 @@ export default function MembersPage() {
                           {[...Array(5)].map((_, i) => (
                             <div
                               key={i}
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                i < Math.floor(member.rating)
-                                  ? 'bg-orange-400'
-                                  : 'bg-gray-200'
-                              }`}
+                              className={`h-1.5 w-1.5 rounded-full ${i < Math.floor(member.rating)
+                                ? 'bg-orange-400'
+                                : 'bg-gray-200'
+                                }`}
                             />
                           ))}
                         </div>
@@ -630,8 +636,8 @@ export default function MembersPage() {
                   )}
 
                   {/* Action Button */}
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     className="w-full"
                     onClick={(e) => {

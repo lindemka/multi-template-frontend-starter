@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from 'react'
+import MobileNavMessages from '@/components/chat/MobileNavMessages'
 import ChatDock from '@/components/chat/ChatDock'
 
 // Full-page messages view: conversations left, thread right
@@ -11,6 +12,7 @@ export default function MessagesPage() {
     // This page is hidden on small screens in favor of the dock
     return (
         <div className="p-4">
+            <MobileNavMessages />
             <h1 className="text-xl font-semibold mb-4">Nachrichten</h1>
             <div className="hidden md:block">
                 <ChatDock />

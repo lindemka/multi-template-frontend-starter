@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Avatar } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
@@ -29,6 +29,21 @@ export default function ChatWindow({
     onClose: () => void
     onMinimize: () => void
 }) {
+    const avatarUrlForUsername = (u: string | null | undefined) => {
+        const seed = (u || '').trim()
+        const total = 70
+        if (!seed) return `https://i.pravatar.cc/150?img=1`
+        const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
+        const idx = (hash % total) + 1
+        return `https://i.pravatar.cc/150?img=${idx}`
+    }
+
+    const initialsFromUsername = (u: string | null | undefined) => {
+        if (!u) return 'U'
+        const parts = u.split(/[^a-zA-Z0-9]+/).filter(Boolean)
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+        return (parts[0][0] + parts[1][0]).toUpperCase()
+    }
     const [input, setInput] = useState('')
     const endRef = useRef<HTMLDivElement | null>(null)
     const viewportRef = useRef<HTMLDivElement | null>(null)
@@ -63,7 +78,10 @@ export default function ChatWindow({
         <Card className="w-[95vw] max-w-[420px] h-[70vh] max-h-[560px] md:w-[380px] md:h-[520px] p-0 flex flex-col shadow-2xl rounded-xl overflow-hidden" data-testid="chat-window" data-thread="true">
             <div className="flex items-center gap-2 p-3 border-b bg-muted/20">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <Avatar className="h-7 w-7" />
+                    <Avatar className="h-7 w-7">
+                        <AvatarImage src={avatarUrlForUsername(username)} alt={username} />
+                        <AvatarFallback delayMs={0}>{initialsFromUsername(username)}</AvatarFallback>
+                    </Avatar>
                     <div className="font-medium truncate">{username}</div>
                 </div>
                 <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="More options">
@@ -95,11 +113,23 @@ export default function ChatWindow({
                                 {group.items.map((m) => {
                                     const mine = m.sender?.username === me
                                     return (
-                                        <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`} data-testid="chat-msg" data-username={m.sender?.username}>
+                                        <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'} items-end gap-2`} data-testid="chat-msg" data-username={m.sender?.username}>
+                                            {!mine && (
+                                                <Avatar className="h-6 w-6">
+                                                    <AvatarImage src={avatarUrlForUsername(m.sender?.username)} alt={m.sender?.username || 'User'} />
+                                                    <AvatarFallback delayMs={0}>{initialsFromUsername(m.sender?.username)}</AvatarFallback>
+                                                </Avatar>
+                                            )}
                                             <div className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm shadow-sm ${mine ? 'bg-primary text-primary-foreground rounded-br-sm' : 'bg-muted rounded-bl-sm'}`}>
                                                 <div className="whitespace-pre-wrap break-words">{m.content}</div>
                                                 <div className={`text-[10px] mt-1 ${mine ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{formatTime(m.createdAt)}</div>
                                             </div>
+                                            {mine && (
+                                                <Avatar className="h-6 w-6">
+                                                    <AvatarImage src={avatarUrlForUsername(me)} alt={me || 'Me'} />
+                                                    <AvatarFallback delayMs={0}>{initialsFromUsername(me)}</AvatarFallback>
+                                                </Avatar>
+                                            )}
                                         </div>
                                     )
                                 })}

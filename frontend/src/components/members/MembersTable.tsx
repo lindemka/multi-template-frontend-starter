@@ -80,15 +80,24 @@ const MemberRow: FC<{ member: Member; onClick: (member: Member) => void }> = ({ 
     return "text-gray-600";
   };
 
+  const avatarForName = (name: string) => {
+    const seed = (name || '').trim()
+    const total = 70
+    if (!seed) return `https://i.pravatar.cc/150?img=1`
+    const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
+    const idx = (hash % total) + 1
+    return `https://i.pravatar.cc/150?img=${idx}`
+  }
+
   return (
-    <TableRow 
+    <TableRow
       className="cursor-pointer hover:bg-muted/50 transition-colors"
       onClick={() => onClick(member)}
     >
       <TableCell>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={member.avatar} alt={member.name} />
+            <AvatarImage src={member.avatar || avatarForName(member.name)} alt={member.name} />
             <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
           </Avatar>
           <div>
@@ -153,13 +162,13 @@ const MemberRow: FC<{ member: Member; onClick: (member: Member) => void }> = ({ 
   );
 };
 
-export const MembersTable: FC<MembersTableProps> = ({ 
-  members, 
+export const MembersTable: FC<MembersTableProps> = ({
+  members,
   loading,
-  onMemberClick 
+  onMemberClick
 }) => {
   if (loading) return <TableSkeleton />;
-  
+
   if (!members.length) {
     return (
       <div className="text-center py-12">
@@ -167,7 +176,7 @@ export const MembersTable: FC<MembersTableProps> = ({
       </div>
     );
   }
-  
+
   return (
     <Table>
       <TableHeader>
@@ -181,7 +190,7 @@ export const MembersTable: FC<MembersTableProps> = ({
       </TableHeader>
       <TableBody>
         {members.map(member => (
-          <MemberRow 
+          <MemberRow
             key={member.id}
             member={member}
             onClick={onMemberClick}
