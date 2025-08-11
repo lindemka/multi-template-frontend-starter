@@ -38,15 +38,17 @@ public class AccountController {
     public ResponseEntity<?> me(Authentication auth) {
         AuthUser user = authUserRepository.findByUsername(auth.getName()).orElseThrow();
         String profileAvatar = user.getUserProfile() != null ? user.getUserProfile().getAvatar() : null;
-        return ResponseEntity.ok(Map.of(
-                "id", user.getId(),
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "firstName", user.getFirstName(),
-                "lastName", user.getLastName(),
-                "emailVerified", user.getEmailVerified(),
-                "profileAvatar", profileAvatar
-        ));
+        
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("id", user.getId());
+        response.put("username", user.getUsername());
+        response.put("email", user.getEmail());
+        response.put("firstName", user.getFirstName());
+        response.put("lastName", user.getLastName());
+        response.put("emailVerified", user.getEmailVerified());
+        response.put("profileAvatar", profileAvatar != null ? profileAvatar : "");
+        
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/profile")

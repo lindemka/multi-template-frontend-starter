@@ -156,7 +156,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
         <CardContent className="relative">
           <div className="absolute -top-16 left-6">
             <Avatar className="h-32 w-32 ring-4 ring-white">
-              <AvatarImage src={resolveAvatarUrl(profile.avatar, profile.name)} />
+              <AvatarImage src={profile.avatar} />
               <AvatarFallback className="text-2xl">
                 {profile.name?.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>

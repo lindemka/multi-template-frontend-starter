@@ -38,6 +38,8 @@ export default function ChatDock() {
     const [composeOpen, setComposeOpen] = useState(false)
     const [composeQuery, setComposeQuery] = useState('')
     const initialized = useRef(false)
+    const [me, setMe] = useState<{ username: string | null; avatar: string | null }>({ username: null, avatar: null })
+    const [isAuthenticated, setIsAuthenticated] = useState(false)
     const meRef = useRef<string | null>(null)
     const meAvatarRef = useRef<string | null>(null)
     const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -66,21 +68,69 @@ export default function ChatDock() {
         initialized.current = true
             ; (async () => {
                 try {
+                    // First check if user is authenticated
+                    try {
+                        const meRes = await fetch('/api/account/me', { credentials: 'include' })
+                        if (!meRes.ok) {
+                            // User is not authenticated - don't initialize chat
+                            console.log('ChatDock - User not authenticated, chat disabled')
+                            setIsAuthenticated(false)
+                            return
+                        }
+                        
+                        const meData = await meRes.json()
+                        if (!meData || meData.error) {
+                            // Invalid user data - don't initialize chat
+                            console.log('ChatDock - Invalid user data, chat disabled')
+                            setIsAuthenticated(false)
+                            return
+                        }
+                        
+                        // User is authenticated - set user data
+                        setIsAuthenticated(true)
+                        
+                        // Store the username first - this is critical for fallback
+                        if (meData?.username) {
+                            meRef.current = meData.username
+                            console.log('ChatDock - username set to:', meData.username)
+                        }
+                        
+                        // Use avatar directly from backend - it's the single source of truth
+                        let avatarUrl = null
+                        if (meData?.profileAvatar && meData.profileAvatar !== '') {
+                            meAvatarRef.current = meData.profileAvatar
+                            avatarUrl = meData.profileAvatar
+                            console.log('ChatDock - avatar from backend:', avatarUrl)
+                        }
+                        
+                        // Update state to trigger re-render
+                        setMe({ 
+                            username: meData?.username || null,
+                            avatar: avatarUrl
+                        })
+                        
+                        // Set auth user for legacy code
+                        try { 
+                            const authUser = auth.getUser()
+                            if (!authUser && meData?.username) {
+                                // If auth is not set, we might need to set it from the backend data
+                                // This is a safety measure
+                            }
+                        } catch { }
+                        
+                    } catch (e) { 
+                        console.error('ChatDock - Failed to fetch user data:', e)
+                        setIsAuthenticated(false)
+                        return
+                    }
+                    
+                    // Only proceed with chat initialization if authenticated
                     // Restore persisted UI state (LinkedIn-like behavior)
                     try {
                         const savedOpen = typeof window !== 'undefined' ? window.localStorage.getItem('chat.open') : null
                         if (savedOpen === '1') setOpen(true)
                         const savedActive = typeof window !== 'undefined' ? window.localStorage.getItem('chat.active') : null
                         if (savedActive) setActive(savedActive)
-                    } catch { /* noop */ }
-                    try { meRef.current = auth.getUser()?.username || null } catch { }
-                    // Load my canonical avatar once from account/me
-                    try {
-                        const meRes = await fetch('/api/account/me', { credentials: 'include' })
-                        if (meRes.ok) {
-                            const meData = await meRes.json()
-                            meAvatarRef.current = (meData?.profileAvatar || meData?.userProfile?.avatar || null)
-                        }
                     } catch { /* noop */ }
                     const c = await connectChat(async (raw: unknown) => {
                         const msg = raw as Message
@@ -313,6 +363,11 @@ export default function ChatDock() {
         } catch { }
     }
 
+    // Don't render anything if user is not authenticated
+    if (!isAuthenticated) {
+        return null
+    }
+
     return (
         <div className="fixed bottom-3 right-3 md:bottom-4 md:right-4 z-50">
             {open && (
@@ -322,14 +377,10 @@ export default function ChatDock() {
                         <div className="flex items-center gap-2 p-3 border-b bg-muted/20 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
                                 <Avatar className="h-6 w-6">
-                                    {(() => {
-                                        // Always use the actual avatar from the backend, don't replace with random photo
-                                        if (meAvatarRef.current) {
-                                            return <AvatarImage src={meAvatarRef.current} alt={meRef.current || 'Me'} />
-                                        }
-                                        return null
-                                    })()}
-                                    <AvatarFallback delayMs={0}>{initialsFromUsername(meRef.current)}</AvatarFallback>
+                                    {me.avatar && (
+                                        <AvatarImage src={me.avatar} alt={displayNameFromUsername(me.username || '')} />
+                                    )}
+                                    <AvatarFallback delayMs={0}>{initialsFromUsername(me.username)}</AvatarFallback>
                                 </Avatar>
                                 <div className="font-semibold text-base truncate">Nachrichten</div>
                             </div>
@@ -452,13 +503,9 @@ export default function ChatDock() {
                     className="w-[95vw] max-w-[360px] md:w-[360px] h-12 md:h-14 rounded-xl overflow-hidden shadow-lg border bg-background flex items-center px-3 gap-3 cursor-pointer"
                 >
                     <Avatar className="h-8 w-8">
-                        {(() => {
-                            // Always use the actual avatar from the backend, don't replace with random photo
-                            if (meAvatarRef.current) {
-                                return <AvatarImage src={meAvatarRef.current} alt={meRef.current || 'Me'} />
-                            }
-                            return null
-                        })()}
+                        {meAvatarRef.current && (
+                            <AvatarImage src={meAvatarRef.current} alt={meRef.current || 'Me'} />
+                        )}
                         <AvatarFallback delayMs={0}>{initialsFromUsername(meRef.current)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">

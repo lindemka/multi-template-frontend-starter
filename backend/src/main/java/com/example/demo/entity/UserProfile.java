@@ -21,7 +21,10 @@ public class UserProfile {
     private String name;
 
     private String location;
+    
+    @Column(name = "avatar_url")
     private String avatar;
+    
     private Integer followers = 0;
     private Double rating = 0.0;
     private String tagline;

@@ -46,13 +46,15 @@ export function NavUser({
         const res = await fetch('/api/account/me', { cache: 'no-store' })
         if (!cancelled && res.ok) {
           const data = await res.json()
-          setCurrentUser(data)
-          setDisplayUser({
-            name: [data.firstName, data.lastName].filter(Boolean).join(' ') || data.username || user.name,
-            email: data.email || user.email,
-            avatar: resolveAvatarUrl((data as any).profileAvatar || data.userProfile?.avatar, data.username) || '',
-          })
-          return
+          if (data && !data.error) {
+            setCurrentUser(data)
+            setDisplayUser({
+              name: [data.firstName, data.lastName].filter(Boolean).join(' ') || data.username || user.name,
+              email: data.email || user.email,
+              avatar: (data as any).profileAvatar || '',  // Use avatar directly from backend
+            })
+            return
+          }
         }
       } catch { }
       const ls = auth.getUser()
