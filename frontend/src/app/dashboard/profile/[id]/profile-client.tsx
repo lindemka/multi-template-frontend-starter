@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  MapPin, Building2, Link, Calendar, Users, Eye, MessageSquare, 
-  ThumbsUp, Share2, Send, MoreHorizontal, PencilLine, Plus, 
-  ArrowRight, CheckCircle2, ArrowLeft, Loader2 
+import {
+  MapPin, Building2, Link, Calendar, Users, Eye, MessageSquare,
+  ThumbsUp, Share2, Send, MoreHorizontal, PencilLine, Plus,
+  ArrowRight, CheckCircle2, ArrowLeft, Loader2
 } from "lucide-react";
 import EditProfileModal from '@/components/profile/EditProfileModal';
 import { memberApi, Member } from '@/lib/memberApi';
+import { resolveAvatarUrl } from '@/lib/avatar';
 
 type ProfileData = Member & {
   email?: string;
@@ -158,11 +159,11 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
   const fetchUserProfile = async (userId: string) => {
     try {
       setLoading(true);
-      
+
       // Check if viewing own profile
       const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
       setIsOwnProfile(currentUser.id && currentUser.id.toString() === userId);
-      
+
       try {
         // Try to fetch member from API
         const memberData = await memberApi.getById(parseInt(userId));
@@ -170,7 +171,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
       } catch (apiErr) {
         // If API fails, try mock data
         const mockUser = mockFoundersData.find(u => u.id === parseInt(userId));
-        
+
         if (mockUser) {
           setProfileData({
             ...mockUser,
@@ -211,8 +212,8 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
           <Card>
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground">{error || 'User not found'}</p>
-              <Button 
-                className="mt-4" 
+              <Button
+                className="mt-4"
                 onClick={() => router.push('/dashboard/members')}
               >
                 Back to Members
@@ -228,8 +229,8 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
         {/* Back button */}
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="mb-4"
           onClick={() => router.push('/dashboard/members')}
         >
@@ -245,13 +246,13 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
               <div>
                 {/* Cover Image - Full width */}
                 <div className="h-48 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 w-full" />
-                
+
                 <div className="relative px-6 pb-4">
                   {/* Profile Avatar */}
                   <div className="absolute -top-16 left-6">
                     <div className="h-32 w-32 rounded-full ring-4 ring-white bg-white overflow-hidden">
                       <Avatar className="h-full w-full">
-                        <AvatarImage src={profileData.avatar} />
+                        <AvatarImage src={resolveAvatarUrl(profileData.avatar, profileData.name)} />
                         <AvatarFallback className="text-3xl bg-gray-100">
                           {(profileData?.name || '').split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -378,7 +379,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={profileData.avatar} />
+                              <AvatarImage src={resolveAvatarUrl(profileData.avatar, profileData.name)} />
                               <AvatarFallback>{(profileData?.name || '').split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
@@ -491,9 +492,9 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm leading-tight">{person.name}</p>
                           <p className="text-xs text-gray-600 line-clamp-2 mt-1">{person.role}</p>
-                          <Button 
-                            variant={person.following ? "secondary" : "outline"} 
-                            size="sm" 
+                          <Button
+                            variant={person.following ? "secondary" : "outline"}
+                            size="sm"
                             className="mt-2"
                           >
                             {person.following ? "Following" : "Follow"}
@@ -539,12 +540,12 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
           </div>
         </div>
       </div>
-      
+
       {/* Edit Profile Modal - Only for own profile */}
       {isOwnProfile && (
-        <EditProfileModal 
-          isOpen={isEditModalOpen} 
-          onClose={() => setIsEditModalOpen(false)} 
+        <EditProfileModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
         />
       )}
     </div>

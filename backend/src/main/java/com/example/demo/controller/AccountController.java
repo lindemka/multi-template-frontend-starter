@@ -37,13 +37,15 @@ public class AccountController {
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
         AuthUser user = authUserRepository.findByUsername(auth.getName()).orElseThrow();
+        String profileAvatar = user.getUserProfile() != null ? user.getUserProfile().getAvatar() : null;
         return ResponseEntity.ok(Map.of(
                 "id", user.getId(),
                 "username", user.getUsername(),
                 "email", user.getEmail(),
                 "firstName", user.getFirstName(),
                 "lastName", user.getLastName(),
-                "emailVerified", user.getEmailVerified()
+                "emailVerified", user.getEmailVerified(),
+                "profileAvatar", profileAvatar
         ));
     }
 

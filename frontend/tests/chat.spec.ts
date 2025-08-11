@@ -2,8 +2,22 @@ import { test, expect } from '@playwright/test'
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000'
 
+async function ensureLoggedOut(page) {
+    try { await page.request.post(`${BASE}/api/auth/logout`) } catch { }
+    try { await page.context().clearCookies() } catch { }
+    try { await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }) } catch { }
+}
+
 async function login(page, username: string, password: string) {
+    await ensureLoggedOut(page)
     await page.goto(`${BASE}/login`)
+    if (page.url().includes('/dashboard')) {
+        await ensureLoggedOut(page)
+        await page.goto(`${BASE}/login`)
+    }
+    // Wait for inputs to be visible to avoid timing issues
+    await page.getByLabel('Username or Email').waitFor({ state: 'visible' })
+    await page.getByLabel('Password').waitFor({ state: 'visible' })
     await page.getByLabel('Username or Email').fill(username)
     await page.getByLabel('Password').fill(password)
     await page.getByRole('button', { name: 'Sign In' }).click()

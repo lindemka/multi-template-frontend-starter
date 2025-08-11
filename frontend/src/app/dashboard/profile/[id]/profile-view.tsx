@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import api from '@/lib/api';
+import { resolveAvatarUrl } from '@/lib/avatar';
 import ProfileEdit from './profile-edit';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -155,7 +156,7 @@ export default function ProfileView({ profileId }: ProfileViewProps) {
         <CardContent className="relative">
           <div className="absolute -top-16 left-6">
             <Avatar className="h-32 w-32 ring-4 ring-white">
-              <AvatarImage src={profile.avatar} />
+              <AvatarImage src={resolveAvatarUrl(profile.avatar, profile.name)} />
               <AvatarFallback className="text-2xl">
                 {profile.name?.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>

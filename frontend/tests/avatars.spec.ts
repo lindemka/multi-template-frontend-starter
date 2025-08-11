@@ -2,8 +2,21 @@ import { test, expect } from '@playwright/test'
 
 const BASE = process.env.BASE_URL || 'http://localhost:3000'
 
+async function ensureLoggedOut(page) {
+    try { await page.request.post(`${BASE}/api/auth/logout`) } catch { }
+    try { await page.context().clearCookies() } catch { }
+    try { await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }) } catch { }
+}
+
 async function login(page, username: string, password: string) {
+    await ensureLoggedOut(page)
     await page.goto(`${BASE}/login`)
+    if (page.url().includes('/dashboard')) {
+        await ensureLoggedOut(page)
+        await page.goto(`${BASE}/login`)
+    }
+    await page.getByLabel('Username or Email').waitFor({ state: 'visible' })
+    await page.getByLabel('Password').waitFor({ state: 'visible' })
     await page.getByLabel('Username or Email').fill(username)
     await page.getByLabel('Password').fill(password)
     await page.getByRole('button', { name: 'Sign In' }).click()
@@ -11,7 +24,7 @@ async function login(page, username: string, password: string) {
 }
 
 test.describe('Avatars', () => {
-    test('chat dock shows avatars and members table uses mocked photos', async ({ page }) => {
+    test('chat dock shows DB avatar images and members table shows images', async ({ page }) => {
         // Create user and login
         await page.request.post(`${BASE}/api/auth/register`, {
             data: { username: 'avatar.tester', email: 'avatar.tester@example.com', password: 'password123', firstName: 'Avatar', lastName: 'Tester', confirmPassword: 'password123' }
@@ -32,17 +45,18 @@ test.describe('Avatars', () => {
         if (await toggle.count()) {
             if (await toggle.isVisible()) await toggle.click()
         }
-        // Wait for conversation row to appear and check for avatar component (image or fallback)
+        // Wait for conversation row to appear
         await expect(page.getByText('Avatar Other').first()).toBeVisible({ timeout: 10000 })
-        const chatAvatarAny = page.locator('[data-testid="chat-conversations"] [data-slot="avatar"], [data-testid="chat-conversations"] [data-slot="avatar-image"], [data-testid="chat-conversations"] [data-slot="avatar-fallback"]').first()
-        await expect(chatAvatarAny).toBeVisible({ timeout: 10000 })
+        // Assert the conversation entry renders an <img> with a real src (DB photo if available; else deterministic photo fallback)
+        const convoRow = page.locator('[data-testid="chat-conversations"] button').filter({ hasText: 'Avatar Other' }).first()
+        const img = convoRow.locator('[data-slot="avatar-image"]').first()
+        await expect(img).toHaveAttribute('src', /https?:\/\//)
 
-        // Navigate to members page and assert mocked images render
+        // Navigate to members page and assert avatar images render with non-empty src
         await page.goto(`${BASE}/dashboard/members`)
-        // Wait for either rows or empty state
-        await page.waitForTimeout(500)
-        const memberAvatarAny = page.locator('[data-slot="avatar"], [data-slot="avatar-image"], [data-slot="avatar-fallback"]').first()
-        await expect(memberAvatarAny).toBeVisible({ timeout: 10000 })
+        await page.waitForTimeout(300)
+        const memberImg = page.locator('[data-slot="avatar-image"]').first()
+        await expect(memberImg).toHaveAttribute('src', /^https?:\/\//)
     })
 })
 

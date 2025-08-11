@@ -2,7 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { connectChat, sendChat } from '@/lib/chatClient'
 import { auth } from '@/lib/auth'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { resolveAvatarUrl } from '@/lib/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -17,12 +18,12 @@ import ChatWindow from './ChatWindow'
 type Message = {
     id: number
     content: string
-    sender: { username: string }
-    recipient: { username: string }
+    sender: { username: string; avatar?: string | null }
+    recipient: { username: string; avatar?: string | null }
     createdAt: string
 }
 
-type Conversation = { id: number; otherUsername: string; updatedAt: string; lastMessage?: string; lastMessageAt?: string; unreadCount?: number }
+type Conversation = { id: number; otherUsername: string; otherAvatar?: string | null; updatedAt: string; lastMessage?: string; lastMessageAt?: string; unreadCount?: number }
 
 declare global {
     interface Window { __wsSent?: boolean }
@@ -38,19 +39,14 @@ export default function ChatDock() {
     const [composeQuery, setComposeQuery] = useState('')
     const initialized = useRef(false)
     const meRef = useRef<string | null>(null)
+    const meAvatarRef = useRef<string | null>(null)
     const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
     // Popout windows: one expanded window and an ordered list of minimized chips (max 3)
     const [expanded, setExpanded] = useState<string | null>(null)
     const [minimized, setMinimized] = useState<string[]>([])
     const totalUnread = useMemo(() => conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0), [conversations])
 
-    const avatarUrlForUsername = (u: string | null | undefined) => {
-        const seed = (u || '').trim() || 'user'
-        const total = 70
-        const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
-        const idx = (hash % total) + 1
-        return `https://i.pravatar.cc/150?img=${idx}`
-    }
+    // No generic photo placeholders; rely on real profile avatar when present.
 
     const initialsFromUsername = (u: string | null | undefined) => {
         if (!u) return 'U'
@@ -78,6 +74,14 @@ export default function ChatDock() {
                         if (savedActive) setActive(savedActive)
                     } catch { /* noop */ }
                     try { meRef.current = auth.getUser()?.username || null } catch { }
+                    // Load my canonical avatar once from account/me
+                    try {
+                        const meRes = await fetch('/api/account/me', { credentials: 'include' })
+                        if (meRes.ok) {
+                            const meData = await meRes.json()
+                            meAvatarRef.current = (meData?.profileAvatar || meData?.userProfile?.avatar || null)
+                        }
+                    } catch { /* noop */ }
                     const c = await connectChat(async (raw: unknown) => {
                         const msg = raw as Message
                         const sender = msg.sender?.username
@@ -318,7 +322,13 @@ export default function ChatDock() {
                         <div className="flex items-center gap-2 p-3 border-b bg-muted/20 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
                                 <Avatar className="h-6 w-6">
-                                    <AvatarImage src={avatarUrlForUsername(meRef.current)} alt={meRef.current || 'Me'} />
+                                    {(() => {
+                                        // Always use the actual avatar from the backend, don't replace with random photo
+                                        if (meAvatarRef.current) {
+                                            return <AvatarImage src={meAvatarRef.current} alt={meRef.current || 'Me'} />
+                                        }
+                                        return null
+                                    })()}
                                     <AvatarFallback delayMs={0}>{initialsFromUsername(meRef.current)}</AvatarFallback>
                                 </Avatar>
                                 <div className="font-semibold text-base truncate">Nachrichten</div>
@@ -361,23 +371,18 @@ export default function ChatDock() {
                                             >
                                                 <div className="flex items-start gap-3">
                                                     <Avatar className="h-10 w-10 shrink-0">
-                                                        <AvatarImage
-                                                            src={avatarUrlForUsername(c.otherUsername)}
-                                                            alt={c.otherUsername}
-                                                            onError={(e) => {
-                                                                const target = e.currentTarget as HTMLImageElement
-                                                                const name = c.otherUsername
-                                                                const parts = (name || '').split(/[^a-zA-Z0-9]+/).filter(Boolean)
-                                                                target.style.display = 'none'
-                                                                const fallback = target.nextElementSibling as HTMLElement | null
-                                                                if (fallback) fallback.style.display = 'flex'
-                                                            }}
-                                                        />
+                                                        {(() => {
+                                                            const src = resolveAvatarUrl(c.otherAvatar, c.otherUsername)
+                                                            return src ? (<AvatarImage src={src} alt={c.otherUsername} />) : null
+                                                        })()}
                                                         <AvatarFallback delayMs={0}>{initialsFromUsername(c.otherUsername)}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex items-start justify-between gap-2">
-                                                            <div className={`truncate ${c.unreadCount ? 'font-semibold' : 'font-medium'}`}>{displayNameFromUsername(c.otherUsername)}</div>
+                                                            <div className={`truncate ${c.unreadCount ? 'font-semibold' : 'font-medium'}`}>
+                                                                {displayNameFromUsername(c.otherUsername)}
+                                                                <span className="ml-1 text-xs text-muted-foreground">@{c.otherUsername}</span>
+                                                            </div>
                                                             <div className="text-[11px] text-muted-foreground whitespace-nowrap pt-0.5">
                                                                 {c.lastMessageAt ? new Date(c.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                                                             </div>
@@ -447,7 +452,14 @@ export default function ChatDock() {
                     className="w-[95vw] max-w-[360px] md:w-[360px] h-12 md:h-14 rounded-xl overflow-hidden shadow-lg border bg-background flex items-center px-3 gap-3 cursor-pointer"
                 >
                     <Avatar className="h-8 w-8">
-                        <AvatarFallback delayMs={0}>MS</AvatarFallback>
+                        {(() => {
+                            // Always use the actual avatar from the backend, don't replace with random photo
+                            if (meAvatarRef.current) {
+                                return <AvatarImage src={meAvatarRef.current} alt={meRef.current || 'Me'} />
+                            }
+                            return null
+                        })()}
+                        <AvatarFallback delayMs={0}>{initialsFromUsername(meRef.current)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                         <div className="font-semibold leading-tight truncate">Nachrichten</div>
@@ -480,7 +492,11 @@ export default function ChatDock() {
                         }}
                     >
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={avatarUrlForUsername(u)} alt={u} />
+                            {(() => {
+                                const conv = conversations.find(c => c.otherUsername === u)
+                                const src = resolveAvatarUrl(conv?.otherAvatar, u)
+                                return src ? (<AvatarImage src={src} alt={u} />) : null
+                            })()}
                             <AvatarFallback delayMs={0}>{initialsFromUsername(u)}</AvatarFallback>
                         </Avatar>
                         <div className="truncate font-medium">{u}</div>
@@ -492,8 +508,10 @@ export default function ChatDock() {
                 {expanded && (
                     <ChatWindow
                         username={expanded}
+                        headerAvatar={(conversations.find(c => c.otherUsername === expanded))?.otherAvatar || null}
                         messages={messages[expanded] || []}
                         me={meRef.current}
+                        meAvatar={meAvatarRef.current}
                         onSend={(text) => sendTo(expanded, text)}
                         onClose={() => {
                             // Close expanded and promote the first chip, if any

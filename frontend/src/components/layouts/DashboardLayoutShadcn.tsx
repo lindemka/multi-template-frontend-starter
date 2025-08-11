@@ -90,7 +90,7 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
       <div className="border-t p-4">
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://ui-avatars.com/api/?name=Admin+User" alt="Admin User" />
+            <AvatarImage src={undefined} alt="Admin User" />
             <AvatarFallback>AU</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
@@ -136,7 +136,7 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="https://ui-avatars.com/api/?name=Admin+User" alt="Admin User" />
+                        <AvatarImage src={undefined} alt="Admin User" />
                         <AvatarFallback>AU</AvatarFallback>
                       </Avatar>
                     </Button>

@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Heart, 
-  MessageCircle, 
-  Share2, 
+import {
+  Heart,
+  MessageCircle,
+  Share2,
   MoreHorizontal,
   Bookmark
 } from 'lucide-react';
 
 // Shadcn UI Components
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { resolveAvatarUrl } from '@/lib/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -47,12 +48,12 @@ interface FeedPostProps {
   onSave?: (postId: string) => void;
 }
 
-const FeedPost: React.FC<FeedPostProps> = ({ 
-  post, 
-  onLike, 
-  onComment, 
-  onShare, 
-  onSave 
+const FeedPost: React.FC<FeedPostProps> = ({
+  post,
+  onLike,
+  onComment,
+  onShare,
+  onSave
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [isSaved, setIsSaved] = useState(post.isSaved);
@@ -75,7 +76,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={post.author.avatar} alt={post.author.name} />
+              <AvatarImage src={resolveAvatarUrl(post.author.avatar as any, post.author.name)} alt={post.author.name} />
               <AvatarFallback>
                 {post.author.name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
@@ -95,7 +96,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
               </p>
             </div>
           </div>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -122,9 +123,9 @@ const FeedPost: React.FC<FeedPostProps> = ({
         {/* Post Image */}
         {post.image && (
           <div className="mb-4 rounded-lg overflow-hidden">
-            <img 
-              src={post.image} 
-              alt="Post content" 
+            <img
+              src={post.image}
+              alt="Post content"
               className="w-full h-auto object-cover"
             />
           </div>
@@ -152,8 +153,8 @@ const FeedPost: React.FC<FeedPostProps> = ({
             className="h-6 w-6"
             onClick={handleSave}
           >
-            <Bookmark 
-              className={`h-3 w-3 ${isSaved ? 'fill-current' : ''}`} 
+            <Bookmark
+              className={`h-3 w-3 ${isSaved ? 'fill-current' : ''}`}
             />
           </Button>
         </div>
@@ -166,9 +167,8 @@ const FeedPost: React.FC<FeedPostProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-2 px-3 ${
-                isLiked ? 'text-red-500 hover:text-red-600' : ''
-              }`}
+              className={`flex items-center space-x-2 px-3 ${isLiked ? 'text-red-500 hover:text-red-600' : ''
+                }`}
               onClick={handleLike}
             >
               <Heart className={`h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />

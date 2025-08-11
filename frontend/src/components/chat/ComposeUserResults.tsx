@@ -1,8 +1,9 @@
 "use client"
 import { useEffect, useState } from 'react'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { resolveAvatarUrl } from '@/lib/avatar'
 
-type UserItem = { username: string; name: string }
+type UserItem = { username: string; name: string; avatar?: string }
 
 export default function ComposeUserResults({ query, onPick }: { query: string; onPick: (username: string) => void }) {
     const [items, setItems] = useState<UserItem[]>([])
@@ -31,14 +32,7 @@ export default function ComposeUserResults({ query, onPick }: { query: string; o
         const t = setTimeout(run, 200)
         return () => { clearTimeout(t); controller.abort() }
     }, [query])
-    const avatarUrlForUsername = (u: string | null | undefined) => {
-        const seed = (u || '').trim()
-        const total = 70
-        if (!seed) return `https://i.pravatar.cc/150?img=1`
-        const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
-        const idx = (hash % total) + 1
-        return `https://i.pravatar.cc/150?img=${idx}`
-    }
+    // No external placeholders. Avatars show initials only.
 
     const initialsFromUsername = (u: string | null | undefined) => {
         if (!u) return 'U'
@@ -56,7 +50,7 @@ export default function ComposeUserResults({ query, onPick }: { query: string; o
             {items.map((u: UserItem) => (
                 <button key={u.username} className="w-full px-2 py-2 hover:bg-accent rounded-md text-left flex items-center gap-2" onClick={() => onPick(u.username)}>
                     <Avatar className="h-7 w-7">
-                        {u.username ? (<AvatarImage src={avatarUrlForUsername(u.username)} alt={u.username} />) : null}
+                        {(() => { const src = resolveAvatarUrl(u.avatar, u.username); return src ? (<AvatarImage src={src} alt={u.username} />) : null })()}
                         <AvatarFallback delayMs={0}>{initialsFromUsername(u.username)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">

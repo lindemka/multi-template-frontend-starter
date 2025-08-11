@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,7 @@ import EditProfileModal from '@/components/profile/EditProfileModal';
 export default function ProfilePage() {
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  
+
   // Redirect to current user's profile (assuming user ID 1 for demo)
   // In a real app, get this from auth context
   useEffect(() => {
@@ -31,13 +32,13 @@ export default function ProfilePage() {
               <div>
                 {/* Cover Image - Full width */}
                 <div className="h-48 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 w-full" />
-                
+
                 <div className="relative px-6 pb-4">
                   {/* Profile Avatar */}
                   <div className="absolute -top-16 left-6">
                     <div className="h-32 w-32 rounded-full ring-4 ring-white bg-white overflow-hidden">
                       <Avatar className="h-full w-full">
-                        <AvatarImage src="/api/placeholder/150/150" alt="Profile" />
+                        <AvatarImage src={resolveAvatarUrl(undefined, 'current-user')} alt="Profile" />
                         <AvatarFallback className="text-3xl bg-gray-100">KL</AvatarFallback>
                       </Avatar>
                     </div>
@@ -45,9 +46,9 @@ export default function ProfilePage() {
 
                   {/* Edit Profile Button */}
                   <div className="flex justify-end mb-4 pt-4">
-                  <Button variant="ghost" size="icon" className="mr-2">
-                    <MoreHorizontal className="h-5 w-5" />
-                  </Button>
+                    <Button variant="ghost" size="icon" className="mr-2">
+                      <MoreHorizontal className="h-5 w-5" />
+                    </Button>
                     <Button variant="outline" className="gap-2" onClick={() => setIsEditModalOpen(true)}>
                       <PencilLine className="h-4 w-4" />
                       Edit Profile
@@ -57,31 +58,31 @@ export default function ProfilePage() {
                   {/* Profile Info */}
                   <div className="mt-8 space-y-4">
                     <div>
-                    <h1 className="text-2xl font-bold">Kai Lindemann</h1>
-                    <p className="text-gray-600">@kailindemann</p>
-                  </div>
+                      <h1 className="text-2xl font-bold">Kai Lindemann</h1>
+                      <p className="text-gray-600">@kailindemann</p>
+                    </div>
 
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    <span>Admin: Manage User</span>
-                  </div>
-
-                  <p className="text-gray-700">
-                    CEO @ foundersbase.com - Senior Product Manager, Ex-Scout24, Business Angel, Startup Enthusiast
-                  </p>
-
-                  <div className="text-sm text-gray-600">
-                    Goals: Support startups
-                  </div>
-
-                  <div className="flex items-center gap-6 text-sm">
-                    <span className="text-gray-600">41 Followers · 29 Contacts</span>
-                    <span className="flex items-center gap-1">
+                    <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="h-4 w-4" />
-                      New York City, United States (USA)
-                    </span>
-                    <a href="#" className="text-blue-600 hover:underline">Contact information</a>
-                  </div>
+                      <span>Admin: Manage User</span>
+                    </div>
+
+                    <p className="text-gray-700">
+                      CEO @ foundersbase.com - Senior Product Manager, Ex-Scout24, Business Angel, Startup Enthusiast
+                    </p>
+
+                    <div className="text-sm text-gray-600">
+                      Goals: Support startups
+                    </div>
+
+                    <div className="flex items-center gap-6 text-sm">
+                      <span className="text-gray-600">41 Followers · 29 Contacts</span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        New York City, United States (USA)
+                      </span>
+                      <a href="#" className="text-blue-600 hover:underline">Contact information</a>
+                    </div>
 
                     <div className="flex gap-2">
                       <Button className="bg-blue-600 hover:bg-blue-700">
@@ -94,35 +95,35 @@ export default function ProfilePage() {
                   {/* Profile Completeness */}
                   <Card className="mt-6 bg-blue-50 border-blue-200">
                     <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-white rounded-full p-3">
-                        <div className="text-2xl font-bold text-green-600">95%</div>
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold">Complete Your Profile</h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Awesome profile! Fully visible everywhere. Enjoy Foundersbase!
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2">
-                          7 tasks remaining • Skip this for now
-                        </p>
-                      </div>
-                      <CheckCircle2 className="h-5 w-5 text-blue-600" />
-                    </div>
-
-                    <Card className="mt-4 bg-white">
-                      <CardContent className="p-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium">Tell Us More About You</p>
-                            <p className="text-sm text-gray-600">Share who you are and why you&apos;re on Foundersbase</p>
-                          </div>
-                          <Button size="sm" variant="ghost" className="text-blue-600">
-                            Ready →
-                          </Button>
+                      <div className="flex items-start gap-3">
+                        <div className="bg-white rounded-full p-3">
+                          <div className="text-2xl font-bold text-green-600">95%</div>
                         </div>
-                      </CardContent>
-                    </Card>
+                        <div className="flex-1">
+                          <h3 className="font-semibold">Complete Your Profile</h3>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Awesome profile! Fully visible everywhere. Enjoy Foundersbase!
+                          </p>
+                          <p className="text-xs text-gray-500 mt-2">
+                            7 tasks remaining • Skip this for now
+                          </p>
+                        </div>
+                        <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                      </div>
+
+                      <Card className="mt-4 bg-white">
+                        <CardContent className="p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">Tell Us More About You</p>
+                              <p className="text-sm text-gray-600">Share who you are and why you&apos;re on Foundersbase</p>
+                            </div>
+                            <Button size="sm" variant="ghost" className="text-blue-600">
+                              Ready →
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
 
                       <Button variant="link" className="mt-2 text-blue-600 p-0">
                         View improvements →
@@ -142,7 +143,7 @@ export default function ProfilePage() {
               <CardContent>
                 <div className="flex items-start gap-4">
                   <Avatar>
-                    <AvatarImage src="/api/placeholder/50/50" alt="Ahmed" />
+                    <AvatarImage src={resolveAvatarUrl(undefined, 'Ahmed Salman')} alt="Ahmed" />
                     <AvatarFallback>AS</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -185,7 +186,7 @@ export default function ProfilePage() {
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src="/api/placeholder/40/40" />
+                              <AvatarImage src={resolveAvatarUrl(undefined, 'Kai Lindemann')} />
                               <AvatarFallback>KL</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
@@ -222,7 +223,7 @@ export default function ProfilePage() {
                         </CardContent>
                       </Card>
                     ))}
-                    
+
                     <div className="text-center pt-4">
                       <Button variant="link">View All Activities →</Button>
                     </div>
@@ -254,7 +255,7 @@ export default function ProfilePage() {
                   <div>
                     <h3 className="font-semibold mb-2">In short</h3>
                     <p className="text-gray-600">
-                      It&apos;s important for me to support entrepreneurial thinkers and contribute to seeing more business ideas come to life. 
+                      It&apos;s important for me to support entrepreneurial thinkers and contribute to seeing more business ideas come to life.
                       With foundersbase I am at providing a missing piece of infrastructure for founders and startups worldwide.
                     </p>
                   </div>
@@ -279,7 +280,7 @@ export default function ProfilePage() {
                   <div>
                     <h3 className="font-semibold mb-2">Offering</h3>
                     <p className="text-gray-600">
-                      Hands-on mentality, Marathon not sprint, Impact driven, Better try than sorry. 
+                      Hands-on mentality, Marathon not sprint, Impact driven, Better try than sorry.
                       MSc. Developmental Biology, Ex-Scout24, Senior Product Manager, Private Pilot (SPL)
                     </p>
                   </div>
@@ -321,7 +322,7 @@ export default function ProfilePage() {
                     <div key={index} className="space-y-3">
                       <div className="flex items-start gap-3">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={`/api/placeholder/48/48`} />
+                          <AvatarImage src={resolveAvatarUrl(undefined, person.name)} />
                           <AvatarFallback className="text-sm">{person.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
@@ -377,11 +378,11 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-      
+
       {/* Edit Profile Modal */}
-      <EditProfileModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
       />
     </div>
   );

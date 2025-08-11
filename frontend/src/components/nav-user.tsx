@@ -6,11 +6,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { resolveAvatarUrl } from "@/lib/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,7 +50,7 @@ export function NavUser({
           setDisplayUser({
             name: [data.firstName, data.lastName].filter(Boolean).join(' ') || data.username || user.name,
             email: data.email || user.email,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.username || data.email || 'User')}&background=0D8ABC&color=fff`,
+            avatar: resolveAvatarUrl((data as any).profileAvatar || data.userProfile?.avatar, data.username) || '',
           })
           return
         }
@@ -64,7 +61,7 @@ export function NavUser({
         setDisplayUser({
           name: ls.username || user.name,
           email: ls.email || user.email,
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(ls.username || 'User')}&background=0D8ABC&color=fff`,
+          avatar: resolveAvatarUrl((ls as any).avatar, ls.username) || '',
         })
       }
     }
@@ -82,7 +79,7 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
+                <AvatarImage src={displayUser.avatar || undefined} alt={displayUser.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -102,7 +99,7 @@ export function NavUser({
               <Link href={currentUser ? `/dashboard/profile/${currentUser.id}` : '/dashboard/profile'}>
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm cursor-pointer hover:bg-sidebar-accent rounded-md">
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
+                    <AvatarImage src={displayUser.avatar || undefined} alt={displayUser.name} />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">

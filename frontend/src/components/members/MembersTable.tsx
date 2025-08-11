@@ -2,6 +2,7 @@
 
 import { FC } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,14 +81,7 @@ const MemberRow: FC<{ member: Member; onClick: (member: Member) => void }> = ({ 
     return "text-gray-600";
   };
 
-  const avatarForName = (name: string) => {
-    const seed = (name || '').trim()
-    const total = 70
-    if (!seed) return `https://i.pravatar.cc/150?img=1`
-    const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
-    const idx = (hash % total) + 1
-    return `https://i.pravatar.cc/150?img=${idx}`
-  }
+  const imageOrUndefined = (url?: string) => (url && url.trim() ? url : undefined)
 
   return (
     <TableRow
@@ -97,7 +91,7 @@ const MemberRow: FC<{ member: Member; onClick: (member: Member) => void }> = ({ 
       <TableCell>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={member.avatar || avatarForName(member.name)} alt={member.name} />
+            <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} alt={member.name} />
             <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
           </Avatar>
           <div>

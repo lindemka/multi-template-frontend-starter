@@ -23,12 +23,16 @@ function Avatar({
 
 function AvatarImage({
   className,
+  src,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  // Avoid rendering when src is empty/falsy to prevent Next.js warning and needless requests
+  if (!src) return null as unknown as JSX.Element
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn("aspect-square size-full", className)}
+      src={src}
       {...props}
     />
   )

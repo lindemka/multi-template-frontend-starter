@@ -8,6 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { openChatWith, resolveUsernameForProfileId } from '@/lib/openChat'
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +90,7 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
           {/* Avatar */}
           <div className="absolute -bottom-12 left-6">
             <Avatar className="h-24 w-24 border-4 border-white">
-              <AvatarImage src={member.avatar} />
+              <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} />
               <AvatarFallback className="text-2xl">
                 {member.name?.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>

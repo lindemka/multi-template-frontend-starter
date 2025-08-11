@@ -31,8 +31,12 @@ public class ChatRestController {
         return chatService.listConversations(me.getId()).stream().map(c -> {
             ChatDtos.ChatConversationDto dto = new ChatDtos.ChatConversationDto();
             dto.id = c.getId();
-            String other = c.getUser1().getId().equals(me.getId()) ? c.getUser2().getUsername() : c.getUser1().getUsername();
-            dto.otherUsername = other;
+            boolean meIsUser1 = c.getUser1().getId().equals(me.getId());
+            AuthUser otherUser = meIsUser1 ? c.getUser2() : c.getUser1();
+            dto.otherUsername = otherUser.getUsername();
+            if (otherUser.getUserProfile() != null) {
+                dto.otherAvatar = otherUser.getUserProfile().getAvatar();
+            }
             dto.updatedAt = c.getUpdatedAt();
             var last = chatService.getLastMessage(c.getId());
             if (last != null) {
@@ -55,8 +59,10 @@ public class ChatRestController {
             dto.createdAt = m.getCreatedAt();
             ChatDtos.SimpleUser s = new ChatDtos.SimpleUser();
             s.username = m.getSender().getUsername();
+            if (m.getSender().getUserProfile() != null) s.avatar = m.getSender().getUserProfile().getAvatar();
             ChatDtos.SimpleUser r = new ChatDtos.SimpleUser();
             r.username = m.getRecipient().getUsername();
+            if (m.getRecipient().getUserProfile() != null) r.avatar = m.getRecipient().getUserProfile().getAvatar();
             dto.sender = s;
             dto.recipient = r;
             return dto;
@@ -76,8 +82,10 @@ public class ChatRestController {
         dto.createdAt = saved.getCreatedAt();
         ChatDtos.SimpleUser s = new ChatDtos.SimpleUser();
         s.username = saved.getSender().getUsername();
+        if (saved.getSender().getUserProfile() != null) s.avatar = saved.getSender().getUserProfile().getAvatar();
         ChatDtos.SimpleUser r = new ChatDtos.SimpleUser();
         r.username = saved.getRecipient().getUsername();
+        if (saved.getRecipient().getUserProfile() != null) r.avatar = saved.getRecipient().getUserProfile().getAvatar();
         dto.sender = s;
         dto.recipient = r;
         return dto;
@@ -100,7 +108,11 @@ public class ChatRestController {
                 .filter(u -> !u.getUsername().equals(principal.getName()))
                 .filter(u -> Boolean.TRUE.equals(u.getEnabled()))
                 .filter(u -> u.getUsername().toLowerCase().contains(q) || (u.getEmail() != null && u.getEmail().toLowerCase().contains(q)))
-                .map(u -> Map.of("username", u.getUsername(), "name", (u.getFirstName() + " " + u.getLastName()).trim()))
+                .map(u -> Map.of(
+                        "username", u.getUsername(),
+                        "name", (u.getFirstName() + " " + u.getLastName()).trim(),
+                        "avatar", u.getUserProfile() != null ? String.valueOf(u.getUserProfile().getAvatar()) : ""
+                ))
                 .toList();
     }
 

@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { resolveAvatarUrl } from '@/lib/avatar'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
@@ -9,34 +10,31 @@ import { ChevronDown, MoreHorizontal, SquareArrowOutUpRight, X, ArrowDown } from
 export type ChatMessage = {
     id: number
     content: string
-    sender: { username: string }
-    recipient: { username: string }
+    sender: { username: string; avatar?: string | null }
+    recipient: { username: string; avatar?: string | null }
     createdAt: string
 }
 
 export default function ChatWindow({
     username,
+    headerAvatar,
     messages,
     me,
+    meAvatar,
     onSend,
     onClose,
     onMinimize,
 }: {
     username: string
+    headerAvatar?: string | null
     messages: ChatMessage[]
     me: string | null
+    meAvatar?: string | null
     onSend: (text: string) => void
     onClose: () => void
     onMinimize: () => void
 }) {
-    const avatarUrlForUsername = (u: string | null | undefined) => {
-        const seed = (u || '').trim()
-        const total = 70
-        if (!seed) return `https://i.pravatar.cc/150?img=1`
-        const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
-        const idx = (hash % total) + 1
-        return `https://i.pravatar.cc/150?img=${idx}`
-    }
+    const imageOrNull = (url?: string | null) => (url && url.trim() ? url : undefined)
 
     const initialsFromUsername = (u: string | null | undefined) => {
         if (!u) return 'U'
@@ -79,7 +77,7 @@ export default function ChatWindow({
             <div className="flex items-center gap-2 p-3 border-b bg-muted/20">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                     <Avatar className="h-7 w-7">
-                        <AvatarImage src={avatarUrlForUsername(username)} alt={username} />
+                        {(() => { const src = resolveAvatarUrl(headerAvatar, username); return imageOrNull(src) ? (<AvatarImage src={src!} alt={username} />) : null })()}
                         <AvatarFallback delayMs={0}>{initialsFromUsername(username)}</AvatarFallback>
                     </Avatar>
                     <div className="font-medium truncate">{username}</div>
@@ -116,7 +114,7 @@ export default function ChatWindow({
                                         <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'} items-end gap-2`} data-testid="chat-msg" data-username={m.sender?.username}>
                                             {!mine && (
                                                 <Avatar className="h-6 w-6">
-                                                    <AvatarImage src={avatarUrlForUsername(m.sender?.username)} alt={m.sender?.username || 'User'} />
+                                                    {(() => { const src = resolveAvatarUrl(m.sender?.avatar, m.sender?.username); return imageOrNull(src) ? (<AvatarImage src={src!} alt={m.sender?.username || 'User'} />) : null })()}
                                                     <AvatarFallback delayMs={0}>{initialsFromUsername(m.sender?.username)}</AvatarFallback>
                                                 </Avatar>
                                             )}
@@ -126,7 +124,7 @@ export default function ChatWindow({
                                             </div>
                                             {mine && (
                                                 <Avatar className="h-6 w-6">
-                                                    <AvatarImage src={avatarUrlForUsername(me)} alt={me || 'Me'} />
+                                                    {(() => { const src = resolveAvatarUrl(meAvatar, me); return imageOrNull(src) ? (<AvatarImage src={src!} alt={me || 'Me'} />) : null })()}
                                                     <AvatarFallback delayMs={0}>{initialsFromUsername(me)}</AvatarFallback>
                                                 </Avatar>
                                             )}

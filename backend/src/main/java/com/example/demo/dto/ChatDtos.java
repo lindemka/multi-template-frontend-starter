@@ -13,6 +13,7 @@ public class ChatDtos {
     public static class ChatConversationDto {
         public Long id;
         public String otherUsername;
+        public String otherAvatar;
         public LocalDateTime updatedAt;
         public String lastMessage;
         public LocalDateTime lastMessageAt;
@@ -29,6 +30,7 @@ public class ChatDtos {
 
     public static class SimpleUser {
         public String username;
+        public String avatar;
     }
 }
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -107,13 +108,8 @@ export default function MembersPage() {
     fetchMembers();
   }, []);
 
-  const avatarForName = (name: string) => {
-    const seed = (name || '').trim() || 'user'
-    const total = 70
-    const hash = Array.from(seed).reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
-    const idx = (hash % total) + 1
-    return `/api/avatar/${idx}`
-  }
+  // Avatars are provided by the backend via UserProfile.avatar
+  const safe = (url?: string) => (url && url.trim() ? url : '')
 
   const fetchMembers = async () => {
     try {
@@ -126,7 +122,7 @@ export default function MembersPage() {
           id: member.id,
           name: member.name,
           location: member.location,
-          avatar: avatarForName(member.name),
+          avatar: safe((member as any).avatar) || '',
           followers: member.followers,
           rating: member.rating,
           goals: member.goals,
@@ -409,7 +405,7 @@ export default function MembersPage() {
                     <TableCell>
                       <div className="flex items-start gap-3">
                         <Avatar>
-                          <AvatarImage src={member.avatar || avatarForName(member.name)} />
+                          <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} />
                           <AvatarFallback>{member.name[0]}</AvatarFallback>
                         </Avatar>
                         <div>
@@ -540,7 +536,7 @@ export default function MembersPage() {
                   {/* Member Header */}
                   <div className="flex items-start gap-3 mb-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={member.avatar || avatarForName(member.name)} />
+                      <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} />
                       <AvatarFallback>{member.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
