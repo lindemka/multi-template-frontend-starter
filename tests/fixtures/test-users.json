@@ -1,0 +1,45 @@
+{
+    "users": {
+        "sarah": {
+            "username": "sarah.chen",
+            "email": "sarah.updated@example.com",
+            "password": "password123",
+            "role": "USER",
+            "purpose": "Primary test user"
+        },
+        "alex": {
+            "username": "alex.johnson",
+            "email": "alex.johnson@example.com",
+            "password": "password123",
+            "role": "USER",
+            "purpose": "Chat testing"
+        },
+        "maria": {
+            "username": "maria.garcia",
+            "email": "maria.garcia@example.com",
+            "password": "password123",
+            "role": "USER",
+            "purpose": "Multiple conversations"
+        },
+        "james": {
+            "username": "james.kim",
+            "email": "james.kim@example.com",
+            "password": "password123",
+            "role": "USER",
+            "purpose": "Profile testing"
+        },
+        "kai": {
+            "username": "kai3",
+            "email": "kai3@example.com",
+            "password": "password123",
+            "role": "USER",
+            "purpose": "Alternative test user"
+        }
+    },
+    "metadata": {
+        "created": "2024-01-01T00:00:00Z",
+        "description": "Test users for automated testing",
+        "database_script": "scripts/create_test_users.sql",
+        "notes": "All users have the same password for simplicity in testing"
+    }
+}

@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class ChatService {
     @Autowired
-    private ChatConversationRepository conversationRepository;
+    public ChatConversationRepository conversationRepository;
     @Autowired
     private ChatMessageRepository messageRepository;
     @Autowired
@@ -30,8 +30,12 @@ public class ChatService {
         return conversationRepository.findBetweenUsers(userAId, userBId)
                 .orElseGet(() -> {
                     ChatConversation c = new ChatConversation();
-                    AuthUser u1 = userRepository.findById(userAId).orElseThrow();
-                    AuthUser u2 = userRepository.findById(userBId).orElseThrow();
+                    // Ensure user1_id < user2_id due to database constraint
+                    Long user1Id = Math.min(userAId, userBId);
+                    Long user2Id = Math.max(userAId, userBId);
+                    
+                    AuthUser u1 = userRepository.findById(user1Id).orElseThrow();
+                    AuthUser u2 = userRepository.findById(user2Id).orElseThrow();
                     c.setUser1(u1);
                     c.setUser2(u2);
                     return conversationRepository.save(c);
@@ -39,7 +43,10 @@ public class ChatService {
     }
 
     public List<ChatConversation> listConversations(Long userId) {
-        return conversationRepository.findAllForUser(userId);
+        System.out.println("[DEBUG] ChatService.listConversations called with userId: " + userId);
+        List<ChatConversation> result = conversationRepository.findAllForUser(userId);
+        System.out.println("[DEBUG] Repository returned " + result.size() + " conversations");
+        return result;
     }
 
     public List<ChatMessage> listMessages(Long userAId, Long userBId) {

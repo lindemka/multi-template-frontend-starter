@@ -4,6 +4,7 @@ import com.example.demo.dto.ChatDtos;
 import com.example.demo.entity.AuthUser;
 import com.example.demo.entity.ChatMessage;
 import com.example.demo.repository.AuthUserRepository;
+import com.example.demo.repository.ChatConversationRepository;
 import com.example.demo.service.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.PageRequest;
@@ -24,11 +25,18 @@ public class ChatRestController {
 
     @Autowired
     private AuthUserRepository authUserRepository;
+    
+    @Autowired
+    private ChatConversationRepository conversationRepository;
 
     @GetMapping("/conversations")
     public List<ChatDtos.ChatConversationDto> getConversations(Principal principal) {
+        System.out.println("[DEBUG] Getting conversations for principal: " + principal.getName());
         AuthUser me = authUserRepository.findByUsername(principal.getName()).orElseThrow();
-        return chatService.listConversations(me.getId()).stream().map(c -> {
+        System.out.println("[DEBUG] Found user: " + me.getUsername() + " with ID: " + me.getId());
+        List<com.example.demo.entity.ChatConversation> conversations = chatService.listConversations(me.getId());
+        System.out.println("[DEBUG] Found " + conversations.size() + " conversations");
+        return conversations.stream().map(c -> {
             ChatDtos.ChatConversationDto dto = new ChatDtos.ChatConversationDto();
             dto.id = c.getId();
             boolean meIsUser1 = c.getUser1().getId().equals(me.getId());
@@ -100,6 +108,49 @@ public class ChatRestController {
         return ResponseEntity.noContent().build();
     }
 
+    @Autowired
+    private javax.sql.DataSource dataSource;
+    
+    @GetMapping("/debug/db")
+    public Map<String, Object> debugDatabase(Principal principal) {
+        System.out.println("[DEBUG] Checking database connection");
+        Long userCount = authUserRepository.count();
+        Long conversationCount = conversationRepository.count();
+        
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("jpaUsers", userCount);
+        result.put("jpaConversations", conversationCount);
+        
+        // Direct JDBC query
+        try (var conn = dataSource.getConnection();
+             var stmt = conn.createStatement()) {
+            
+            // Count users with direct SQL
+            var rs = stmt.executeQuery("SELECT COUNT(*) FROM users");
+            if (rs.next()) {
+                result.put("jdbcUsers", rs.getLong(1));
+            }
+            rs.close();
+            
+            // Count conversations with direct SQL
+            rs = stmt.executeQuery("SELECT COUNT(*) FROM chat_conversations");
+            if (rs.next()) {
+                result.put("jdbcConversations", rs.getLong(1));
+            }
+            rs.close();
+            
+            // Get database metadata
+            var dbMeta = conn.getMetaData();
+            result.put("dbUrl", dbMeta.getURL());
+            result.put("dbUser", dbMeta.getUserName());
+            
+        } catch (Exception e) {
+            result.put("error", e.getMessage());
+        }
+        
+        return result;
+    }
+    
     @GetMapping("/users/search")
     public List<Map<String, String>> searchUsers(@RequestParam("q") String query, Principal principal) {
         if (query == null || query.trim().isEmpty()) return List.of();

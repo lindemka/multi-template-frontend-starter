@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BarChart3, Layout, Menu, X } from 'lucide-react';
+import { Home, BarChart3, Layout, Menu, X, MessageSquare } from 'lucide-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -16,6 +16,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+    { name: 'Messages', href: '/dashboard/messages', icon: MessageSquare },
     { name: 'Multipurpose', href: '/multipurpose', icon: Layout },
   ];
 

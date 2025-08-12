@@ -22,7 +22,7 @@ public class UserProfile {
 
     private String location;
     
-    @Column(name = "avatar_url")
+    @Column(name = "avatar")
     private String avatar;
     
     private Integer followers = 0;

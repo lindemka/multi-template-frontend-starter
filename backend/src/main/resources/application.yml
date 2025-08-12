@@ -7,7 +7,7 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:development}
     
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:project1}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:project1}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -137,8 +137,4 @@ spring:
       ddl-auto: validate
     show-sql: false
   cache:
-    type: redis
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+    type: simple

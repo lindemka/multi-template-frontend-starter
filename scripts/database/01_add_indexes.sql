@@ -1,30 +1,35 @@
 -- Performance optimization indexes for Foundersbase database
 -- Run this script after initial database setup
 
--- Member table indexes
-CREATE INDEX IF NOT EXISTS idx_member_email ON members(email);
-CREATE INDEX IF NOT EXISTS idx_member_status ON members(status);
-CREATE INDEX IF NOT EXISTS idx_member_location ON members(location);
-CREATE INDEX IF NOT EXISTS idx_member_created_at ON members(created_at);
-CREATE INDEX IF NOT EXISTS idx_member_updated_at ON members(updated_at);
+-- User profiles table indexes (replaces old members table)
+CREATE INDEX IF NOT EXISTS idx_user_profiles_user_id ON user_profiles(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_location ON user_profiles(location);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_created_at ON user_profiles(created_at);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_updated_at ON user_profiles(updated_at);
 
 -- Composite indexes for common queries
-CREATE INDEX IF NOT EXISTS idx_member_status_location ON members(status, location);
-CREATE INDEX IF NOT EXISTS idx_member_status_created ON members(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_location_created ON user_profiles(location, created_at DESC);
 
--- Full text search index for member search
-CREATE INDEX IF NOT EXISTS idx_member_search ON members 
+-- Full text search index for user profile search
+CREATE INDEX IF NOT EXISTS idx_user_profiles_search ON user_profiles 
   USING gin(to_tsvector('english', 
     COALESCE(name, '') || ' ' || 
     COALESCE(tagline, '') || ' ' || 
-    COALESCE(about, '')
+    COALESCE(location, '')
   ));
 
--- AuthUser table indexes
-CREATE INDEX IF NOT EXISTS idx_auth_user_username ON auth_users(username);
-CREATE INDEX IF NOT EXISTS idx_auth_user_email ON auth_users(email);
-CREATE INDEX IF NOT EXISTS idx_auth_user_enabled ON auth_users(enabled);
+-- Users table indexes (renamed from auth_users)
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_enabled ON users(enabled);
+
+-- Startup related indexes
+CREATE INDEX IF NOT EXISTS idx_startups_name ON startups(name);
+CREATE INDEX IF NOT EXISTS idx_startup_members_startup_id ON startup_members(startup_id);
+CREATE INDEX IF NOT EXISTS idx_startup_members_user_id ON startup_members(user_id);
 
 -- Analyze tables after adding indexes
-ANALYZE members;
-ANALYZE auth_users;
+ANALYZE user_profiles;
+ANALYZE users;
+ANALYZE startups;
+ANALYZE startup_members;

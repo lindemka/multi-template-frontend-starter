@@ -38,27 +38,41 @@ export default function AccountPage() {
 
   useEffect(() => {
     loadUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadUserData = async () => {
     try {
-      const currentUser = auth.getUser();
-      if (!currentUser) {
+      // Get user data from the me endpoint
+      const meRes = await fetch('/api/account/me', { credentials: 'include' });
+      if (!meRes.ok) {
         router.push('/login');
         return;
       }
 
-      // Fetch fresh user data from backend
-      const response = await api.get(`/api/users/${currentUser.id}`);
-      const user = response.data;
-      
+      const me = await meRes.json();
+      if (!me || me.error || !me.id) {
+        router.push('/login');
+        return;
+      }
+
+      // Use the data from /api/account/me directly
+      const user = {
+        id: me.id,
+        username: me.username,
+        email: me.email,
+        firstName: me.firstName,
+        lastName: me.lastName,
+        role: me.role || 'USER'
+      };
+
       setUserData(user);
-      setFormData({
-        ...formData,
+      setFormData(prev => ({
+        ...prev,
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || ''
-      });
+      }));
     } catch (error: unknown) {
       console.error('Error loading user data:', error);
       setMessage({ type: 'error', text: 'Failed to load user data' });
@@ -73,21 +87,28 @@ export default function AccountPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      const response = await api.put(`/api/users/${userData?.id}`, {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email
+      const response = await fetch('/api/account/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email
+        })
       });
 
-      // Update local storage with new user data
-      const updatedUser = response.data;
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      
-      setUserData(updatedUser);
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUserData(prev => ({ ...prev, ...updatedUser }));
+        setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      } else {
+        const errorData = await response.json();
+        setMessage({ type: 'error', text: errorData.error || 'Failed to update profile' });
+      }
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
-      setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to update profile' });
+      console.error('Error updating profile:', error);
+      setMessage({ type: 'error', text: 'Failed to update profile' });
     } finally {
       setSaving(false);
     }
@@ -95,7 +116,7 @@ export default function AccountPage() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.newPassword !== formData.confirmPassword) {
       setMessage({ type: 'error', text: 'New passwords do not match' });
       return;
@@ -110,21 +131,31 @@ export default function AccountPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      await api.post(`/api/users/${userData?.id}/change-password`, {
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
+      const response = await fetch('/api/account/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword
+        })
       });
 
-      setMessage({ type: 'success', text: 'Password changed successfully!' });
-      setFormData({
-        ...formData,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Password changed successfully!' });
+        setFormData({
+          ...formData,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+      } else {
+        const errorData = await response.json();
+        setMessage({ type: 'error', text: errorData.error || 'Failed to change password' });
+      }
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
-      setMessage({ type: 'error', text: err.response?.data?.error || 'Failed to change password' });
+      console.error('Error changing password:', error);
+      setMessage({ type: 'error', text: 'Failed to change password' });
     } finally {
       setSaving(false);
     }

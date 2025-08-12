@@ -1,7 +1,8 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { connectChat, sendChat } from '@/lib/chatClient'
+import { connectChat } from '@/lib/chatClient'
 import { auth } from '@/lib/auth'
+import { usePathname, useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { resolveAvatarUrl } from '@/lib/avatar'
 import { Button } from '@/components/ui/button'
@@ -11,25 +12,18 @@ import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Search, ChevronDown, MoreHorizontal, SquareArrowOutUpRight, SquarePen } from 'lucide-react'
+import { Search, ChevronDown, ChevronLeft, MoreHorizontal, SquareArrowOutUpRight, SquarePen, Send } from 'lucide-react'
 import ComposeUserResults from './ComposeUserResults'
 import ChatWindow from './ChatWindow'
-
-type Message = {
-    id: number
-    content: string
-    sender: { username: string; avatar?: string | null }
-    recipient: { username: string; avatar?: string | null }
-    createdAt: string
-}
-
-type Conversation = { id: number; otherUsername: string; otherAvatar?: string | null; updatedAt: string; lastMessage?: string; lastMessageAt?: string; unreadCount?: number }
+import { chatService, type Message, type Conversation } from '@/lib/chatService'
 
 declare global {
     interface Window { __wsSent?: boolean }
 }
 
 export default function ChatDock() {
+    const pathname = usePathname()
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [active, setActive] = useState<string | null>(null)
@@ -37,9 +31,11 @@ export default function ChatDock() {
     const [filter, setFilter] = useState('')
     const [composeOpen, setComposeOpen] = useState(false)
     const [composeQuery, setComposeQuery] = useState('')
+    const [messageInput, setMessageInput] = useState('')
     const initialized = useRef(false)
     const [me, setMe] = useState<{ username: string | null; avatar: string | null }>({ username: null, avatar: null })
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
     const meRef = useRef<string | null>(null)
     const meAvatarRef = useRef<string | null>(null)
     const pollTimer = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -63,118 +59,151 @@ export default function ChatDock() {
         return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ') || u
     }
 
+    // Check if mobile device
     useEffect(() => {
-        if (initialized.current) return
-        initialized.current = true
-            ; (async () => {
-                try {
-                    // First check if user is authenticated
-                    try {
-                        const meRes = await fetch('/api/account/me', { credentials: 'include' })
-                        if (!meRes.ok) {
-                            // User is not authenticated - don't initialize chat
-                            console.log('ChatDock - User not authenticated, chat disabled')
-                            setIsAuthenticated(false)
-                            return
-                        }
-                        
-                        const meData = await meRes.json()
-                        if (!meData || meData.error) {
-                            // Invalid user data - don't initialize chat
-                            console.log('ChatDock - Invalid user data, chat disabled')
-                            setIsAuthenticated(false)
-                            return
-                        }
-                        
-                        // User is authenticated - set user data
-                        setIsAuthenticated(true)
-                        
-                        // Store the username first - this is critical for fallback
-                        if (meData?.username) {
-                            meRef.current = meData.username
-                            console.log('ChatDock - username set to:', meData.username)
-                        }
-                        
-                        // Use avatar directly from backend - it's the single source of truth
-                        let avatarUrl = null
-                        if (meData?.profileAvatar && meData.profileAvatar !== '') {
-                            meAvatarRef.current = meData.profileAvatar
-                            avatarUrl = meData.profileAvatar
-                            console.log('ChatDock - avatar from backend:', avatarUrl)
-                        }
-                        
-                        // Update state to trigger re-render
-                        setMe({ 
-                            username: meData?.username || null,
-                            avatar: avatarUrl
-                        })
-                        
-                        // Set auth user for legacy code
-                        try { 
-                            const authUser = auth.getUser()
-                            if (!authUser && meData?.username) {
-                                // If auth is not set, we might need to set it from the backend data
-                                // This is a safety measure
-                            }
-                        } catch { }
-                        
-                    } catch (e) { 
-                        console.error('ChatDock - Failed to fetch user data:', e)
-                        setIsAuthenticated(false)
-                        return
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768) // md breakpoint
+        }
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
+
+    useEffect(() => {
+        let checkInterval: NodeJS.Timeout | null = null
+
+        const initializeChat = async () => {
+            try {
+                // First check if user is authenticated
+                const meRes = await fetch('/api/account/me', { credentials: 'include' })
+                if (!meRes.ok) {
+                    // User is not authenticated - don't initialize chat
+                    console.log('ChatDock - User not authenticated, chat disabled')
+                    setIsAuthenticated(false)
+
+                    // Set up polling to check for authentication
+                    if (!checkInterval) {
+                        checkInterval = setInterval(() => {
+                            initializeChat()
+                        }, 2000)
                     }
-                    
-                    // Only proceed with chat initialization if authenticated
-                    // Restore persisted UI state (LinkedIn-like behavior)
-                    try {
-                        const savedOpen = typeof window !== 'undefined' ? window.localStorage.getItem('chat.open') : null
-                        if (savedOpen === '1') setOpen(true)
-                        const savedActive = typeof window !== 'undefined' ? window.localStorage.getItem('chat.active') : null
-                        if (savedActive) setActive(savedActive)
-                    } catch { /* noop */ }
-                    const c = await connectChat(async (raw: unknown) => {
-                        const msg = raw as Message
-                        const sender = msg.sender?.username
-                        const recipient = msg.recipient?.username
-                        // Determine peer conservatively: prefer current active thread, else sender/recipient
-                        const peer = (active && (sender === active || recipient === active)) ? active : (sender || recipient)
-                        if (!peer) return
-                        setMessages((prev) => ({ ...prev, [peer]: [...(prev[peer] || []), msg] }))
-                        setConversations((prev) => {
-                            const exists = prev.find((c) => c.otherUsername === peer)
-                            if (exists) {
-                                return prev.map((c) => {
-                                    if (c.otherUsername !== peer) return c
-                                    const unreadCount = (peer !== active) ? ((c.unreadCount || 0) + 1) : 0
-                                    return { ...c, updatedAt: new Date().toISOString(), lastMessage: msg.content, lastMessageAt: msg.createdAt, unreadCount }
-                                })
-                            }
-                            return [{ id: Date.now(), otherUsername: peer, updatedAt: new Date().toISOString(), lastMessage: msg.content, lastMessageAt: msg.createdAt, unreadCount: (peer !== active) ? 1 : 0 }, ...prev]
-                        })
-                        setActive((prev) => prev ?? peer)
-                        setOpen(true)
-                        // If message pertains to the active thread, mark as read and refresh from server
-                        if (peer === active) {
-                            try { await fetch(`/api/chat/conversations/${peer}/mark-read`, { method: 'POST', credentials: 'include' }) } catch { }
-                            setConversations((prev) => prev.map(c => c.otherUsername === peer ? { ...c, unreadCount: 0 } : c))
-                            await loadThread(peer)
-                        }
-                    })
-                    if (!c) return
-                    const convRes = await fetch('/api/chat/conversations', { credentials: 'include' })
-                    if (convRes.ok) {
-                        const data: Conversation[] = await convRes.json()
-                        data.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-                        setConversations(data)
-                        if (data.length && !active) {
-                            setActive(data[0].otherUsername)
-                            await loadThread(data[0].otherUsername)
-                        }
-                    }
-                } catch (e) {
-                    console.error('Chat init failed', e)
+                    return
                 }
-            })()
+
+                const meData = await meRes.json()
+                if (!meData || meData.error) {
+                    // Invalid user data - don't initialize chat
+                    console.log('ChatDock - Invalid user data, chat disabled')
+                    setIsAuthenticated(false)
+                    return
+                }
+
+                // User is authenticated - clear polling interval
+                if (checkInterval) {
+                    clearInterval(checkInterval)
+                    checkInterval = null
+                }
+
+                // Check if we're already initialized
+                if (initialized.current) {
+                    setIsAuthenticated(true)
+                    return
+                }
+
+                // Mark as initialized
+                initialized.current = true
+                setIsAuthenticated(true)
+
+                // Store the username first - this is critical for fallback
+                if (meData?.username) {
+                    meRef.current = meData.username
+                    console.log('ChatDock - username set to:', meData.username)
+                }
+
+                // Use avatar directly from backend - it's the single source of truth
+                let avatarUrl = null
+                if (meData?.profileAvatar && meData.profileAvatar !== '') {
+                    meAvatarRef.current = meData.profileAvatar
+                    avatarUrl = meData.profileAvatar
+                    console.log('ChatDock - avatar from backend:', avatarUrl)
+                }
+
+                // Update state to trigger re-render
+                setMe({
+                    username: meData?.username || null,
+                    avatar: avatarUrl
+                })
+
+                // Set auth user for legacy code
+                try {
+                    const authUser = auth.getUser()
+                    if (!authUser && meData?.username) {
+                        // If auth is not set, we might need to set it from the backend data
+                        // This is a safety measure
+                    }
+                } catch { }
+
+                // Only proceed with chat initialization if authenticated
+                // Restore persisted UI state (LinkedIn-like behavior)
+                try {
+                    const savedOpen = typeof window !== 'undefined' ? window.localStorage.getItem('chat.open') : null
+                    if (savedOpen === '1') setOpen(true)
+                    const savedActive = typeof window !== 'undefined' ? window.localStorage.getItem('chat.active') : null
+                    if (savedActive) setActive(savedActive)
+                } catch { /* noop */ }
+                const c = await connectChat(async (raw: unknown) => {
+                    const msg = raw as Message
+                    const sender = msg.sender?.username
+                    const recipient = msg.recipient?.username
+                    // Determine peer conservatively: prefer current active thread, else sender/recipient
+                    const peer = (active && (sender === active || recipient === active)) ? active : (sender || recipient)
+                    if (!peer) return
+                    setMessages((prev) => ({ ...prev, [peer]: [...(prev[peer] || []), msg] }))
+                    setConversations((prev) => {
+                        const exists = prev.find((c) => c.otherUsername === peer)
+                        if (exists) {
+                            return prev.map((c) => {
+                                if (c.otherUsername !== peer) return c
+                                const unreadCount = (peer !== active) ? ((c.unreadCount || 0) + 1) : 0
+                                return { ...c, updatedAt: new Date().toISOString(), lastMessage: msg.content, lastMessageAt: msg.createdAt, unreadCount }
+                            })
+                        }
+                        return [{ id: Date.now(), otherUsername: peer, updatedAt: new Date().toISOString(), lastMessage: msg.content, lastMessageAt: msg.createdAt, unreadCount: (peer !== active) ? 1 : 0 }, ...prev]
+                    })
+                    setActive((prev) => prev ?? peer)
+                    setOpen(true)
+                    // If message pertains to the active thread, mark as read and refresh from server
+                    if (peer === active) {
+                        try { await fetch(`/api/chat/conversations/${peer}/mark-read`, { method: 'POST', credentials: 'include' }) } catch { }
+                        setConversations((prev) => prev.map(c => c.otherUsername === peer ? { ...c, unreadCount: 0 } : c))
+                        await loadThread(peer)
+                    }
+                })
+                if (!c) return
+                const data = await chatService.getConversations()
+                setConversations(data)
+                // Don't auto-select first conversation - let user see the list first
+                // Only auto-select if there was a previously saved active conversation
+                const savedActive = typeof window !== 'undefined' ? window.localStorage.getItem('chat.active') : null
+                if (data.length && savedActive && data.some(c => c.otherUsername === savedActive)) {
+                    setActive(savedActive)
+                    await loadThread(savedActive)
+                }
+            } catch (e) {
+                console.error('Chat init failed', e)
+                setIsAuthenticated(false)
+            }
+        }
+
+        // Start initialization
+        initializeChat()
+
+        // Cleanup
+        return () => {
+            if (checkInterval) {
+                clearInterval(checkInterval)
+            }
+        }
     }, [])
 
     // Persist UI state
@@ -239,7 +268,7 @@ export default function ChatDock() {
                 if (res.ok) {
                     const data: Conversation[] = await res.json()
                     setConversations(data)
-                    if (!active && data.length) setActive(data[0].otherUsername)
+                    // Don't auto-select first conversation when polling
                 }
             } catch { }
             if (++ticks >= 10 && pollTimer.current) {
@@ -286,18 +315,19 @@ export default function ChatDock() {
             return [{ id: Date.now(), otherUsername: username, updatedAt }, ...prev]
         })
         try {
-            const res = await sendChat(username, content.trim())
-            if (!res && !(window as any).__wsSent) {
-                setMessages((prev) => ({ ...prev, [username]: (prev[username] || []).filter((m) => m.id !== optimistic.id) }))
-                window.alert('Message could not be delivered. The user might not be available for messaging.')
-                return
-            }
-        } catch {
-            setMessages((prev) => ({ ...prev, [username]: (prev[username] || []).filter((m) => m.id !== optimistic.id) }))
-            window.alert('Message could not be delivered. The user might not be available for messaging.')
-            return
+            const res = await chatService.sendMessage(username, content.trim())
+            // Don't show error - message will be delivered when connection is restored
+            // The optimistic update already shows the message to the user
+        } catch (error) {
+            // Keep the optimistic message but mark it as pending/failed
+            console.error('Failed to send message:', error)
+            // You could add a retry mechanism here or mark the message as failed
+            // For now, we'll keep the message and try to sync later
         }
-        await loadThread(username)
+        // Add a small delay before loading the thread to ensure the message is saved
+        setTimeout(async () => {
+            await loadThread(username)
+        }, 500)
     }
 
     const filteredConversations = conversations.filter(c =>
@@ -321,25 +351,7 @@ export default function ChatDock() {
     }
 
     const fetchMessagesWithFallback = async (username: string): Promise<Message[] | null> => {
-        try {
-            const res = await fetch(`/api/chat/messages/${username}`, { credentials: 'include' })
-            if (res.ok) {
-                const data: Message[] = await res.json()
-                return Array.isArray(data) ? data : []
-            }
-        } catch { }
-        try {
-            const ticketRes = await fetch('/api/chat/ws-ticket', { credentials: 'include' })
-            if (!ticketRes.ok) return null
-            const { token } = await ticketRes.json()
-            const backend = (process.env.NEXT_PUBLIC_BACKEND_ORIGIN || process.env.BACKEND_ORIGIN || 'http://localhost:8080') as string
-            const direct = await fetch(`${backend}/api/chat/messages/${username}`, { headers: { Authorization: `Bearer ${token}` } })
-            if (!direct.ok) return null
-            const data: Message[] = await direct.json()
-            return Array.isArray(data) ? data : []
-        } catch {
-            return null
-        }
+        return await chatService.fetchMessagesWithFallback(username);
     }
 
     // Explicit loader to fetch a thread on demand (even if active hasn't changed)
@@ -363,8 +375,8 @@ export default function ChatDock() {
         } catch { }
     }
 
-    // Don't render anything if user is not authenticated
-    if (!isAuthenticated) {
+    // Don't render anything if user is not authenticated or on mobile messages page
+    if (!isAuthenticated || (isMobile && pathname?.startsWith('/dashboard/messages'))) {
         return null
     }
 
@@ -372,7 +384,7 @@ export default function ChatDock() {
         <div className="fixed bottom-3 right-3 md:bottom-4 md:right-4 z-50">
             {open && (
                 <>
-                    <Card className="w-[95vw] max-w-[380px] h-[70vh] max-h-[560px] md:w-[360px] md:h-[560px] p-0 flex flex-col shadow-xl rounded-xl overflow-hidden" data-testid="chat-dock">
+                    <Card className="w-[95vw] max-w-[380px] h-[70vh] max-h-[480px] md:w-[360px] md:h-[560px] p-0 flex flex-col shadow-xl rounded-xl overflow-hidden" data-testid="chat-dock">
                         {/* Header - LinkedIn style */}
                         <div className="flex items-center gap-2 p-3 border-b bg-muted/20 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -390,17 +402,23 @@ export default function ChatDock() {
                             <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="More options">
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Open in full">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                aria-label="Open in full"
+                                onClick={() => router.push('/dashboard/messages' + (active ? `?user=${active}` : ''))}
+                            >
                                 <SquareArrowOutUpRight className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Minimize" onClick={() => setOpen(false)}>
                                 <ChevronDown className="h-4 w-4" />
                             </Button>
                         </div>
-                        <div className="flex h-full overflow-hidden min-h-0">
-                            {/* Conversations list */}
-                            <div className="flex-1 flex flex-col min-h-0" data-testid="chat-conversations">
-                                <div className="p-2">
+                        <div className="flex-1 flex overflow-hidden min-h-0">
+                            {/* Always show conversation list in the Nachrichten box */}
+                            <div className="flex-1 flex flex-col min-h-0 overflow-hidden" data-testid="chat-conversations">
+                                <div className="p-2 flex-shrink-0">
                                     <div className="relative">
                                         <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -411,14 +429,16 @@ export default function ChatDock() {
                                         />
                                     </div>
                                 </div>
-                                <Separator />
-                                <ScrollArea className="flex-1" type="hover">
-                                    <div className="py-1">
+                                <Separator className="flex-shrink-0" />
+                                <ScrollArea className="flex-1 overflow-hidden" type="hover">
+                                    <div className="py-1 px-1">
                                         {filteredConversations.map((c) => (
                                             <button
                                                 key={c.id}
-                                                className={`w-full px-3 py-2 hover:bg-accent/70 transition text-left rounded-md ${expanded === c.otherUsername ? 'bg-accent' : ''}`}
-                                                onClick={async () => { await openWindow(c.otherUsername) }}
+                                                className={`w-full px-3 py-2 hover:bg-accent/70 transition text-left rounded-md ${active === c.otherUsername ? 'bg-accent' : ''}`}
+                                                onClick={async () => {
+                                                    await openWindow(c.otherUsername);
+                                                }}
                                             >
                                                 <div className="flex items-start gap-3">
                                                     <Avatar className="h-10 w-10 shrink-0">
@@ -515,7 +535,13 @@ export default function ChatDock() {
                         <span className="inline-flex items-center justify-center h-5 min-w-5 px-1 rounded-full bg-primary text-primary-foreground text-[10px]">{totalUnread}</span>
                     ) : null}
                     <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                    <SquareArrowOutUpRight className="h-4 w-4 text-muted-foreground" />
+                    <SquareArrowOutUpRight
+                        className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            router.push('/dashboard/messages')
+                        }}
+                    />
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </div>
             )}

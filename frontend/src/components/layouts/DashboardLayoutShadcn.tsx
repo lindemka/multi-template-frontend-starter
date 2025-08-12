@@ -8,7 +8,8 @@ import {
   BarChart3,
   Menu,
   Home,
-  LogOut
+  LogOut,
+  MessageSquare
 } from 'lucide-react';
 
 // Shadcn UI Components
@@ -19,6 +20,8 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetHeader,
+  SheetTitle,
 } from '@/components/ui/sheet';
 import {
   DropdownMenu,
@@ -39,6 +42,7 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
+    { name: 'Messages', href: '/dashboard/messages', icon: MessageSquare },
   ];
 
   const SidebarContent = () => (
@@ -171,6 +175,9 @@ const DashboardLayoutShadcn: React.FC<DashboardLayoutShadcnProps> = ({ children 
 
         {/* Mobile Sidebar Content */}
         <SheetContent side="left" className="p-0 w-72">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </SheetHeader>
           <SidebarContent />
         </SheetContent>
       </Sheet>

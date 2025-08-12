@@ -64,12 +64,8 @@ export async function connectChat(onMessage: (msg: unknown) => void) {
 }
 
 export async function sendChat(toUsername: string, content: string): Promise<any | null> {
-    // Prefer websocket if connected
-    if (client && client.connected) {
-        client.publish({ destination: `/app/chat.send/${toUsername}`, body: JSON.stringify({ content }) })
-        return null
-    }
-    // Fallback to REST BFF so messages persist even if WS is not connected
+    // Use REST API for reliable message sending
+    // WebSocket can be re-enabled later for real-time features
     try {
         const res = await fetch('/api/chat/send', {
             method: 'POST',
@@ -77,10 +73,11 @@ export async function sendChat(toUsername: string, content: string): Promise<any
             credentials: 'include',
             body: JSON.stringify({ to: toUsername, content }),
         })
-        if (!res.ok) return null
-        return await res.json()
+
+        if (!res.ok) return null;
+        return await res.json();
     } catch {
-        return null
+        return null;
     }
 }
 

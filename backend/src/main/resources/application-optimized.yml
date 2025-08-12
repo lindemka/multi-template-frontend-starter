@@ -98,4 +98,4 @@ management:
     db:
       enabled: true
     redis:
-      enabled: true
+      enabled: false

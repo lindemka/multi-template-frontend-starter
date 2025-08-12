@@ -9,8 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Profile("postgres")
+//@Service
+@Profile("disabled")
 public class AuthDataInitializer {
 
     @Autowired
@@ -19,7 +19,7 @@ public class AuthDataInitializer {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostConstruct
+    //@PostConstruct
     @Transactional
     public void initAuthUsers() {
         // Check if auth users already exist

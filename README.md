@@ -17,73 +17,58 @@ A full-stack application: Spring Boot backend + Next.js frontend using shadcn/ui
 ./scripts/dev.sh stop      # stop both
 ```
 
-## Available Pages (Dev)
+## Testing
 
-- **Home**: `http://localhost:3000/` - Landing page
-- **Dashboard**: `http://localhost:3000/dashboard` - Dashboard with shadcn/ui components
-- **Test**: `http://localhost:3000/test` - Component testing page
+The project uses Playwright for end-to-end testing with a consolidated testing strategy.
 
-## Architecture
-
-### Frontend (Next.js)
-- **Framework**: Next.js 15 with React 19
-- **UI Components**: shadcn/ui with Radix UI primitives
-- **Styling**: Tailwind CSS v4
-- **State Management**: TanStack Query for server state
-- **Type Safety**: Full TypeScript support
-
-### Backend (Spring Boot)
-- **Framework**: Spring Boot 3.4.2 with Java 21
-- **Database**: H2 (development) with JPA/Hibernate
-- **API**: RESTful endpoints with JSON responses
-- **Development**: Hot reload with Spring DevTools
-
-## Project Structure
-
-```
-fbase/
-├── frontend/                       # Next.js frontend
-│   ├── src/
-│   │   ├── app/                   # Next.js app router pages
-│   │   ├── components/            # React components with shadcn/ui
-│   │   ├── lib/                   # Utilities and API client
-│   │   └── types/                 # TypeScript definitions
-│   └── package.json
-├── backend/                       # Spring Boot backend
-│   ├── src/main/java/            # Java source code
-│   └── pom.xml
-├── scripts/                       # Build and deployment scripts (essential + optional/legacy)
-├── archive/                       # Legacy template files
-└── ai/                           # Documentation
-```
-
-## Features
-
-- ✅ **Modern Stack**: Next.js 15 + Spring Boot 3.4.2 + Java 21
-- ✅ **shadcn/ui Components**: Professional UI component library
-- ✅ **Type Safety**: Full TypeScript support throughout
-- ✅ **Hot Reload**: Both frontend and backend development servers
-- ✅ **Production Ready**: Optimized builds and deployment scripts
-- ✅ **Responsive Design**: Mobile-first approach with Tailwind CSS
-- ✅ **API Integration**: RESTful backend with React Query client
-- ✅ **Development Tools**: ESLint, TypeScript checking, and more
-
-## Builds & Deployment (Local)
+### Quick Commands
 
 ```bash
-# Build artifacts only (keep dev running)
-./scripts/deploy.sh
+# Run all tests
+./scripts/test.sh all
 
-# Full production build + run (stops dev servers)
-./scripts/build.sh
+# Run specific test categories
+./scripts/test.sh basic      # Basic application tests
+./scripts/test.sh auth       # Authentication tests
+./scripts/test.sh messages   # Messages functionality tests
+./scripts/test.sh chat       # Chat interface tests
+./scripts/test.sh members    # Members page tests
+./scripts/test.sh account    # Account management tests
+
+# Run tests in different modes
+./scripts/test.sh ui         # Interactive UI mode
+./scripts/test.sh debug      # Debug mode
+./scripts/test.sh headed     # Headed mode (see browser)
 ```
 
-## Documentation
+### Test Structure
 
-All detailed documentation is available in the `/ai` folder:
+All tests are organized in the `tests/` directory:
+- `tests/README.md` - Comprehensive testing documentation
+- `tests/MESSAGES_TROUBLESHOOTING.md` - Specific troubleshooting for messages page
+- `tests/helpers/` - Reusable test utilities
+- `tests/fixtures/` - Test data and configurations
 
-- `ai/AI-INDEX.md` - Single source of truth for all docs
-- `ai/OPERATIONS-RUNBOOK.md` - Run, build, deploy, and testing guide
-- `ai/SCRIPTS-GUIDE.md` - Script usage (dev, status, build, deploy)
-- `ai/ARCHITECTURE.md` - Technical architecture details
- - Database quick actions and SQL helpers documented in `ai/OPERATIONS-RUNBOOK.md` and `ai/SCRIPTS-GUIDE.md`
+### Test Users
+
+The following test users are available for testing:
+- **sarah.chen** (sarah.chen@example.com) - Primary test user
+- **alex.johnson** (alex.johnson@example.com) - Chat testing
+- **maria.garcia** (maria.garcia@example.com) - Multiple conversations
+- **james.kim** (james.kim@example.com) - Profile testing
+- **kai3** (kai3@example.com) - Alternative test user
+
+All users have password: `password123`
+
+### Common Issues
+
+- **Login failures**: Use API authentication instead of UI login for reliable tests
+- **Missing elements**: Use content-based selectors instead of data-testid attributes
+- **API status codes**: Accept multiple valid responses (200, 404, 403)
+- **Page structure**: Test functionality, not implementation details
+
+See `tests/README.md` for detailed troubleshooting and best practices.
+
+## Available Pages (Dev)
+
+- **Home**: `

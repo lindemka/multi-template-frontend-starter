@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.sql.Connection;
 
-@Configuration
+//@Configuration
 public class DatabaseInitializer {
     
     private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
@@ -25,7 +25,7 @@ public class DatabaseInitializer {
     @Autowired
     private DataSource dataSource;
     
-    @Bean
+    //@Bean
     CommandLineRunner initDatabase() {
         return args -> {
             try {

@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Configuration
+//@Configuration
 public class DatabaseFixer {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseFixer.class);
@@ -15,7 +15,7 @@ public class DatabaseFixer {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @PostConstruct
+    //@PostConstruct
     public void fixDatabase() {
         try {
             logger.info("Starting database fix...");
@@ -48,7 +48,7 @@ public class DatabaseFixer {
             
             // Create user profiles for users without one
             int profilesCreated = jdbcTemplate.update(
-                "INSERT INTO user_profiles (user_id, name, location, avatar, tagline, followers, rating, created_at, updated_at) " +
+                "INSERT INTO user_profiles (user_id, name, location, avatar_url, tagline, followers, rating, created_at, updated_at) " +
                 "SELECT u.id, " +
                 "       COALESCE(u.first_name || ' ' || u.last_name, u.username), " +
                 "       'Not specified', " +
@@ -79,16 +79,24 @@ public class DatabaseFixer {
                 );
                 logger.info("Created 3 sample startups");
                 
-                // Add startup members
-                jdbcTemplate.update(
-                    "INSERT INTO startup_members (startup_id, user_id, role, equity_percentage, joined_date, is_active, created_at) " +
-                    "SELECT s.id, u.id, 'Founder', 40.00, CURRENT_DATE, true, NOW() " +
-                    "FROM startups s " +
-                    "CROSS JOIN (SELECT id FROM users LIMIT 1) u " +
-                    "WHERE s.name = 'TechVenture' " +
-                    "ON CONFLICT (startup_id, user_id) DO NOTHING"
+                // Add startup members - only if they don't exist
+                Integer memberCount = jdbcTemplate.queryForObject(
+                    "SELECT COUNT(*) FROM startup_members WHERE startup_id IN (SELECT id FROM startups WHERE name = 'TechVenture')",
+                    Integer.class
                 );
-                logger.info("Added startup members");
+                
+                if (memberCount == 0) {
+                    jdbcTemplate.update(
+                        "INSERT INTO startup_members (startup_id, user_id, role, equity_percentage, joined_date, is_active, created_at) " +
+                        "SELECT s.id, u.id, 'Founder', 40.00, CURRENT_DATE, true, NOW() " +
+                        "FROM startups s " +
+                        "CROSS JOIN (SELECT id FROM users LIMIT 1) u " +
+                        "WHERE s.name = 'TechVenture'"
+                    );
+                    logger.info("Added startup members");
+                } else {
+                    logger.info("Startup members already exist, skipping");
+                }
             }
             
             // Create sample founder profiles
