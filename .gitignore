@@ -38,6 +38,12 @@ Thumbs.db
 # Logs
 logs
 *.log
+backend.log
+frontend.log
+dev.log
+dev-frontend.log
+backend-restart.log
+frontend-start.log
 
 # Runtime data
 pids
@@ -256,3 +262,133 @@ frontend/blob-report/
 frontend/traces/
 frontend/screenshots/
 frontend/videos/
+
+# Database and data files
+.data/
+*.sqlite
+*.db
+*.db-journal
+*.db-wal
+
+# PostgreSQL data directory (Docker volumes)
+.data/postgres/
+
+# Database configuration files that might contain sensitive data
+backend/flyway.conf
+backend/src/main/resources/application-dev.properties
+backend/src/main/resources/application-test.properties
+
+# Test artifacts and results
+test-results/
+test-artifacts/
+*.test-results/
+*.test-artifacts/
+
+# Temporary test files
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+!tests/**/*.spec.ts
+!tests/**/*.test.ts
+
+# Manual test files
+comprehensive-test.html
+manual-test-script.html
+
+# Debug and temporary files
+cookies.txt
+*.cookies
+debug-*.log
+temp-*.log
+
+# Configuration files that might be environment-specific
+ensure-docker-db-only.sh
+fix_database_schema.sql
+
+# Documentation files that are temporary
+MESSAGES_FINAL_FIXES.md
+MESSAGES_FIXES_SUMMARY.md
+DATABASE_CONFIG.md
+
+# Scripts that are temporary or development-only
+scripts/test.sh
+scripts/create_test_users.sql
+scripts/populate_*.sql
+scripts/fix_*.sql
+scripts/update_*.sql
+scripts/verify_*.sql
+scripts/create_*.sql
+
+# Frontend temporary files
+frontend/src/app/api/chat/messages-fixed/
+frontend/src/app/dashboard/messages/
+frontend/src/lib/chatService.ts
+
+# Test helper files that might be temporary
+tests/browser-simulation.js
+tests/manual-user-journey.js
+tests/simple-login-test.sh
+tests/test-frontend-profile.js
+tests/test-full-stack.js
+tests/test-profile-edit.js
+tests/verify-fixes.js
+tests/verify-password.js
+
+# Documentation files in tests that might be temporary
+tests/CONSOLIDATION_SUMMARY.md
+tests/MESSAGES_TROUBLESHOOTING.md
+tests/TESTING_SUMMARY.md
+
+# Lock files (keep package-lock.json but ignore others)
+*.lock
+!package-lock.json
+!yarn.lock
+!pnpm-lock.yaml
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+dist/
+build/
+
+# OS specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Editor specific files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/
+
+# Backup files
+*~
+*.orig
+*.rej
+*.bak
+*.backup
+*.old
+*.tmp
+*.temp
+
+# Local configuration files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.local.js
+config.local.json
