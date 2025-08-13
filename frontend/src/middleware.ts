@@ -12,7 +12,10 @@ const PUBLIC_PATHS: string[] = [
 ]
 
 function isPublicPath(pathname: string): boolean {
+    // Allow Next.js internals and common static asset paths
     if (pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.startsWith('/assets')) return true
+    // Allow direct static files from public/ (e.g., /file.svg, /robots.txt, /sitemap.xml)
+    if (pathname.includes('.')) return true
     return PUBLIC_PATHS.includes(pathname)
 }
 
@@ -24,9 +27,6 @@ export async function middleware(req: NextRequest) {
 
     // Allow public pages
     if (isPublicPath(pathname)) return NextResponse.next()
-
-    // Temporarily bypass authentication for testing
-    return NextResponse.next()
 
     // For all other pages, require auth
     const access = req.cookies.get('accessToken')?.value

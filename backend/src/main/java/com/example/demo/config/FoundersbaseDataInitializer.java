@@ -3,6 +3,7 @@ package com.example.demo.config;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import com.example.demo.service.UserProfileService;
+import com.example.demo.util.AvatarUtil;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,7 +171,7 @@ public class FoundersbaseDataInitializer {
                 UserProfile profile = new UserProfile();
                 profile.setUser(user);
                 profile.setName(user.getFullName());
-                profile.setAvatar("https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+") + "&background=random");
+                profile.setAvatar(AvatarUtil.generateAvatarUrl(user.getFullName()));
                 profile.setFollowers((int)(Math.random() * 500));
                 profile.setRating(3.5 + Math.random() * 1.5);
                 

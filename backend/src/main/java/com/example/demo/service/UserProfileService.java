@@ -6,6 +6,7 @@ import com.example.demo.entity.FounderProfile;
 import com.example.demo.repository.AuthUserRepository;
 import com.example.demo.repository.UserProfileRepository;
 import com.example.demo.repository.FounderProfileRepository;
+import com.example.demo.util.AvatarUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,7 +53,10 @@ public class UserProfileService {
         UserProfile profile = new UserProfile();
         profile.setUser(user);
         profile.setName(user.getFullName());
-        profile.setAvatar("https://ui-avatars.com/api/?name=" + user.getFullName().replace(" ", "+"));
+        // Generate deterministic avatar based on user ID - stored in database as single source of truth
+        Long userId = user.getId();
+        int avatarIndex = (int)((userId % 70) + 1);
+        profile.setAvatar("https://i.pravatar.cc/150?img=" + avatarIndex);
         profile.setLocation("Not specified");
         profile.setTagline("New member of Foundersbase");
         profile.setFollowers(0);

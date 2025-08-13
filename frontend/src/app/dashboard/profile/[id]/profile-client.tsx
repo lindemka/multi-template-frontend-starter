@@ -252,7 +252,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                   <div className="absolute -top-16 left-6">
                     <div className="h-32 w-32 rounded-full ring-4 ring-white bg-white overflow-hidden">
                       <Avatar className="h-full w-full">
-                        <AvatarImage src={resolveAvatarUrl(profileData.avatar, profileData.name)} />
+                        <AvatarImage src={resolveAvatarUrl(profileData.avatar)} />
                         <AvatarFallback className="text-3xl bg-gray-100">
                           {(profileData?.name || '').split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -379,7 +379,7 @@ export default function ProfilePageClient({ params }: { params: { id: string } }
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={resolveAvatarUrl(profileData.avatar, profileData.name)} />
+                              <AvatarImage src={resolveAvatarUrl(profileData.avatar)} />
                               <AvatarFallback>{(profileData?.name || '').split(' ').map(n => n[0]).join('')}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">

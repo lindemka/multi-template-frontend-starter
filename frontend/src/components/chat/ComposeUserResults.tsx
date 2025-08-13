@@ -50,7 +50,7 @@ export default function ComposeUserResults({ query, onPick }: { query: string; o
             {items.map((u: UserItem) => (
                 <button key={u.username} className="w-full px-2 py-2 hover:bg-accent rounded-md text-left flex items-center gap-2" onClick={() => onPick(u.username)}>
                     <Avatar className="h-7 w-7">
-                        {(() => { const src = resolveAvatarUrl(u.avatar, u.username); return src ? (<AvatarImage src={src} alt={u.username} />) : null })()}
+                        {(() => { const src = resolveAvatarUrl(u.avatar); return src ? (<AvatarImage src={src} alt={u.username} />) : null })()}
                         <AvatarFallback delayMs={0}>{initialsFromUsername(u.username)}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">

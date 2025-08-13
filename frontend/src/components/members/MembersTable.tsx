@@ -91,7 +91,7 @@ const MemberRow: FC<{ member: Member; onClick: (member: Member) => void }> = ({ 
       <TableCell>
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} alt={member.name} />
+            <AvatarImage src={resolveAvatarUrl(member.avatar)} alt={member.name} />
             <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
           </Avatar>
           <div>

@@ -51,7 +51,7 @@ export function NavUser({
             setDisplayUser({
               name: [data.firstName, data.lastName].filter(Boolean).join(' ') || data.username || user.name,
               email: data.email || user.email,
-              avatar: (data as any).profileAvatar || '',  // Use avatar directly from backend
+              avatar: resolveAvatarUrl((data as any).profileAvatar) || '',  // Use avatar from database only
             })
             return
           }
@@ -63,7 +63,7 @@ export function NavUser({
         setDisplayUser({
           name: ls.username || user.name,
           email: ls.email || user.email,
-          avatar: resolveAvatarUrl((ls as any).avatar, ls.username) || '',
+          avatar: resolveAvatarUrl((ls as any).avatar) || '',
         })
       }
     }
@@ -82,7 +82,14 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={displayUser.avatar || undefined} alt={displayUser.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {displayUser.name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{displayUser.name}</span>

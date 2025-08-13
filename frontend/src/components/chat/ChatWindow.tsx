@@ -77,7 +77,7 @@ export default function ChatWindow({
             <div className="flex items-center gap-2 p-3 border-b bg-muted/20">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                     <Avatar className="h-7 w-7">
-                        {(() => { const src = resolveAvatarUrl(headerAvatar, username); return imageOrNull(src) ? (<AvatarImage src={src!} alt={username} />) : null })()}
+                        {(() => { const src = resolveAvatarUrl(headerAvatar); return imageOrNull(src) ? (<AvatarImage src={src!} alt={username} />) : null })()}
                         <AvatarFallback delayMs={0}>{initialsFromUsername(username)}</AvatarFallback>
                     </Avatar>
                     <div className="font-medium truncate">{username}</div>
@@ -114,7 +114,7 @@ export default function ChatWindow({
                                         <div key={m.id} className={`flex ${mine ? 'justify-end' : 'justify-start'} items-end gap-2`} data-testid="chat-msg" data-username={m.sender?.username}>
                                             {!mine && (
                                                 <Avatar className="h-6 w-6">
-                                                    {(() => { const src = resolveAvatarUrl(m.sender?.avatar, m.sender?.username); return imageOrNull(src) ? (<AvatarImage src={src!} alt={m.sender?.username || 'User'} />) : null })()}
+                                                    {(() => { const src = resolveAvatarUrl(m.sender?.avatar); return imageOrNull(src) ? (<AvatarImage src={src!} alt={m.sender?.username || 'User'} />) : null })()}
                                                     <AvatarFallback delayMs={0}>{initialsFromUsername(m.sender?.username)}</AvatarFallback>
                                                 </Avatar>
                                             )}
@@ -124,7 +124,7 @@ export default function ChatWindow({
                                             </div>
                                             {mine && (
                                                 <Avatar className="h-6 w-6">
-                                                    {(() => { const src = resolveAvatarUrl(meAvatar, me); return imageOrNull(src) ? (<AvatarImage src={src!} alt={me || 'Me'} />) : null })()}
+                                                    {(() => { const src = resolveAvatarUrl(meAvatar); return imageOrNull(src) ? (<AvatarImage src={src!} alt={me || 'Me'} />) : null })()}
                                                     <AvatarFallback delayMs={0}>{initialsFromUsername(me)}</AvatarFallback>
                                                 </Avatar>
                                             )}

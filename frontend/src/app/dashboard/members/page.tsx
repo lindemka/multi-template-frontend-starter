@@ -405,7 +405,7 @@ export default function MembersPage() {
                     <TableCell>
                       <div className="flex items-start gap-3">
                         <Avatar>
-                          <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} />
+                          <AvatarImage src={resolveAvatarUrl(member.avatar)} />
                           <AvatarFallback>{member.name[0]}</AvatarFallback>
                         </Avatar>
                         <div>
@@ -536,7 +536,7 @@ export default function MembersPage() {
                   {/* Member Header */}
                   <div className="flex items-start gap-3 mb-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} />
+                      <AvatarImage src={resolveAvatarUrl(member.avatar)} />
                       <AvatarFallback>{member.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">

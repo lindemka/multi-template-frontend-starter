@@ -35,6 +35,9 @@ public class FeedService {
     @Autowired
     private AuthUserRepository authUserRepository;
     
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+    
     // Post operations
     public FeedDtos.PostResponse createPost(FeedDtos.CreatePostRequest request, AuthUser currentUser) {
         FeedPost post = new FeedPost(request.getContent(), currentUser);
@@ -251,12 +254,20 @@ public class FeedService {
         summary.setUsername(user.getUsername());
         summary.setEmail(user.getEmail());
         summary.setDisplayName(user.getFullName());
-        summary.setAvatarUrl(user.getUserProfile() != null ? user.getUserProfile().getAvatar() : null);
         
-        // Get user profile information if available
-        if (user.getUserProfile() != null) {
-            summary.setTitle(user.getUserProfile().getTagline());
-            summary.setCompany(user.getUserProfile().getLocation());
+        // ALWAYS use avatar from database - single source of truth
+        // Explicitly load the user profile to ensure avatar is available
+        Optional<UserProfile> profileOpt = userProfileRepository.findByUserId(user.getId());
+        if (profileOpt.isPresent()) {
+            UserProfile profile = profileOpt.get();
+            summary.setAvatarUrl(profile.getAvatar());
+            summary.setTitle(profile.getTagline());
+            summary.setCompany(profile.getLocation());
+        } else {
+            // This should never happen if database integrity is maintained
+            summary.setAvatarUrl(null);
+            summary.setTitle(null);
+            summary.setCompany(null);
         }
         
         return summary;

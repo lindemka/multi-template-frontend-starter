@@ -38,7 +38,7 @@ export default function ProfilePage() {
                   <div className="absolute -top-16 left-6">
                     <div className="h-32 w-32 rounded-full ring-4 ring-white bg-white overflow-hidden">
                       <Avatar className="h-full w-full">
-                        <AvatarImage src={resolveAvatarUrl(undefined, 'current-user')} alt="Profile" />
+                        <AvatarImage src={resolveAvatarUrl(undefined)} alt="Profile" />
                         <AvatarFallback className="text-3xl bg-gray-100">KL</AvatarFallback>
                       </Avatar>
                     </div>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
               <CardContent>
                 <div className="flex items-start gap-4">
                   <Avatar>
-                    <AvatarImage src={resolveAvatarUrl(undefined, 'Ahmed Salman')} alt="Ahmed" />
+                    <AvatarImage src={resolveAvatarUrl(undefined)} alt="Ahmed" />
                     <AvatarFallback>AS</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -186,7 +186,7 @@ export default function ProfilePage() {
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={resolveAvatarUrl(undefined, 'Kai Lindemann')} />
+                              <AvatarImage src={resolveAvatarUrl(undefined)} />
                               <AvatarFallback>KL</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                     <div key={index} className="space-y-3">
                       <div className="flex items-start gap-3">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={resolveAvatarUrl(undefined, person.name)} />
+                          <AvatarImage src={resolveAvatarUrl(undefined)} />
                           <AvatarFallback className="text-sm">{person.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">

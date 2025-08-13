@@ -120,12 +120,12 @@ export default function ChatDock() {
                     console.log('ChatDock - username set to:', meData.username)
                 }
 
-                // Use avatar directly from backend - it's the single source of truth
+                // Use consistent avatar resolution - same as other components
                 let avatarUrl = null
-                if (meData?.profileAvatar && meData.profileAvatar !== '') {
-                    meAvatarRef.current = meData.profileAvatar
-                    avatarUrl = meData.profileAvatar
-                    console.log('ChatDock - avatar from backend:', avatarUrl)
+                if (meData?.username) {
+                    avatarUrl = resolveAvatarUrl(meData.profileAvatar)
+                    meAvatarRef.current = avatarUrl
+                    console.log('ChatDock - avatar resolved:', avatarUrl)
                 }
 
                 // Update state to trigger re-render
@@ -443,7 +443,7 @@ export default function ChatDock() {
                                                 <div className="flex items-start gap-3">
                                                     <Avatar className="h-10 w-10 shrink-0">
                                                         {(() => {
-                                                            const src = resolveAvatarUrl(c.otherAvatar, c.otherUsername)
+                                                            const src = resolveAvatarUrl(c.otherAvatar)
                                                             return src ? (<AvatarImage src={src} alt={c.otherUsername} />) : null
                                                         })()}
                                                         <AvatarFallback delayMs={0}>{initialsFromUsername(c.otherUsername)}</AvatarFallback>
@@ -567,7 +567,7 @@ export default function ChatDock() {
                         <Avatar className="h-8 w-8">
                             {(() => {
                                 const conv = conversations.find(c => c.otherUsername === u)
-                                const src = resolveAvatarUrl(conv?.otherAvatar, u)
+                                const src = resolveAvatarUrl(conv?.otherAvatar)
                                 return src ? (<AvatarImage src={src} alt={u} />) : null
                             })()}
                             <AvatarFallback delayMs={0}>{initialsFromUsername(u)}</AvatarFallback>

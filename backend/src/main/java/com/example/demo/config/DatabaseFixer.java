@@ -52,7 +52,7 @@ public class DatabaseFixer {
                 "SELECT u.id, " +
                 "       COALESCE(u.first_name || ' ' || u.last_name, u.username), " +
                 "       'Not specified', " +
-                "       'https://ui-avatars.com/api/?name=' || REPLACE(COALESCE(u.first_name || ' ' || u.last_name, u.username), ' ', '+'), " +
+                "       'https://i.pravatar.cc/150?img=' || (ABS(HASH(COALESCE(u.first_name || ' ' || u.last_name, u.username))) % 70 + 1), " +
                 "       'Member of Foundersbase', " +
                 "       0, " +
                 "       0.0, " +

@@ -93,7 +93,7 @@ export default function ProfileDrawer({ isOpen, onClose, member, onViewFullProfi
           {/* Avatar */}
           <div className="absolute -bottom-12 left-6">
             <Avatar className="h-24 w-24 border-4 border-white">
-              <AvatarImage src={resolveAvatarUrl(member.avatar, member.name)} />
+              <AvatarImage src={resolveAvatarUrl(member.avatar)} />
               <AvatarFallback className="text-2xl">
                 {member.name?.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>

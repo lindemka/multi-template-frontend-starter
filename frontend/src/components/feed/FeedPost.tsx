@@ -141,7 +141,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={resolveAvatarUrl(post.author.avatarUrl as any, post.author.displayName)} alt={post.author.displayName} />
+              <AvatarImage src={resolveAvatarUrl(post.author.avatarUrl as any)} alt={post.author.displayName} />
               <AvatarFallback>
                 {post.author.displayName.split(' ').map(n => n[0]).join('').toUpperCase()}
               </AvatarFallback>
@@ -300,7 +300,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
                 {post.comments.map((comment) => (
                   <div key={comment.id} className="flex space-x-3">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={resolveAvatarUrl(comment.user.avatarUrl as any, comment.user.displayName)} />
+                      <AvatarImage src={resolveAvatarUrl(comment.user.avatarUrl as any)} />
                       <AvatarFallback>
                         {comment.user.displayName.split(' ').map(n => n[0]).join('').toUpperCase()}
                       </AvatarFallback>

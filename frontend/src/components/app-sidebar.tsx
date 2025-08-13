@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { auth } from "@/lib/auth"
+import { resolveAvatarUrl } from "@/lib/avatar"
 import {
   Users,
   Home,
@@ -32,7 +33,7 @@ const data = {
   user: {
     name: "Admin User",
     email: "admin@example.com",
-    avatar: "https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff",
+    avatar: resolveAvatarUrl(null),
   },
   navMain: [
     {
@@ -91,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       setUser({
         name: currentUser.username || 'User',
         email: currentUser.email || 'user@example.com',
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.username || 'User')}&background=0D8ABC&color=fff`,
+        avatar: resolveAvatarUrl(currentUser.profileAvatar),
       });
     }
   }, []);

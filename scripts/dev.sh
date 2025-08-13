@@ -82,7 +82,8 @@ if command -v /usr/libexec/java_home >/dev/null 2>&1; then
 fi
 if command -v jenv >/dev/null 2>&1; then
   eval "$(jenv init -)" >/dev/null 2>&1 || true
-  jenv shell 21 >/dev/null 2>&1 || true
+  # Prefer a Java 21 runtime if available
+  jenv shell 21 >/dev/null 2>&1 || jenv shell 21.0 >/dev/null 2>&1 || true
 fi
 
 # Helpful context
@@ -134,7 +135,13 @@ sleep 2
 if [ "$START_BACKEND" = true ]; then
   echo -e "${BLUE}Starting backend...${NC}"
   cd backend
-  nohup mvn spring-boot:run > backend.log 2>&1 &
+  # Ensure Maven and the app run under Java 21
+  if [ -n "${JAVA_HOME:-}" ]; then
+    echo -e "${YELLOW}Using JAVA_HOME=${JAVA_HOME} for backend${NC}"
+    nohup env JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH" mvn spring-boot:run > backend.log 2>&1 &
+  else
+    nohup mvn spring-boot:run > backend.log 2>&1 &
+  fi
   cd ..
 fi
 

@@ -24,8 +24,8 @@ export default function LoginClient() {
   // Check if already logged in
   useEffect(() => {
     const hasAccessCookie = typeof document !== 'undefined' && document.cookie.includes('accessToken=');
-    const hasRefreshCookie = typeof document !== 'undefined' && document.cookie.includes('refreshToken=');
-    if (hasAccessCookie || hasRefreshCookie || auth.isAuthenticated()) {
+    // Do not treat refreshToken as authenticated to avoid redirect loops; middleware handles refresh
+    if (hasAccessCookie || auth.isAuthenticated()) {
       const from = searchParams.get('from') || '/dashboard';
       router.replace(from);
     }

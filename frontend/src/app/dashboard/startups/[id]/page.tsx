@@ -6,17 +6,18 @@ import api from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  ArrowLeft, 
-  Building2, 
-  MapPin, 
-  Users, 
-  TrendingUp, 
-  DollarSign, 
-  Calendar, 
-  Globe, 
+import {
+  ArrowLeft,
+  Building2,
+  MapPin,
+  Users,
+  TrendingUp,
+  DollarSign,
+  Calendar,
+  Globe,
   Briefcase,
   Mail,
   Phone,
@@ -79,15 +80,15 @@ export default function StartupDetailPage() {
   const fetchStartupDetails = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch startup details
       const startupResponse = await api.get(`/api/startups/${params.id}`);
       setStartup(startupResponse.data);
-      
+
       // Fetch startup members
       const membersResponse = await api.get(`/api/startups/${params.id}/members`);
       setMembers(membersResponse.data);
-      
+
       setError(null);
     } catch (err) {
       console.error('Error fetching startup details:', err);
@@ -171,9 +172,9 @@ export default function StartupDetailPage() {
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-4">
               {startup.logoUrl && (
-                <img 
-                  src={startup.logoUrl} 
-                  alt={startup.name} 
+                <img
+                  src={startup.logoUrl}
+                  alt={startup.name}
                   className="h-16 w-16 rounded-lg object-cover"
                 />
               )}
@@ -208,7 +209,7 @@ export default function StartupDetailPage() {
           <p className="text-muted-foreground mb-6">
             {startup.description}
           </p>
-          
+
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="flex items-center gap-3">
               <MapPin className="h-5 w-5 text-muted-foreground" />
@@ -257,7 +258,7 @@ export default function StartupDetailPage() {
           <TabsTrigger value="about">About</TabsTrigger>
           <TabsTrigger value="jobs">Open Positions</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="team">
           <Card>
             <CardHeader>
@@ -271,8 +272,8 @@ export default function StartupDetailPage() {
                 {members.map((member) => (
                   <div key={member.id} className="flex items-center gap-3 p-3 border rounded-lg">
                     <Avatar>
-                      <AvatarImage 
-                        src={`https://ui-avatars.com/api/?name=${member.user.firstName}+${member.user.lastName}&background=6366f1&color=fff`} 
+                      <AvatarImage
+                        src={resolveAvatarUrl(member.user.avatar)}
                       />
                       <AvatarFallback>
                         {member.user.firstName[0]}{member.user.lastName[0]}
@@ -298,7 +299,7 @@ export default function StartupDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="about">
           <Card>
             <CardHeader>
@@ -324,7 +325,7 @@ export default function StartupDetailPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="jobs">
           <Card>
             <CardHeader>
