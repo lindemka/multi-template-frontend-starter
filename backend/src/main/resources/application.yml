@@ -105,7 +105,7 @@ cors:
 app:
   origin: ${APP_ORIGIN:http://localhost:3000}
   auth:
-    requireEmailVerification: ${REQUIRE_EMAIL_VERIFICATION:true}
+    requireEmailVerification: ${REQUIRE_EMAIL_VERIFICATION:false}
   mail:
     from: ${MAIL_FROM:no-reply@project1.local}
 

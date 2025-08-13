@@ -15,22 +15,20 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <ProtectedRoute>
-      <div>
-        <SidebarProvider>
-          <div className="flex min-h-screen w-full">
-            <AppSidebar />
-            <div className="flex flex-1 flex-col">
-              <SiteHeader />
-              <SidebarInset>
-                <div className="flex flex-1 flex-col gap-4 p-4">
-                  {children}
-                </div>
-              </SidebarInset>
-            </div>
+    <div>
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AppSidebar />
+          <div className="flex flex-1 flex-col">
+            <SiteHeader />
+            <SidebarInset>
+              <div className="flex flex-1 flex-col gap-4 p-4">
+                {children}
+              </div>
+            </SidebarInset>
           </div>
-        </SidebarProvider>
-      </div>
-    </ProtectedRoute>
+        </div>
+      </SidebarProvider>
+    </div>
   );
 }

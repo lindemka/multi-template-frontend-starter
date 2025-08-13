@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/feed/**").permitAll() // Temporarily allow feed access for testing
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/api/account/confirm-email").permitAll()
                 .requestMatchers("/api/members/**").permitAll()

@@ -137,6 +137,9 @@ public class UserProfileController {
             if (updates.containsKey("skills")) {
                 profile.setSkills((List<String>) updates.get("skills"));
             }
+            if (updates.containsKey("avatar")) {
+                profile.setAvatar((String) updates.get("avatar"));
+            }
             
             // Update about section
             if (updates.containsKey("about")) {

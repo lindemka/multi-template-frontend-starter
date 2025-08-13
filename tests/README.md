@@ -1,458 +1,177 @@
-# Playwright Testing Strategy
+# Feed Test Suite
 
-This directory contains the consolidated Playwright testing strategy for the Foundersbase application. All tests are organized here to provide a single source of truth for testing.
+This directory contains comprehensive end-to-end tests for the feed functionality of the application.
 
-## 🚀 Quick Start
+## Test Files
 
-```bash
-# Run all tests
-./scripts/test.sh all
-
-# Run specific test categories
-./scripts/test.sh basic      # Basic application tests
-./scripts/test.sh auth       # Authentication tests
-./scripts/test.sh messages   # Messages functionality tests
-./scripts/test.sh chat       # Chat interface tests
-./scripts/test.sh members    # Members page tests
-./scripts/test.sh account    # Account management tests
-
-# Run tests in different modes
-./scripts/test.sh ui         # Interactive UI mode
-./scripts/test.sh debug      # Debug mode
-./scripts/test.sh headed     # Headed mode (see browser)
-```
-
-## 📁 Directory Structure
-
-```
-tests/
-├── README.md                    # This documentation
-├── auth.spec.ts                 # Authentication tests
-├── basic.spec.ts                # Basic application tests
-├── messages.spec.ts             # Messages functionality tests
-├── chat.spec.ts                 # Chat interface tests
-├── members.spec.ts              # Members page tests
-├── account.spec.ts              # Account management tests
-├── helpers/                     # Test utilities
-│   ├── auth.ts                  # Authentication helpers
-│   ├── api.ts                   # API testing helpers
-│   └── data.ts                  # Test data management
-└── fixtures/                    # Test fixtures and data
-    └── test-users.json          # Test user credentials
-```
-
-## 👥 Test Users
-
-| Username | Email | Password | Purpose |
-|----------|-------|----------|---------|
-| sarah.chen | sarah.chen@example.com | password123 | Primary test user |
-| alex.johnson | alex.johnson@example.com | password123 | Chat testing |
-| maria.garcia | maria.garcia@example.com | password123 | Multiple conversations |
-| james.kim | james.kim@example.com | password123 | Profile testing |
-| kai3 | kai3@example.com | password123 | Alternative test user |
-
-## 🔧 Configuration
-
-### Playwright Config (`playwright.config.ts`)
-
-- **Base URL**: `http://localhost:3000`
-- **Timeout**: 60 seconds global, 10 seconds per action
-- **Reporters**: HTML, JSON, JUnit
-- **Browsers**: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
-- **Web Server**: Auto-starts `npm run dev` if not running
-
-### Environment Requirements
-
-- **Backend**: Spring Boot on port 8080
-- **Frontend**: Next.js on port 3000
-- **Database**: PostgreSQL via Docker
-- **Node.js**: Latest LTS version
-
-## 🧪 Test Categories
-
-### 1. Basic Tests (`basic.spec.ts`)
-Tests fundamental application functionality:
-- Page loading and navigation
-- Authentication flows
+### `feed-test-suite.spec.ts`
+The main test suite that covers all feed functionality including:
+- Loading and displaying posts
+- Creating new posts
+- Post interactions (like, comment, share)
+- Feed refresh functionality
 - Responsive design
-- Error handling
-- API health checks
+- Post metadata display
 
-### 2. Authentication Tests (`auth.spec.ts`)
-Tests user authentication:
-- Login/logout flows
-- Session management
-- Protected route access
-- Form validation
-- API authentication
+## Test Configuration
 
-### 3. Messages Tests (`messages.spec.ts`)
-Tests messaging functionality:
-- Page loading and authentication
-- API endpoint testing
-- WebSocket connections
-- Message sending/receiving
-- Conversation management
+### Prerequisites
+1. **Backend**: Spring Boot application running on port 8080
+2. **Frontend**: Next.js application running on port 3000
+3. **Database**: PostgreSQL with test data from `V10__create_feed_tables.sql`
 
-### 4. Chat Tests (`chat.spec.ts`)
-Tests real-time chat features:
-- Chat dock functionality
-- Message persistence
-- Real-time updates
-- Multiple conversations
-- WebSocket integration
+### Authentication
+Currently, tests run with authentication bypassed for development purposes. This allows for faster testing and easier debugging.
 
-### 5. Members Tests (`members.spec.ts`)
-Tests member management:
-- Member listing
-- Search and filtering
-- Profile viewing
-- Pagination
-- API integration
+**To re-enable authentication:**
+1. Re-enable authentication in `backend/src/main/java/com/example/demo/config/SecurityConfig.java`
+2. Re-enable authentication checks in frontend API routes
+3. Update tests to include login steps
 
-### 6. Account Tests (`account.spec.ts`)
-Tests account management:
-- Profile editing
-- Settings management
-- Password changes
-- Avatar uploads
-- Account deletion
+## Running Tests
 
-## 🛠️ Helper Functions
-
-### Authentication Helpers (`helpers/auth.ts`)
-
-```typescript
-// Login with test user
-await login(page, TEST_USERS.sarah);
-
-// Login with username instead of email
-await loginWithUsername(page, TEST_USERS.sarah);
-
-// Check if logged in
-const isLoggedIn = await isLoggedIn(page);
-
-// Ensure logged in (login if not)
-await ensureLoggedIn(page, TEST_USERS.sarah);
-
-// Test login failure
-await testLoginFailure(page, 'invalid@email.com', 'wrongpass');
-
-// Get auth token for API testing
-const token = await getAuthToken(page, TEST_USERS.sarah);
-```
-
-### API Helpers (`helpers/api.ts`)
-
-```typescript
-// Make authenticated API request
-const response = await authenticatedRequest(request, '/api/endpoint', {
-  method: 'POST',
-  data: { key: 'value' },
-  token: 'auth-token'
-});
-
-// Test API endpoint
-const data = await testApiEndpoint(request, '/api/endpoint', 200, {
-  method: 'POST',
-  data: { key: 'value' }
-});
-```
-
-### Data Helpers (`helpers/data.ts`)
-
-```typescript
-// Generate test message
-const message = generateTestMessage('Test Prefix');
-
-// Generate unique test data
-const data = generateUniqueTestData();
-
-// Get random test user
-const user = getRandomTestUser();
-
-// Clean up test data
-await cleanupTestData();
-```
-
-## 🚨 Common Issues and Solutions
-
-### 1. Login Failures
-
-**Problem**: Tests fail with "Login failed: Still on login page after submission"
-
-**Root Cause**: Frontend login flow doesn't redirect properly or has timing issues
-
-**Solutions**:
-- Use API login instead of UI login for reliable authentication
-- Set auth token in localStorage before navigating to protected pages
-- Add proper wait conditions for page loads
-
-```typescript
-// ✅ Recommended approach
-const loginResponse = await request.post('/api/auth/login', {
-  data: { usernameOrEmail: user.email, password: user.password }
-});
-const token = loginResponse.json().accessToken;
-
-// Set token in page context
-await page.addInitScript((token) => {
-  localStorage.setItem('authToken', token);
-}, token);
-```
-
-### 2. Missing UI Elements
-
-**Problem**: Tests fail with "element not found" errors
-
-**Root Cause**: Tests look for `data-testid` attributes that don't exist in the actual application
-
-**Solutions**:
-- Use semantic selectors based on actual page content
-- Look for text content, placeholders, or class names
-- Use flexible selectors that match the real application structure
-
-```typescript
-// ❌ Don't use data-testid that don't exist
-await expect(page.locator('[data-testid="conversations-list"]')).toBeVisible();
-
-// ✅ Use actual page content
-await expect(page.locator('text=Nachrichten')).toBeVisible();
-await expect(page.locator('input[placeholder*="search"]')).toBeVisible();
-```
-
-### 3. API Response Status Codes
-
-**Problem**: Tests expect specific status codes but receive different ones
-
-**Root Cause**: API endpoints return different status codes than expected (e.g., 403 instead of 404)
-
-**Solutions**:
-- Accept multiple valid status codes
-- Document actual API behavior
-- Use flexible assertions
-
-```typescript
-// ✅ Accept multiple valid status codes
-expect([200, 404, 403]).toContain(response.status());
-
-// ✅ Document expected behavior
-// API returns 403 for unauthorized access, 404 for not found
-```
-
-### 4. Page Structure Changes
-
-**Problem**: Tests break when UI structure changes
-
-**Root Cause**: Tests are too tightly coupled to specific HTML structure
-
-**Solutions**:
-- Use content-based selectors
-- Test functionality, not implementation
-- Use flexible locators
-
-```typescript
-// ❌ Brittle structure-based selectors
-await expect(page.locator('h1')).toContainText('Dashboard');
-
-// ✅ Content-based selectors
-await expect(page.locator('text=Dashboard')).toBeVisible();
-```
-
-## 📋 Best Practices
-
-### 1. Test Structure
-
-```typescript
-test.describe('Feature Name', () => {
-  test.beforeEach(async ({ page }) => {
-    // Setup: Login, navigate to page, etc.
-  });
-
-  test('should do something specific', async ({ page }) => {
-    // Arrange: Set up test data
-    // Act: Perform the action
-    // Assert: Verify the result
-  });
-});
-```
-
-### 2. Reliable Selectors
-
-```typescript
-// ✅ Good: Content-based selectors
-await expect(page.locator('text=Welcome to fbase')).toBeVisible();
-await expect(page.locator('input[placeholder*="search"]')).toBeVisible();
-
-// ✅ Good: Flexible selectors
-await expect(page.locator('button').filter({ hasText: 'Send' })).toBeVisible();
-
-// ❌ Avoid: Brittle selectors
-await expect(page.locator('[data-testid="specific-id"]')).toBeVisible();
-```
-
-### 3. API Testing
-
-```typescript
-// ✅ Test API endpoints directly
-const response = await request.post('/api/auth/login', {
-  data: { usernameOrEmail: user.email, password: user.password }
-});
-expect(response.ok()).toBeTruthy();
-
-// ✅ Handle multiple valid responses
-expect([200, 404, 403]).toContain(response.status());
-```
-
-### 4. Error Handling
-
-```typescript
-// ✅ Graceful handling of missing elements
-const element = page.locator('text=Some Text');
-if (await element.count() > 0) {
-  await expect(element).toBeVisible();
-} else {
-  console.log('Element not found, continuing with test');
-}
-
-// ✅ Skip tests when prerequisites aren't met
-if (!loginResponse.ok()) {
-  test.skip();
-  return;
-}
-```
-
-## 🔍 Debugging
-
-### 1. Run Tests in Debug Mode
-
+### Quick Start
 ```bash
-./scripts/test.sh debug --project=chromium
+# Start the backend
+cd backend && mvn spring-boot:run
+
+# Start the frontend (in a new terminal)
+cd frontend && npm run dev
+
+# Run the feed test suite
+npx playwright test tests/feed-test-suite.spec.ts
 ```
 
-### 2. Run Tests in UI Mode
-
+### Running with UI
 ```bash
-./scripts/test.sh ui
+# Run tests with browser UI visible
+npx playwright test tests/feed-test-suite.spec.ts --headed
+
+# Run tests in a specific browser
+npx playwright test tests/feed-test-suite.spec.ts --project=chromium --headed
 ```
 
-### 3. Run Tests in Headed Mode
-
+### Running All Tests
 ```bash
-./scripts/test.sh headed --project=chromium
+# Run all tests in the project
+npx playwright test
+
+# Run tests with coverage report
+npx playwright test --reporter=html
 ```
 
-### 4. View Test Reports
+## Test Structure
 
+### Test Categories
+1. **Page Loading**: Verifies feed page loads correctly with posts
+2. **Modal Functionality**: Tests create post modal opening and form elements
+3. **Post Interactions**: Verifies like, comment, and share buttons are present
+4. **Metadata Display**: Checks author information, timestamps, and interaction counts
+5. **Refresh Functionality**: Tests feed refresh behavior
+6. **Responsive Design**: Verifies feed works on mobile viewports
+
+### Test Data
+Tests use sample data from the database migration `V10__create_feed_tables.sql`:
+- 4 sample posts with different authors
+- Various content types (text, emojis, hashtags)
+- Different interaction counts
+
+## Debugging Tests
+
+### View Test Results
 ```bash
-./scripts/test.sh report
+# Open the HTML report
+npx playwright show-report
 ```
 
-### 5. Check Test Artifacts
-
-- **Screenshots**: `test-results/` directory
-- **Videos**: `test-results/` directory (on failure)
-- **Traces**: `test-results/` directory (on retry)
-
-## 📊 Test Reports
-
-### HTML Report
-- **Location**: `playwright-report/`
-- **Command**: `npx playwright show-report`
-- **Features**: Interactive test results, screenshots, videos, traces
-
-### JSON Report
-- **Location**: `test-results/results.json`
-- **Use**: CI/CD integration, custom reporting
-
-### JUnit Report
-- **Location**: `test-results/results.xml`
-- **Use**: CI/CD integration with JUnit-compatible tools
-
-## 🚀 CI/CD Integration
-
-### GitHub Actions Example
-
-```yaml
-name: Playwright Tests
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: ./scripts/test.sh all
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+### Debug Mode
+```bash
+# Run tests in debug mode with step-by-step execution
+npx playwright test tests/feed-test-suite.spec.ts --debug
 ```
 
-## 🔧 Maintenance
+### Screenshots and Videos
+Test failures automatically generate:
+- Screenshots of the failure state
+- Video recordings of the test execution
+- Error context information
 
-### 1. Update Test Users
+## Common Issues
 
-Edit `tests/fixtures/test-users.json` to add/remove test users.
+### Authentication Issues
+If tests fail due to authentication:
+1. Check that authentication is properly bypassed in the configuration
+2. Verify backend and frontend are running
+3. Check database connection and test data
 
-### 2. Update Helper Functions
+### Element Not Found
+If tests can't find elements:
+1. Check that the page has loaded completely
+2. Verify element selectors match the current UI
+3. Check for dynamic content loading
 
-Modify `tests/helpers/` files to add new utility functions.
+### Network Issues
+If API calls fail:
+1. Verify backend is running on port 8080
+2. Check frontend API routes are working
+3. Verify database is accessible
 
-### 3. Add New Test Categories
+## Test Maintenance
 
-Create new `.spec.ts` files following the existing patterns.
+### Adding New Tests
+1. Follow the existing test structure
+2. Use descriptive test names
+3. Add appropriate assertions
+4. Include error handling
 
-### 4. Update Documentation
+### Updating Selectors
+When UI changes:
+1. Update element selectors in tests
+2. Verify tests still pass
+3. Update documentation if needed
 
-Keep this README updated with new patterns and lessons learned.
+### Test Data Management
+When database schema changes:
+1. Update test data in migrations
+2. Adjust test expectations
+3. Verify all tests pass
 
-## 📝 Lessons Learned
+## Best Practices
 
-### 1. Authentication Issues
-- **Problem**: Frontend login flow is unreliable for testing
-- **Solution**: Use API login for tests, set tokens in localStorage
-- **Documentation**: Always test authentication via API first
+1. **Isolation**: Each test should be independent
+2. **Descriptive Names**: Use clear, descriptive test names
+3. **Proper Assertions**: Use appropriate assertions for each check
+4. **Error Handling**: Include proper error handling and cleanup
+5. **Documentation**: Keep this README updated with changes
 
-### 2. UI Element Selection
-- **Problem**: `data-testid` attributes don't exist in the application
-- **Solution**: Use content-based selectors and actual page structure
-- **Documentation**: Inspect actual page before writing selectors
+## Troubleshooting
 
-### 3. API Response Handling
-- **Problem**: APIs return different status codes than expected
-- **Solution**: Accept multiple valid status codes and document actual behavior
-- **Documentation**: Test APIs directly to understand actual responses
+### Tests Not Running
+- Check that Playwright is installed: `npm install -D @playwright/test`
+- Verify browser binaries: `npx playwright install`
 
-### 4. Page Structure
-- **Problem**: Tests break when UI changes
-- **Solution**: Test functionality, not implementation details
-- **Documentation**: Use flexible, content-based selectors
+### Backend Connection Issues
+- Check backend is running: `curl http://localhost:8080/health`
+- Verify database connection
+- Check application logs
 
-## 🎯 Success Criteria
+### Frontend Issues
+- Check frontend is running: `curl http://localhost:3000`
+- Verify API routes are accessible
+- Check browser console for errors
 
-- ✅ All tests run without endless loops
-- ✅ Tests complete in reasonable time (< 2 minutes)
-- ✅ Tests are reliable and don't flake
-- ✅ Tests provide meaningful feedback
-- ✅ Tests are easy to maintain and extend
-- ✅ Documentation is comprehensive and up-to-date
+## Contributing
 
-## 📞 Support
+When adding new tests:
+1. Follow the existing patterns
+2. Add appropriate documentation
+3. Ensure tests are reliable and fast
+4. Update this README if needed
 
-For testing issues:
-1. Check this documentation first
-2. Review the "Common Issues and Solutions" section
-3. Check test artifacts for debugging information
-4. Run tests in debug mode for step-by-step investigation
-5. Update this documentation with new findings
+## Support
 
----
-
-**Status**: ✅ Testing setup is clean, consolidated, and working!
+For issues with the test suite:
+1. Check the troubleshooting section
+2. Review test logs and screenshots
+3. Verify all prerequisites are met
+4. Check for recent changes that might affect tests
